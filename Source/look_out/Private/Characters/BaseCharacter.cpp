@@ -4,9 +4,9 @@
 #include "Characters/BaseCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Characters/Components/MovementComponentExtended.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 // Sets default values
@@ -44,6 +44,9 @@ ABaseCharacter::ABaseCharacter()
 
 	GetCharacterMovement()->Mass = 60;
 	GetCharacterMovement()->bPushForceUsingZOffset = true;
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	
+	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
 }
 
 void ABaseCharacter::BeginPlay()
@@ -61,75 +64,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABaseCharacter::MoveForward(float AxisValue)
-{
-	const FRotator ControlRotation = GetControlRotation();
-
-	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	AddMovementInput(ForwardDirection, AxisValue);
-}
-
-void ABaseCharacter::MoveRight(float AxisValue)
-{
-	const FRotator ControlRotation = GetControlRotation();
-
-	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
-
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	AddMovementInput(RightDirection, AxisValue);
-}
-
-void ABaseCharacter::ToggleSprint(bool State)
-{
-	if (State && CanSprint)
-	{
-		ChangeWalkSpeed(SprintSpeed);
-		IsSprinting = true;
-	}
-	else if (!State)
-	{
-		ChangeWalkSpeed(WalkSpeed);
-		IsSprinting = false;
-	}
-}
-
-void ABaseCharacter::JumpAction()
-{
-	Jump();
-}
-
-void ABaseCharacter::ChangeWalkSpeed(float _WalkSpeed)
-{
-	GetCharacterMovement()->MaxWalkSpeed = _WalkSpeed;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = _WalkSpeed / 2;
-}
-
 void ABaseCharacter::Zoom(bool State)
 {
 	Camera->SetFieldOfView(State ? 50 : FieldOfView);
-}
-
-void ABaseCharacter::Look(float InputAxisX, float InputAxisY, bool bHoldingRMB)
-{
-	bool HaveToRotateItem = IsGrabbingObject && bHoldingRMB && GrabbedObjectType().bIsNotHeavy;
-
-	if (!HaveToRotateItem)
-	{
-		AddControllerYawInput(InputAxisX);
-		AddControllerPitchInput(InputAxisY);
-	}
-	else
-	{
-		InputAxisX *= -1;
-		InputAxisY *= -1;
-
-		GrabRotation.Roll = GrabRotation.Roll - InputAxisY;
-		GrabRotation.Yaw = GrabRotation.Yaw - InputAxisX;
-	}
 }
 
 FWeightCheckResult ABaseCharacter::GrabbedObjectType()

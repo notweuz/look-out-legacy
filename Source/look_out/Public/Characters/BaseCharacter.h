@@ -32,27 +32,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void MoveForward(float InputAxis);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void MoveRight(float InputAxis);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void Look(float InputAxisX, float InputAxisY, bool bHoldingRMB);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void ToggleSprint(bool State);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void JumpAction();
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void ChangeWalkSpeed(float WalkSpeed);
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual FWeightCheckResult GrabbedObjectType();
-	
-	UFUNCTION(BlueprintCallable)
 	virtual void Zoom(bool State);
 
 public:	
@@ -61,6 +40,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual FWeightCheckResult GrabbedObjectType();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UMovementComponentExtended* MovementComponentExtended;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -73,15 +58,6 @@ protected:
 	class UPhysicsHandleComponent* PhysicsHandle;
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float WalkSpeed = 400;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float SprintSpeed = 600;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float DragSpeed = 90;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float InteractDistance = 200;
 	
@@ -102,10 +78,4 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
 	FRotator GrabRotation = FRotator::ZeroRotator;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="States")
-	bool CanSprint = true;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="States")
-	bool IsSprinting = false;
 };
