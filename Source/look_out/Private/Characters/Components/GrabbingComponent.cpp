@@ -48,7 +48,7 @@ FWeightCheckResult UGrabbingComponent::GrabbedObjectType()
 {
 	FWeightCheckResult Result;
 
-	UPrimitiveComponent* GrabbedComponent = nullptr;
+	const UPrimitiveComponent* GrabbedComponent = nullptr;
 
 	if (OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
 	{
@@ -57,9 +57,7 @@ FWeightCheckResult UGrabbingComponent::GrabbedObjectType()
 
 	if (GrabbedComponent && HeavyObject)
 	{
-		bool IsObjectHeavy = GrabbedComponent == HeavyObject;
-
-		if (IsObjectHeavy)
+		if (GrabbedComponent == HeavyObject)
 		{
 			Result.bIsHeavy = true;
 			Result.bIsNotHeavy = false;
