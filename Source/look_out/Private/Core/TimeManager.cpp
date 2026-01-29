@@ -14,13 +14,20 @@ ATimeManager::ATimeManager()
 void ATimeManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PerformTimeUpdate(0);
 }
 
 // Called every frame
 void ATimeManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	PerformTimeUpdate(DeltaTime);
+}
 
+void ATimeManager::PerformTimeUpdate(float DeltaTime)
+{
 	if (!bTimeStopped)
 	{
 		float DayMultiplier = TimeDilation * RealHoursPerDay;
@@ -42,5 +49,13 @@ void ATimeManager::Tick(float DeltaTime)
 			Time = 0;
 			Day++;
 		}
+	}
+}
+
+void ATimeManager::TriggerMinutePassed(int Day, float Time)
+{
+	if (OnCallMinutePassed.IsBound())
+	{
+		OnCallMinutePassed.Broadcast(Day, Time);
 	}
 }

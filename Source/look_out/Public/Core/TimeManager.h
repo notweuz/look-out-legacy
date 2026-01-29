@@ -46,6 +46,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Events")
 	void TriggerMinutePassed(int Day, float Time);
+	
+	void PerformTimeUpdate(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
 	bool bTimeStopped = false;
