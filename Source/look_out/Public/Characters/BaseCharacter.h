@@ -70,5 +70,5 @@ public:
 	UGrabbingComponent* GrabbingComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPlayerSideInteractionComponent* PlayerSideInteractionComponent;
+	UPlayerSideInteractionComponent* PSInteractionComponent;
 };

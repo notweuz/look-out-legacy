@@ -22,7 +22,7 @@ ABaseCharacter::ABaseCharacter()
 	// Components
 	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
 	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
-	PlayerSideInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PlayerSideInteractionComponents"));
+	PSInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PSInteractionComponent"));
 
 	// Creating camera component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
