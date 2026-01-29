@@ -6,18 +6,6 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
-USTRUCT(BlueprintType)
-struct FWeightCheckResult
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsHeavy = false;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsNotHeavy = false;
-};
-
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
 {
@@ -41,13 +29,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual FWeightCheckResult GrabbedObjectType();
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UMovementComponentExtended* MovementComponentExtended;
-	
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class USpringArmComponent* SpringArm;
 	
@@ -57,25 +38,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPhysicsHandleComponent* PhysicsHandle;
 	
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float InteractDistance = 200;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float GrabDistance = 200;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float FieldOfView = 90;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float Strength = 1500;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UMovementComponentExtended* MovementComponentExtended;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
-	UPrimitiveComponent* HeavyObject = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
-	bool IsGrabbingObject = false;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
-	FRotator GrabRotation = FRotator::ZeroRotator;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UGrabbingComponent* GrabbingComponent;
 };

@@ -4,6 +4,7 @@
 #include "Characters/Components/MovementComponentExtended.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Characters/BaseCharacter.h"
+#include "Characters/Components/GrabbingComponent.h"
 
 // Sets default values for this component's properties
 UMovementComponentExtended::UMovementComponentExtended()
@@ -85,7 +86,7 @@ void UMovementComponentExtended::ChangeWalkSpeed(float _WalkSpeed)
 
 void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, bool bHoldingRMB)
 {
-	bool HaveToRotateItem = OwnerCharacter->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbedObjectType().
+	bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType().
 		bIsNotHeavy;
 
 	if (!HaveToRotateItem)
@@ -95,11 +96,7 @@ void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, bool b
 	}
 	else
 	{
-		InputAxisX *= -1;
-		InputAxisY *= -1;
-
-		OwnerCharacter->GrabRotation.Roll = OwnerCharacter->GrabRotation.Roll - InputAxisY;
-		OwnerCharacter->GrabRotation.Yaw = OwnerCharacter->GrabRotation.Yaw - InputAxisX;
+		OwnerCharacter->GrabbingComponent->LightweightObjectRotation(InputAxisX, InputAxisY);
 	}
 }
 

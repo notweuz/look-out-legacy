@@ -44,9 +44,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UPROPERTY()
-	class ABaseCharacter* OwnerCharacter;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float WalkSpeed = 400;
@@ -62,5 +59,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="States")
 	bool IsSprinting = false;
-		
+	
+protected:
+	UPROPERTY()
+	class ABaseCharacter* OwnerCharacter;
 };
