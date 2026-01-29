@@ -78,6 +78,11 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (GrabbingComponent->IsGrabbingObject)
+	{
+		GrabbingComponent->ProcessGrabbing(DeltaTime);
+	}
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

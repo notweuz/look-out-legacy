@@ -35,8 +35,6 @@ void UGrabbingComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                        FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	ProcessGrabbing(DeltaTime);
 }
 
 void UGrabbingComponent::LightweightObjectRotation(float InputAxisX, float InputAxisY)
