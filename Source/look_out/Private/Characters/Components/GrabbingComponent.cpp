@@ -93,7 +93,7 @@ void UGrabbingComponent::ToggleGrabComponent(bool State)
 			AActor* HitActor = HitResult.GetActor();
 			UPrimitiveComponent* HitActorComponent = HitResult.GetComponent();
 
-			if (HitActor->ActorHasTag("lightweight"))
+			if (HitActor->ActorHasTag("grabbable"))
 			{
 				OwnerCharacter->PhysicsHandle->GrabComponentAtLocation(HitActorComponent, "None",
 				                                                       HitActorComponent->GetComponentLocation());
@@ -102,7 +102,7 @@ void UGrabbingComponent::ToggleGrabComponent(bool State)
 			}
 			else
 			{
-				if (HitActor->ActorHasTag("heavyweight"))
+				if (HitActor->ActorHasTag("draggable"))
 				{
 					HeavyObject = HitActorComponent;
 					OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
