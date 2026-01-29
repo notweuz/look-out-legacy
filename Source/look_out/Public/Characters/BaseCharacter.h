@@ -6,6 +6,18 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FRelatedForwardVectorResult
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly)
+	FVector StartVector;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FVector EndVector;
+};
+
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
 {
@@ -29,6 +41,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual FRelatedForwardVectorResult GetForwardVectorRelatedToCamera(float VectorLength);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class USpringArmComponent* SpringArm;
 	
@@ -37,6 +52,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPhysicsHandleComponent* PhysicsHandle;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPhysicsConstraintComponent* PhysicsConstraint;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float InteractDistance = 200;

@@ -30,13 +30,7 @@ protected:
 	virtual void Look(float InputAxisX, float InputAxisY, bool bHoldingRMB);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void ToggleSprint(bool State);
-	
-	UFUNCTION(BlueprintCallable)
 	virtual void JumpAction();
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void ChangeWalkSpeed(float WalkSpeed);
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void DoCrouch(bool State);
@@ -44,6 +38,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void ToggleSprint(bool State);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void ChangeWalkSpeed(float WalkSpeed);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float WalkSpeed = 400;

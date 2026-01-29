@@ -37,6 +37,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	virtual FWeightCheckResult GrabbedObjectType();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void ToggleGrabComponent(bool State);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void ProcessGrabbing(float DeltaSeconds);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
 	UPrimitiveComponent* HeavyObject = nullptr;
