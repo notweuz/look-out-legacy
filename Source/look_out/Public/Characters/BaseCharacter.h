@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/GrabbingComponent.h"
 #include "Components/MovementComponentExtended.h"
+#include "Components/PlayerSideInteractionComponent.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -19,6 +20,7 @@ struct FRelatedForwardVectorResult
 	UPROPERTY(BlueprintReadOnly)
 	FVector EndVector;
 };
+
 
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
@@ -59,9 +61,6 @@ public:
 	UPhysicsConstraintComponent* PhysicsConstraint;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float InteractDistance = 200;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float FieldOfView = 90;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -69,4 +68,7 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UGrabbingComponent* GrabbingComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPlayerSideInteractionComponent* PlayerSideInteractionComponent;
 };

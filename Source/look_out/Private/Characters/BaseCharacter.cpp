@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Characters/Components/GrabbingComponent.h"
 #include "Characters/Components/MovementComponentExtended.h"
+#include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,6 +22,7 @@ ABaseCharacter::ABaseCharacter()
 	// Components
 	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
 	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
+	PlayerSideInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PlayerSideInteractionComponents"));
 
 	// Creating camera component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
