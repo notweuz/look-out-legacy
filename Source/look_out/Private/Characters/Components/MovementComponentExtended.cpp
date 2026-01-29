@@ -65,7 +65,7 @@ void UMovementComponentExtended::ToggleSprint(bool State)
 		ChangeWalkSpeed(SprintSpeed);
 		IsSprinting = true;
 	}
-	else if (!State)
+	else if (!State && CanSprint)
 	{
 		ChangeWalkSpeed(WalkSpeed);
 		IsSprinting = false;

@@ -59,23 +59,13 @@ FWeightCheckResult UGrabbingComponent::GrabbedObjectType()
 		GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 	}
 
+	if (HeavyObject != nullptr)
+	{
+		Result.bIsHeavy = true;
+	}
 	if (GrabbedComponent)
 	{
-		if (HeavyObject != nullptr)
-		{
-			Result.bIsHeavy = true;
-			Result.bIsNotHeavy = false;
-		}
-		else
-		{
-			Result.bIsHeavy = false;
-			Result.bIsNotHeavy = true;
-		}
-	}
-	else
-	{
-		Result.bIsHeavy = false;
-		Result.bIsNotHeavy = false;
+		Result.bIsNotHeavy = true;
 	}
 
 	return Result;
@@ -168,24 +158,24 @@ void UGrabbingComponent::ProcessGrabbing(float DeltaSeconds)
 		FName BoneName2;
 
 		OwnerCharacter->PhysicsConstraint->GetConstrainedComponents(
-			Component1, 
-			BoneName1, 
-			Component2, 
+			Component1,
+			BoneName1,
+			Component2,
 			BoneName2
 		);
-		
+
 		FVector Component2Location = Component2->GetComponentLocation();
 		FVector Component1Location = Component1->GetComponentLocation();
 
 		float DistanceVectorLength = FVector::Dist(Component1Location, Component2Location);
 		float MaxDistance = GrabDistance * 1.5;
-		
+
 		if (DistanceVectorLength >= MaxDistance)
 		{
 			FVector Difference = Component1Location - Component2Location;
 			Difference.Normalize();
 			float ObjectScale = Component1->GetComponentScale().X;
-			
+
 			FVector FinalLaunchVector = DistanceVectorLength * Difference * ObjectScale * 0.1;
 			OwnerCharacter->LaunchCharacter(FinalLaunchVector, false, false);
 		}
