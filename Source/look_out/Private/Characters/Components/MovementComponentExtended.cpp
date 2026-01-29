@@ -2,10 +2,10 @@
 
 
 #include "Characters/Components/MovementComponentExtended.h"
-#include "GameFramework/CharacterMovementComponent.h"
+
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/GrabbingComponent.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 // Sets default values for this component's properties
 UMovementComponentExtended::UMovementComponentExtended()
 {

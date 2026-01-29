@@ -3,12 +3,12 @@
 
 #include "Characters/Components/GrabbingComponent.h"
 
+#include "Camera/CameraComponent.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Components/CapsuleComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-
 // Sets default values for this component's properties
 UGrabbingComponent::UGrabbingComponent()
 {
@@ -177,5 +177,21 @@ void UGrabbingComponent::ProcessGrabbing(float DeltaSeconds)
 			FVector FinalLaunchVector = DistanceVectorLength * Difference * ObjectScale * 0.1;
 			OwnerCharacter->LaunchCharacter(FinalLaunchVector, false, false);
 		}
+	}
+}
+
+void UGrabbingComponent::ThrowObject()
+{
+	FWeightCheckResult Result = GrabbedObjectType();
+	if (Result.bIsNotHeavy)
+	{
+		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
+		FVector ForwardVector = OwnerCharacter->Camera->GetForwardVector();
+		
+		float Force = FMath::Clamp(Strength / GrabbedComponent->GetMass(), 500, Strength);
+		FVector ForceVector = ForwardVector * Force;
+		
+		ToggleGrabComponent(false);
+		GrabbedComponent->SetAllPhysicsLinearVelocity(ForceVector);
 	}
 }

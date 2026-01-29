@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/GrabbingComponent.h"
+#include "Components/MovementComponentExtended.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -63,8 +65,8 @@ public:
 	float FieldOfView = 90;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UMovementComponentExtended* MovementComponentExtended;
+	UMovementComponentExtended* MovementComponentExtended;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UGrabbingComponent* GrabbingComponent;
+	UGrabbingComponent* GrabbingComponent;
 };

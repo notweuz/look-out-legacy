@@ -43,6 +43,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void ProcessGrabbing(float DeltaSeconds);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void ThrowObject();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
 	UPrimitiveComponent* HeavyObject = nullptr;

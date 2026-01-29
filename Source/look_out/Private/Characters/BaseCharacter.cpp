@@ -6,9 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "Characters/Components/GrabbingComponent.h"
 #include "Characters/Components/MovementComponentExtended.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -18,19 +18,20 @@ ABaseCharacter::ABaseCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Components
+	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
+	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
+
 	// Creating camera component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	PhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraint"));
 
-	// Set mesh rotation & position
-	// GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
-
 	SpringArm->SetupAttachment(GetMesh());
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
-	
+
 	// Spring Arm Defaults
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->TargetArmLength = 0;
@@ -40,7 +41,7 @@ ABaseCharacter::ABaseCharacter()
 	SpringArm->CameraLagSpeed = 20;
 	SpringArm->CameraRotationLagSpeed = 20;
 	SpringArm->CameraLagMaxDistance = 10;
-	
+
 	// Physics Handle Defaults
 	PhysicsHandle->InterpolationSpeed = 10;
 
@@ -55,7 +56,7 @@ ABaseCharacter::ABaseCharacter()
 	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearPlasticityType = CCPT_Grow;
 	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearPlasticityThreshold = 0.5;
 	PhysicsConstraint->SetLinearDriveAccelerationMode(false);
-	
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bIgnoreBaseRotation = true;
@@ -63,11 +64,6 @@ ABaseCharacter::ABaseCharacter()
 	GetCharacterMovement()->Mass = 60;
 	GetCharacterMovement()->bPushForceUsingZOffset = true;
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
-	
-	// Components
-	
-	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
-	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
 }
 
 void ABaseCharacter::BeginPlay()
@@ -78,7 +74,7 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (GrabbingComponent->IsGrabbingObject)
 	{
 		GrabbingComponent->ProcessGrabbing(DeltaTime);
@@ -98,13 +94,13 @@ void ABaseCharacter::Zoom(bool State)
 FRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(float VectorLength)
 {
 	FRelatedForwardVectorResult Result;
-	
+
 	const FVector CameraLocation = Camera->GetComponentLocation();
 	FVector CameraForwardVector = Camera->GetForwardVector();
-	
+
 	CameraForwardVector *= VectorLength;
 	Result.StartVector = CameraLocation;
 	Result.EndVector = CameraLocation + CameraForwardVector;
-	
+
 	return Result;
 }
