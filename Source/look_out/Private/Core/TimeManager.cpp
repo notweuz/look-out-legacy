@@ -52,10 +52,10 @@ void ATimeManager::PerformTimeUpdate(float DeltaTime)
 	}
 }
 
-void ATimeManager::TriggerMinutePassed(int Day, float Time)
+void ATimeManager::TriggerMinutePassed(int _Day, float _Time)
 {
 	if (OnCallMinutePassed.IsBound())
 	{
-		OnCallMinutePassed.Broadcast(Day, Time);
+		OnCallMinutePassed.Broadcast(_Day, _Time);
 	}
 }
