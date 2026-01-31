@@ -1,20 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Core/Components/TimeIntegrationComponent.h"
-
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values for this component's properties
 UTimeIntegrationComponent::UTimeIntegrationComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
-// Called when the game starts
 void UTimeIntegrationComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,17 +23,35 @@ void UTimeIntegrationComponent::BeginPlay()
 	}
 }
 
-
-// Called every frame
 void UTimeIntegrationComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
-                                              FActorComponentTickFunction* ThisTickFunction)
+											  FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
-void UTimeIntegrationComponent::OnMinutePassedTriggered(const int Day, const float Time)
+void UTimeIntegrationComponent::OnMinutePassedTriggered(const int32 Day, const float Time)
 {
-	OnMinutePassedReceived(Day, Time);
+	OnMinutePassed.Broadcast(Day, Time);
+}
+
+FTimeFormattedResult UTimeIntegrationComponent::GetTimeFormatted() const
+{
+	FTimeFormattedResult Result;
+	
+	if (!TimeManager)
+	{
+		return Result;
+	}
+	
+	Result.Day = TimeManager->Day;
+	
+	const float CurrentTime = TimeManager->Time;
+	
+	const int32 TotalSeconds = FMath::FloorToInt(CurrentTime);
+	
+	Result.Hour = TotalSeconds / 3600;
+	Result.Minute = (TotalSeconds % 3600) / 60;
+	Result.Second = TotalSeconds % 60;
+	
+	return Result;
 }
