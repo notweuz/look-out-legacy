@@ -7,8 +7,10 @@
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Components/CapsuleComponent.h"
+#include "Interfaces/Grabbable.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+
 // Sets default values for this component's properties
 UGrabbingComponent::UGrabbingComponent()
 {
@@ -90,28 +92,37 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 
 		if (bHit)
 		{
-			const AActor* HitActor = HitResult.GetActor();
+			AActor* HitActor = HitResult.GetActor();
 			UPrimitiveComponent* HitActorComponent = HitResult.GetComponent();
 
-			if (HitActor->ActorHasTag("grabbable"))
+			if (HitActor && HitActor->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 			{
-				OwnerCharacter->PhysicsHandle->GrabComponentAtLocation(HitActorComponent, "None",
-				                                                       HitActorComponent->GetComponentLocation());
-				GrabRotation = HitActorComponent->GetComponentRotation();
-				IsGrabbingObject = true;
-			}
-			else
-			{
-				if (HitActor->ActorHasTag("draggable"))
+				if (IGrabbable* GrabbableInterface = Cast<IGrabbable>(HitActor))
 				{
-					HeavyObject = HitActorComponent;
-					OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
-						HitActorComponent, "None", OwnerCharacter->GetCapsuleComponent(), "None");
-					OwnerCharacter->MovementComponentExtended->CanSprint = false;
-					OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
-					OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
-						OwnerCharacter->MovementComponentExtended->DragSpeed);
-					IsGrabbingObject = true;
+					if (const EGrabbableObjectType Type = GrabbableInterface->GetGrabbableType(); Type == Lightweight)
+					{
+						OwnerCharacter->PhysicsHandle->GrabComponentAtLocation(
+							HitActorComponent, 
+							NAME_None,
+							HitActorComponent->GetComponentLocation()
+						);
+						GrabRotation = HitActorComponent->GetComponentRotation();
+						IsGrabbingObject = true;
+					}
+					else if (Type == Heavyweight)
+					{
+						HeavyObject = HitActorComponent;
+						OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
+							HitActorComponent, NAME_None,
+							OwnerCharacter->GetCapsuleComponent(), NAME_None
+						);
+						OwnerCharacter->MovementComponentExtended->CanSprint = false;
+						OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
+						OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
+							OwnerCharacter->MovementComponentExtended->DragSpeed
+						);
+						IsGrabbingObject = true;
+					}
 				}
 			}
 		}
