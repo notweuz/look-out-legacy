@@ -132,8 +132,13 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 	{
 		if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 		{
+			UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 			OwnerCharacter->PhysicsHandle->ReleaseComponent();
-			OwnerCharacter->PhysicsHandle->GetGrabbedComponent()->SetEnableGravity(true);
+			
+			if (GrabbedComponent)
+			{
+				GrabbedComponent->SetEnableGravity(true);
+			}
 		}
 		else if (ObjectType == Heavyweight)
 		{
