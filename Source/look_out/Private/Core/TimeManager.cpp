@@ -3,11 +3,23 @@
 
 #include "Core/TimeManager.h"
 
+#include "Components/DirectionalLightComponent.h"
+#include "Components/ExponentialHeightFogComponent.h"
+#include "Components/SkyAtmosphereComponent.h"
+#include "Components/SkyLightComponent.h"
+#include "Components/VolumetricCloudComponent.h"
+
 // Sets default values
 ATimeManager::ATimeManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	DirectionalLight = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("DirectionalLight"));
+	ExponentialHeightFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("ExponentialHeightFog"));
+	SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
+	SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
+	VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +60,14 @@ void ATimeManager::PerformTimeUpdate(float DeltaTime)
 		{
 			Time = 0;
 			Day++;
+		} else
+		{
+			float DayPercent = Time / DayLength;
+			float SunYaw = DayPercent * 360;
+			float SunPitch = FMath::Cos(FMath::DegreesToRadians(SunYaw - 180)) * -55;
+			FRotator SunRotation = FRotator(SunPitch, SunYaw, 0.0f);
+			
+			DirectionalLight->SetRelativeRotation(SunRotation);
 		}
 	}
 }

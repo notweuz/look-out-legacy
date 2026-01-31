@@ -57,4 +57,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Date & Time")
 	float Time = 0;
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UDirectionalLightComponent* DirectionalLight;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UExponentialHeightFogComponent* ExponentialHeightFog;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USkyAtmosphereComponent* SkyAtmosphere;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USkyLightComponent* SkyLight;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UVolumetricCloudComponent* VolumetricCloud;
 };
