@@ -28,7 +28,7 @@ void UPlayerSideInteractionComponent::BeginPlay()
 
 
 // Called every frame
-void UPlayerSideInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPlayerSideInteractionComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -37,7 +37,7 @@ void UPlayerSideInteractionComponent::TickComponent(float DeltaTime, ELevelTick 
 
 void UPlayerSideInteractionComponent::Interact()
 {
-	FRelatedForwardVectorResult InteractVectors = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
+	auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
 	FHitResult HitResult;
 
 	FCollisionQueryParams QueryParams;
@@ -45,8 +45,8 @@ void UPlayerSideInteractionComponent::Interact()
 
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
-		InteractVectors.StartVector,
-		InteractVectors.EndVector,
+		StartVector,
+		EndVector,
 		ECC_Visibility,
 		QueryParams
 	);

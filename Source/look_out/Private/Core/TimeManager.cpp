@@ -31,23 +31,22 @@ void ATimeManager::BeginPlay()
 }
 
 // Called every frame
-void ATimeManager::Tick(float DeltaTime)
+void ATimeManager::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 	PerformTimeUpdate(DeltaTime);
 }
 
-void ATimeManager::PerformTimeUpdate(float DeltaTime)
+void ATimeManager::PerformTimeUpdate(const float DeltaTime)
 {
 	if (!bTimeStopped)
 	{
-		float DayMultiplier = TimeDilation * RealHoursPerDay;
-		float TimeDelta = DeltaTime / DayMultiplier;
-		float NewTime = Time + TimeDelta;
+		const float DayMultiplier = TimeDilation * RealHoursPerDay;
+		const float TimeDelta = DeltaTime / DayMultiplier;
+		const float NewTime = Time + TimeDelta;
 		Time = NewTime;
-		int CurrentMinute = FMath::Floor(Time / 2.5);
-		if (LastMinute != CurrentMinute)
+		if (const int CurrentMinute = FMath::Floor(Time / 2.5); LastMinute != CurrentMinute)
 		{
 			LastMinute = CurrentMinute;
 			if (OnCallMinutePassed.IsBound())
@@ -62,17 +61,17 @@ void ATimeManager::PerformTimeUpdate(float DeltaTime)
 			Day++;
 		} else
 		{
-			float DayPercent = Time / DayLength;
-			float SunYaw = DayPercent * 360;
-			float SunPitch = FMath::Cos(FMath::DegreesToRadians(SunYaw - 180)) * -55;
-			FRotator SunRotation = FRotator(SunPitch, SunYaw, 0.0f);
+			const float DayPercent = Time / DayLength;
+			const float SunYaw = DayPercent * 360;
+			const float SunPitch = FMath::Cos(FMath::DegreesToRadians(SunYaw - 180)) * -55;
+			const FRotator SunRotation = FRotator(SunPitch, SunYaw, 0.0f);
 			
 			DirectionalLight->SetRelativeRotation(SunRotation);
 		}
 	}
 }
 
-void ATimeManager::TriggerMinutePassed(int _Day, float _Time)
+void ATimeManager::TriggerMinutePassed(const int _Day, const float _Time) const
 {
 	if (OnCallMinutePassed.IsBound())
 	{

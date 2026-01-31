@@ -73,7 +73,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABaseCharacter::Tick(float DeltaTime)
+void ABaseCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -88,7 +88,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABaseCharacter::Zoom(bool State)
+void ABaseCharacter::Zoom(const bool State)
 {
 	Camera->SetFieldOfView(State ? 50 : FieldOfView);
 }

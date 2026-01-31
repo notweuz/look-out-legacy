@@ -27,16 +27,7 @@ void UMovementComponentExtended::BeginPlay()
 }
 
 
-// Called every frame
-void UMovementComponentExtended::TickComponent(float DeltaTime, ELevelTick TickType,
-                                           FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UMovementComponentExtended::MoveForward(float AxisValue)
+void UMovementComponentExtended::MoveForward(const float AxisValue)
 {
 	const FRotator ControlRotation = OwnerCharacter->GetControlRotation();
 
@@ -47,7 +38,7 @@ void UMovementComponentExtended::MoveForward(float AxisValue)
 	OwnerCharacter->AddMovementInput(ForwardDirection, AxisValue);
 }
 
-void UMovementComponentExtended::MoveRight(float AxisValue)
+void UMovementComponentExtended::MoveRight(const float AxisValue)
 {
 	const FRotator ControlRotation = OwnerCharacter->GetControlRotation();
 
@@ -58,35 +49,9 @@ void UMovementComponentExtended::MoveRight(float AxisValue)
 	OwnerCharacter->AddMovementInput(RightDirection, AxisValue);
 }
 
-void UMovementComponentExtended::ToggleSprint(bool State)
+void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bHoldingRMB)
 {
-	if (State && CanSprint)
-	{
-		ChangeWalkSpeed(SprintSpeed);
-		IsSprinting = true;
-	}
-	else if (!State && CanSprint)
-	{
-		ChangeWalkSpeed(WalkSpeed);
-		IsSprinting = false;
-	}
-}
-
-void UMovementComponentExtended::JumpAction()
-{
-	OwnerCharacter->Jump();
-}
-
-void UMovementComponentExtended::ChangeWalkSpeed(float _WalkSpeed)
-{
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = _WalkSpeed;
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeedCrouched = _WalkSpeed / 2;
-}
-
-
-void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, bool bHoldingRMB)
-{
-	bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType().
+	const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType().
 		bIsNotHeavy;
 
 	if (!HaveToRotateItem)
@@ -100,7 +65,12 @@ void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, bool b
 	}
 }
 
-void UMovementComponentExtended::DoCrouch(bool State)
+void UMovementComponentExtended::JumpAction()
+{
+	OwnerCharacter->Jump();
+}
+
+void UMovementComponentExtended::DoCrouch(const bool State)
 {
 	if (State)
 	{
@@ -114,4 +84,34 @@ void UMovementComponentExtended::DoCrouch(bool State)
 	{
 		OwnerCharacter->UnCrouch();
 	}
+}
+
+// Called every frame
+void UMovementComponentExtended::TickComponent(const float DeltaTime, const ELevelTick TickType,
+                                               FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+
+void UMovementComponentExtended::ToggleSprint(const bool State)
+{
+	if (State && CanSprint)
+	{
+		ChangeWalkSpeed(SprintSpeed);
+		IsSprinting = true;
+	}
+	else if (!State && CanSprint)
+	{
+		ChangeWalkSpeed(WalkSpeed);
+		IsSprinting = false;
+	}
+}
+
+void UMovementComponentExtended::ChangeWalkSpeed(const float _WalkSpeed)
+{
+	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = _WalkSpeed;
+	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeedCrouched = _WalkSpeed / 2;
 }

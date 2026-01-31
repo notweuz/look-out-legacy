@@ -45,7 +45,7 @@ public:
 	FCallMinutePassedSignature OnCallMinutePassed;
 	
 	UFUNCTION(BlueprintCallable, Category = "Events")
-	void TriggerMinutePassed(int Day, float Time);
+	void TriggerMinutePassed(int Day, float Time) const;
 	
 	void PerformTimeUpdate(float DeltaTime);
 
