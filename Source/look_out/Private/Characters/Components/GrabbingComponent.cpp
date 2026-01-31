@@ -135,7 +135,7 @@ void UGrabbingComponent::ToggleGrabComponent(bool State)
 	}
 }
 
-void UGrabbingComponent::ProcessGrabbing(float DeltaSeconds)
+void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 {
 	auto [bIsHeavy, bIsNotHeavy] = GrabbedObjectType();
 	if (bIsNotHeavy)
