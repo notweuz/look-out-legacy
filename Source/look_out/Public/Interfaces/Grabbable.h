@@ -23,6 +23,6 @@ class LOOK_OUT_API IGrabbable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Grabbing")
-	EGrabbableObjectType GetGrabbableType(AActor* Caller);
+	UFUNCTION(Category="Grabbing")
+	virtual EGrabbableObjectType GetGrabbableType(AActor* Caller);
 };
