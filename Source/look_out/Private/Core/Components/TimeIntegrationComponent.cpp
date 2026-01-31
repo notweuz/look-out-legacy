@@ -46,12 +46,13 @@ FTimeFormattedResult UTimeIntegrationComponent::GetTimeFormatted() const
 	Result.Day = TimeManager->Day;
 	
 	const float CurrentTime = TimeManager->Time;
+	const float DayLength = TimeManager->DayLength;
 	
-	const int32 TotalSeconds = FMath::FloorToInt(CurrentTime);
+	const float NormalizedTime = CurrentTime / DayLength * 24.0f;
 	
-	Result.Hour = TotalSeconds / 3600;
-	Result.Minute = (TotalSeconds % 3600) / 60;
-	Result.Second = TotalSeconds % 60;
+	Result.Hour = FMath::FloorToInt(NormalizedTime);
+	Result.Minute = FMath::FloorToInt((NormalizedTime - Result.Hour) * 60.0f);
+	Result.Second = FMath::FloorToInt(((NormalizedTime - Result.Hour) * 60.0f - Result.Minute) * 60.0f);
 	
 	return Result;
 }

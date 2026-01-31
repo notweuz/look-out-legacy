@@ -26,9 +26,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
-	float DayLength = 3600;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
 	float RealHoursPerDay = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
@@ -57,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Date & Time")
 	float Time = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	float DayLength = 3600;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
