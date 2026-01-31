@@ -46,9 +46,9 @@ void UGrabbingComponent::LightweightObjectRotation(float InputAxisX, float Input
 	GrabRotation.Yaw = GrabRotation.Yaw - InputAxisX;
 }
 
-FWeightCheckResult UGrabbingComponent::GrabbedObjectType()
+EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
 {
-	FWeightCheckResult Result;
+	EGrabbableObjectType Result = None;
 
 	const UPrimitiveComponent* GrabbedComponent = nullptr;
 
@@ -59,11 +59,11 @@ FWeightCheckResult UGrabbingComponent::GrabbedObjectType()
 
 	if (HeavyObject != nullptr)
 	{
-		Result.bIsHeavy = true;
+		Result = Heavyweight;
 	}
 	if (GrabbedComponent)
 	{
-		Result.bIsNotHeavy = true;
+		Result = Lightweight;
 	}
 
 	return Result;
@@ -118,12 +118,11 @@ void UGrabbingComponent::ToggleGrabComponent(bool State)
 	}
 	else
 	{
-		auto [bIsHeavy, bIsNotHeavy] = GrabbedObjectType();
-		if (bIsNotHeavy)
+		if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 		{
 			OwnerCharacter->PhysicsHandle->ReleaseComponent();
 		}
-		else if (bIsHeavy)
+		else if (ObjectType == Heavyweight)
 		{
 			HeavyObject = nullptr;
 			OwnerCharacter->PhysicsConstraint->BreakConstraint();
@@ -137,8 +136,7 @@ void UGrabbingComponent::ToggleGrabComponent(bool State)
 
 void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 {
-	auto [bIsHeavy, bIsNotHeavy] = GrabbedObjectType();
-	if (bIsNotHeavy)
+	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 	{
 		auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
 		OwnerCharacter->PhysicsHandle->SetTargetLocation(EndVector);
@@ -148,7 +146,7 @@ void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 			10.0);
 		GrabbedComponent->SetWorldRotation(NewRotation);
 	}
-	else if (bIsHeavy)
+	else if (ObjectType == Heavyweight)
 	{
 		UPrimitiveComponent* Component1 = nullptr;
 		FName BoneName1;
@@ -181,8 +179,7 @@ void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 
 void UGrabbingComponent::ThrowObject()
 {
-	auto [bIsHeavy, bIsNotHeavy] = GrabbedObjectType();
-	if (bIsNotHeavy)
+	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 	{
 		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 		const FVector ForwardVector = OwnerCharacter->Camera->GetForwardVector();

@@ -51,8 +51,7 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 
 void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bHoldingRMB)
 {
-	const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType().
-		bIsNotHeavy;
+	const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType() == Lightweight;
 
 	if (!HaveToRotateItem)
 	{

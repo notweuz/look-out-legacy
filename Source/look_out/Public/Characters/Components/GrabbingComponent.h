@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Data/WeightCheckResult.h"
+#include "Enums/GrabbableObjectType.h"
 #include "GrabbingComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -25,7 +26,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual FWeightCheckResult GrabbedObjectType();
+	virtual EGrabbableObjectType GrabbedObjectType();
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void ToggleGrabComponent(bool State);
