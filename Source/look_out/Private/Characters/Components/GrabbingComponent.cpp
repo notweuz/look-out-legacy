@@ -106,6 +106,7 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 							NAME_None,
 							HitActorComponent->GetComponentLocation()
 						);
+						HitActorComponent->SetEnableGravity(false);
 						GrabRotation = HitActorComponent->GetComponentRotation();
 						IsGrabbingObject = true;
 					}
@@ -132,6 +133,7 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 		if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 		{
 			OwnerCharacter->PhysicsHandle->ReleaseComponent();
+			OwnerCharacter->PhysicsHandle->GetGrabbedComponent()->SetEnableGravity(true);
 		}
 		else if (ObjectType == Heavyweight)
 		{
