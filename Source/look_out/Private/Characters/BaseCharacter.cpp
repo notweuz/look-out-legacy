@@ -73,6 +73,11 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ABaseCharacter::Zoom(const bool State)
+{
+	Camera->SetFieldOfView(State ? 50 : FieldOfView);
+}
+
 void ABaseCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -88,14 +93,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABaseCharacter::Zoom(const bool State)
+FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(float VectorLength)
 {
-	Camera->SetFieldOfView(State ? 50 : FieldOfView);
-}
-
-FRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(float VectorLength)
-{
-	FRelatedForwardVectorResult Result;
+	FCameraRelatedForwardVectorResult Result;
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
 	FVector CameraForwardVector = Camera->GetForwardVector();

@@ -1,0 +1,1 @@
+﻿#include "Data/WeightCheckResult.h"

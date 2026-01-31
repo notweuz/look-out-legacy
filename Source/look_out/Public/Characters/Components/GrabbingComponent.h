@@ -4,19 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/WeightCheckResult.h"
 #include "GrabbingComponent.generated.h"
-
-USTRUCT(BlueprintType)
-struct FWeightCheckResult
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsHeavy = false;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsNotHeavy = false;
-};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LOOK_OUT_API UGrabbingComponent : public UActorComponent
