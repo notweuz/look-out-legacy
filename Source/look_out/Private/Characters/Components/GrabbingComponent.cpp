@@ -69,7 +69,7 @@ EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
 	return Result;
 }
 
-void UGrabbingComponent::ToggleGrabComponent(bool State)
+void UGrabbingComponent::ToggleGrabComponent(const bool State)
 {
 	if (State)
 	{
