@@ -20,6 +20,8 @@ ATimeManager::ATimeManager()
 	SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
 	SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
 	VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
+	
+	SkyLight->Intensity = 0.025;
 }
 
 // Called when the game starts or when spawned
