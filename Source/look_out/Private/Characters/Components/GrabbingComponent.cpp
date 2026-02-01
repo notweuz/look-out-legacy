@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Characters/Components/GrabbingComponent.h"
 
 #include "Camera/CameraComponent.h"
@@ -11,28 +8,17 @@
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
-// Sets default values for this component's properties
 UGrabbingComponent::UGrabbingComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
 void UGrabbingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
-
-// Called every frame
 void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
                                        FActorComponentTickFunction* ThisTickFunction)
 {
@@ -41,17 +27,19 @@ void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick T
 
 void UGrabbingComponent::LightweightObjectRotation(float InputAxisX, float InputAxisY)
 {
-	InputAxisX *= -1;
-	InputAxisY *= -1;
+	if (!IsGrabbingObject) return;
 
-	GrabRotation.Roll = GrabRotation.Roll - InputAxisY;
-	GrabRotation.Yaw = GrabRotation.Yaw - InputAxisX;
+	const float RotationSpeed = 1.5f;
+
+	GrabRotation.Yaw += InputAxisX * RotationSpeed;
+	GrabRotation.Pitch += InputAxisY * RotationSpeed;
+
+	GrabRotation.Normalize();
 }
 
 EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
 {
 	EGrabbableObjectType Result = None;
-
 	const UPrimitiveComponent* GrabbedComponent = nullptr;
 
 	if (OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
@@ -59,14 +47,8 @@ EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
 		GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 	}
 
-	if (HeavyObject != nullptr)
-	{
-		Result = Heavyweight;
-	}
-	if (GrabbedComponent)
-	{
-		Result = Lightweight;
-	}
+	if (HeavyObject != nullptr) Result = Heavyweight;
+	if (GrabbedComponent) Result = Lightweight;
 
 	return Result;
 }
@@ -78,17 +60,10 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 		const auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
 
 		FHitResult HitResult;
-
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(OwnerCharacter);
 
-		const bool bHit = GetWorld()->LineTraceSingleByChannel(
-			HitResult,
-			StartVector,
-			EndVector,
-			ECC_Visibility,
-			QueryParams
-		);
+		const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, QueryParams);
 
 		if (bHit)
 		{
@@ -101,13 +76,18 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 				{
 					if (const EGrabbableObjectType Type = GrabbableInterface->GetGrabbableType(); Type == Lightweight)
 					{
-						OwnerCharacter->PhysicsHandle->GrabComponentAtLocation(
-							HitActorComponent, 
+						GrabRotation = FRotator::ZeroRotator;
+						
+						OwnerCharacter->PhysicsHandle->GrabComponentAtLocationWithRotation(
+							HitActorComponent,
 							NAME_None,
-							HitActorComponent->GetComponentLocation()
+							HitActorComponent->GetComponentLocation(),
+							HitActorComponent->GetComponentRotation()
 						);
+						
 						HitActorComponent->SetEnableGravity(false);
-						GrabRotation = HitActorComponent->GetComponentRotation();
+						HitActorComponent->WakeAllRigidBodies();
+						
 						IsGrabbingObject = true;
 					}
 					else if (Type == Heavyweight)
@@ -119,9 +99,7 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 						);
 						OwnerCharacter->MovementComponentExtended->CanSprint = false;
 						OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
-						OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
-							OwnerCharacter->MovementComponentExtended->DragSpeed
-						);
+						OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
 						IsGrabbingObject = true;
 					}
 				}
@@ -134,10 +112,10 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 		{
 			UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 			OwnerCharacter->PhysicsHandle->ReleaseComponent();
-			
 			if (GrabbedComponent)
 			{
 				GrabbedComponent->SetEnableGravity(true);
+				GrabbedComponent->WakeAllRigidBodies();
 			}
 		}
 		else if (ObjectType == Heavyweight)
@@ -145,8 +123,7 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 			HeavyObject = nullptr;
 			OwnerCharacter->PhysicsConstraint->BreakConstraint();
 			OwnerCharacter->MovementComponentExtended->CanSprint = true;
-			OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
-				OwnerCharacter->MovementComponentExtended->WalkSpeed);
+			OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->WalkSpeed);
 		}
 		IsGrabbingObject = false;
 	}
@@ -157,12 +134,24 @@ void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 	{
 		auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
+		
 		OwnerCharacter->PhysicsHandle->SetTargetLocation(EndVector);
+
 		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
-		const FRotator NewRotation = FMath::RInterpTo(
-			GrabbedComponent->GetComponentRotation(), GrabRotation, DeltaSeconds,
-			10.0);
-		GrabbedComponent->SetWorldRotation(NewRotation);
+		if (GrabbedComponent)
+		{
+			FRotator CameraRot = OwnerCharacter->Camera->GetComponentRotation();
+			FRotator BaseYaw(0.0f, CameraRot.Yaw, 0.0f);
+			
+			FQuat TargetQuat = FQuat(BaseYaw) * FQuat(GrabRotation);
+
+			FRotator CurrentRot = GrabbedComponent->GetComponentRotation();
+			FRotator SmoothTargetRot = FMath::RInterpTo(CurrentRot, TargetQuat.Rotator(), DeltaSeconds, 50.0f);
+
+			OwnerCharacter->PhysicsHandle->SetTargetRotation(SmoothTargetRot);
+			
+			GrabbedComponent->WakeAllRigidBodies();
+		}
 	}
 	else if (ObjectType == Heavyweight)
 	{
@@ -171,26 +160,17 @@ void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
 		UPrimitiveComponent* Component2 = nullptr;
 		FName BoneName2;
 
-		OwnerCharacter->PhysicsConstraint->GetConstrainedComponents(
-			Component1,
-			BoneName1,
-			Component2,
-			BoneName2
-		);
+		OwnerCharacter->PhysicsConstraint->GetConstrainedComponents(Component1, BoneName1, Component2, BoneName2);
 
-		const FVector Component2Location = Component2->GetComponentLocation();
-		const FVector Component1Location = Component1->GetComponentLocation();
-
-		const float DistanceVectorLength = FVector::Dist(Component1Location, Component2Location);
-
-		if (const float MaxDistance = GrabDistance * 1.5; DistanceVectorLength >= MaxDistance)
+		if (Component1 && Component2)
 		{
-			FVector Difference = Component1Location - Component2Location;
-			Difference.Normalize();
-			const float ObjectScale = Component1->GetComponentScale().X;
-
-			const FVector FinalLaunchVector = DistanceVectorLength * Difference * ObjectScale * 0.1;
-			OwnerCharacter->LaunchCharacter(FinalLaunchVector, false, false);
+			const float Distance = FVector::Dist(Component1->GetComponentLocation(), Component2->GetComponentLocation());
+			if (Distance >= GrabDistance * 1.5f)
+			{
+				FVector Diff = Component1->GetComponentLocation() - Component2->GetComponentLocation();
+				Diff.Normalize();
+				OwnerCharacter->LaunchCharacter(Distance * Diff * Component1->GetComponentScale().X * 0.1f, false, false);
+			}
 		}
 	}
 }
@@ -200,12 +180,12 @@ void UGrabbingComponent::ThrowObject()
 	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
 	{
 		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
-		const FVector ForwardVector = OwnerCharacter->Camera->GetForwardVector();
-
-		const float Force = FMath::Clamp(Strength / GrabbedComponent->GetMass(), 500, Strength);
-		const FVector ForceVector = ForwardVector * Force;
+		FVector LaunchImpulse = OwnerCharacter->Camera->GetForwardVector();
+		
+		float Mass = FMath::Max(1.0f, GrabbedComponent->GetMass());
+		float FinalStrength = FMath::Clamp(Strength / Mass, 500.0f, Strength);
 		
 		ToggleGrabComponent(false);
-		GrabbedComponent->SetAllPhysicsLinearVelocity(ForceVector);
+		GrabbedComponent->AddImpulse(LaunchImpulse * FinalStrength, NAME_None, true);
 	}
 }
