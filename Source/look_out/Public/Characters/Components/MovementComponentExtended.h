@@ -27,7 +27,7 @@ protected:
 	virtual void MoveRight(float InputAxis);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void Look(float InputAxisX, float InputAxisY, bool bHoldingRMB);
+	virtual void Look(float InputAxisX, float InputAxisY, bool bRotateObject);
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void JumpAction();

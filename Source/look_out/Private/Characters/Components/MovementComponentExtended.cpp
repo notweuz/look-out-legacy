@@ -49,11 +49,9 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 	OwnerCharacter->AddMovementInput(RightDirection, AxisValue);
 }
 
-void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bHoldingRMB)
+void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bRotateObject)
 {
-	const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bHoldingRMB && OwnerCharacter->GrabbingComponent->GrabbedObjectType() == Lightweight;
-
-	if (!HaveToRotateItem)
+	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
 		OwnerCharacter->AddControllerYawInput(InputAxisX);
 		OwnerCharacter->AddControllerPitchInput(InputAxisY);
