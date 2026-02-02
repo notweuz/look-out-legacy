@@ -59,11 +59,10 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 	{
 		const auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
 
-		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(OwnerCharacter);
 
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, QueryParams))
+		if (FHitResult HitResult; GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, QueryParams))
 		{
 			AActor* HitActor = HitResult.GetActor();
 			UPrimitiveComponent* HitActorComponent = HitResult.GetComponent();
