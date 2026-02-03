@@ -35,6 +35,9 @@ public:
 	virtual void ProcessGrabbing(float DeltaSeconds);
 	
 	UFUNCTION(BlueprintCallable)
+	virtual void ChangeDistance(float DeltaVector);
+	
+	UFUNCTION(BlueprintCallable)
 	virtual void ThrowObject();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
@@ -48,6 +51,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float Strength = 1500;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
+	float MaxGrabDistance = 200;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
+	float MinGrabDistance = 75;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float GrabDistance = 200;

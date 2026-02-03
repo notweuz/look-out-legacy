@@ -57,6 +57,7 @@ void UGrabbingComponent::ToggleGrabComponent(const bool State)
 {
 	if (State)
 	{
+		GrabDistance = MaxGrabDistance;
 		const auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
 
 		FCollisionQueryParams QueryParams;
@@ -183,4 +184,10 @@ void UGrabbingComponent::ThrowObject()
 		ToggleGrabComponent(false);
 		GrabbedComponent->AddImpulse(LaunchImpulse * FinalStrength, NAME_None, true);
 	}
+}
+
+void UGrabbingComponent::ChangeDistance(const float DeltaVector)
+{
+	GrabDistance += DeltaVector * 5;
+	GrabDistance = FMath::Clamp(GrabDistance, MinGrabDistance, MaxGrabDistance);
 }
