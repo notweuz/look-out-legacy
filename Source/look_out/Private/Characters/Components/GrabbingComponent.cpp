@@ -188,6 +188,9 @@ void UGrabbingComponent::ThrowObject()
 
 void UGrabbingComponent::ChangeDistance(const float DeltaVector)
 {
-	GrabDistance += DeltaVector * 5;
-	GrabDistance = FMath::Clamp(GrabDistance, MinGrabDistance, MaxGrabDistance);
+	if (GrabbedObjectType() == Lightweight)
+	{
+		GrabDistance += DeltaVector * 5;
+		GrabDistance = FMath::Clamp(GrabDistance, MinGrabDistance, MaxGrabDistance);
+	}
 }
