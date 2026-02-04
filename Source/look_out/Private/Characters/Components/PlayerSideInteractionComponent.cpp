@@ -51,6 +51,12 @@ void UPlayerSideInteractionComponent::Interact()
 		QueryParams
 	);
 
+	if (HitResult.GetComponent()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		IInteractable::Execute_Interact(HitResult.GetComponent(), OwnerCharacter);
+		return;
+	}
+	
 	if (AActor* HitActor = HitResult.GetActor(); bHit && HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
 		IInteractable::Execute_Interact(HitActor, OwnerCharacter);
