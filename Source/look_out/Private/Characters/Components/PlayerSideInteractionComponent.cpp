@@ -51,14 +51,31 @@ void UPlayerSideInteractionComponent::Interact()
 		QueryParams
 	);
 
-	if (HitResult.GetComponent()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	if (bHit)
 	{
-		IInteractable::Execute_Interact(HitResult.GetComponent(), OwnerCharacter);
-		return;
-	}
-	
-	if (AActor* HitActor = HitResult.GetActor(); bHit && HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-	{
-		IInteractable::Execute_Interact(HitActor, OwnerCharacter);
+		UPrimitiveComponent* HitComp = HitResult.GetComponent();
+
+		UObject* Target = nullptr;
+
+		if (HitComp && HitComp->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+		{
+			Target = HitComp;
+		}
+		else if (AActor* HitActor = HitResult.GetActor())
+		{
+			if (HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+			{
+				Target = HitActor;
+			}
+		}
+
+		if (Target)
+		{
+			IInteractable::Execute_Interact(
+				Target,
+				OwnerCharacter,
+				HitComp
+			);
+		}
 	}
 }
