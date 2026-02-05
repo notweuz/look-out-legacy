@@ -21,7 +21,8 @@ void UGrabbingComponent::BeginPlay()
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
-void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
+                                       FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
@@ -60,6 +61,10 @@ void UGrabbingComponent::GrabObject()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(OwnerCharacter);
 
+#if WITH_EDITOR
+	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
+#endif
+
 	FHitResult Hit;
 	if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
 	{
@@ -71,8 +76,17 @@ void UGrabbingComponent::GrabObject()
 
 	if (!HitActor || !HitActor->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
+#if WITH_EDITOR
+		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+		UE_LOG(LogTemp, Log, TEXT("GrabbingComponent hit non-grabbable actor: %s"), *HitActor->GetName())
+#endif
 		return;
 	}
+	
+#if WITH_EDITOR
+	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Blue, false, 2.0f);
+	UE_LOG(LogTemp, Log, TEXT("GrabbingComponent hit grabbable actor: %s"), *HitActor->GetName())
+#endif
 
 	IGrabbable* Grabbable = Cast<IGrabbable>(HitActor);
 
@@ -85,7 +99,8 @@ void UGrabbingComponent::GrabObject()
 		HitComponent->SetEnableGravity(false);
 		HitComponent->WakeAllRigidBodies();
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(),
+		       *HitActor->GetName())
 	}
 	else if (Type == Heavyweight)
 	{
@@ -95,15 +110,18 @@ void UGrabbingComponent::GrabObject()
 
 		OwnerCharacter->MovementComponentExtended->CanSprint = false;
 		OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
-		OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
+		OwnerCharacter->MovementComponentExtended->
+		                ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(),
+		       *HitActor->GetName())
 	}
 	else if (Type == Static)
 	{
 		StaticObject = HitComponent;
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(),
+		       *HitActor->GetName())
 	}
 }
 
@@ -127,7 +145,8 @@ void UGrabbingComponent::ReleaseObject()
 		HeavyObject = nullptr;
 		OwnerCharacter->PhysicsConstraint->BreakConstraint();
 		OwnerCharacter->MovementComponentExtended->CanSprint = true;
-		OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->WalkSpeed);
+		OwnerCharacter->MovementComponentExtended->
+		                ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->WalkSpeed);
 	}
 	else if (Type == Static)
 	{
@@ -198,7 +217,9 @@ void UGrabbingComponent::ProcessStaticGrabbing() const
 {
 	if (const UCapsuleComponent* PlayerCapsule = OwnerCharacter->GetCapsuleComponent(); StaticObject && PlayerCapsule)
 	{
-		if (const float Distance = FVector::Dist(StaticObject->GetComponentLocation(), PlayerCapsule->GetComponentLocation()); Distance >= GrabDistance * 1.5f)
+		if (const float Distance = FVector::Dist(StaticObject->GetComponentLocation(),
+		                                         PlayerCapsule->GetComponentLocation()); Distance >= GrabDistance *
+			1.5f)
 		{
 			FVector Diff = StaticObject->GetComponentLocation() - PlayerCapsule->GetComponentLocation();
 			Diff.Normalize();
@@ -244,7 +265,8 @@ void UGrabbingComponent::ChangeGrabDistance(const float Delta)
 		return;
 	}
 
-	if (AActor* TargetOwner = Target->GetOwner(); TargetOwner && TargetOwner->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
+	if (AActor* TargetOwner = Target->GetOwner(); TargetOwner && TargetOwner->GetClass()->ImplementsInterface(
+		UGrabbable::StaticClass()))
 	{
 		IGrabbable::Execute_OnMouseScrollInput(TargetOwner, Delta);
 	}
