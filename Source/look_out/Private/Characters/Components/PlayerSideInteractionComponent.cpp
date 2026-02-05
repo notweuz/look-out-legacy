@@ -43,15 +43,21 @@ void UPlayerSideInteractionComponent::Interact() const
 
 	if (HitComponent && HitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
+		UE_LOG(LogTemp, Log, TEXT("PSIComponent found an interactable actor component %s"), *HitComponent->GetName())
 		InteractableTarget = HitComponent;
 	}
 	else if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
+		UE_LOG(LogTemp, Log, TEXT("PSIComponent found an interactable actor %s"), *HitActor->GetName())
 		InteractableTarget = HitActor;
 	}
 
 	if (InteractableTarget)
 	{
+		UE_LOG(LogTemp, Log, TEXT("PSIComponent executing interaction on %s"), *InteractableTarget->GetName())
 		IInteractable::Execute_Interact(InteractableTarget, OwnerCharacter);
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PSIComponent failed to execute interaction on %s, something went wrong!"), *InteractableTarget->GetName())
 	}
 }

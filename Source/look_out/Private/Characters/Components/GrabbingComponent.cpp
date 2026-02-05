@@ -41,6 +41,7 @@ EGrabbableObjectType UGrabbingComponent::GetGrabbedObjectType() const
 
 void UGrabbingComponent::ToggleGrab(bool bGrab)
 {
+	UE_LOG(LogTemp, Log, TEXT("Player toggled grabbing to: %s"), bGrab ? TEXT("true") : TEXT("false"));
 	if (bGrab)
 	{
 		GrabObject();
@@ -84,6 +85,7 @@ void UGrabbingComponent::GrabObject()
 		HitComponent->SetEnableGravity(false);
 		HitComponent->WakeAllRigidBodies();
 		IsGrabbingObject = true;
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
 	}
 	else if (Type == Heavyweight)
 	{
@@ -95,11 +97,13 @@ void UGrabbingComponent::GrabObject()
 		OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
 		OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
 		IsGrabbingObject = true;
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
 	}
 	else if (Type == Static)
 	{
 		StaticObject = HitComponent;
 		IsGrabbingObject = true;
+		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(), *HitActor->GetName())
 	}
 }
 
@@ -115,9 +119,11 @@ void UGrabbingComponent::ReleaseObject()
 			GrabbedComponent->SetEnableGravity(true);
 			GrabbedComponent->WakeAllRigidBodies();
 		}
+		UE_LOG(LogTemp, Log, TEXT("Player released a Lightweight %s"), *GrabbedComponent->GetName())
 	}
 	else if (Type == Heavyweight)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Player released a Heavyweight %s"), *HeavyObject->GetName())
 		HeavyObject = nullptr;
 		OwnerCharacter->PhysicsConstraint->BreakConstraint();
 		OwnerCharacter->MovementComponentExtended->CanSprint = true;
@@ -125,6 +131,7 @@ void UGrabbingComponent::ReleaseObject()
 	}
 	else if (Type == Static)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Player released a Static %s"), *StaticObject->GetName())
 		StaticObject = nullptr;
 	}
 
@@ -213,6 +220,7 @@ void UGrabbingComponent::ThrowObject()
 
 	ToggleGrab(false);
 	GrabbedComponent->AddImpulse(ImpulseDirection * FinalStrength, NAME_None, true);
+	UE_LOG(LogTemp, Log, TEXT("Player threw an %s item"), *GrabbedComponent->GetName())
 }
 
 void UGrabbingComponent::ChangeGrabDistance(const float Delta)

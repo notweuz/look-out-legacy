@@ -28,6 +28,7 @@ ATimeManager::ATimeManager()
 void ATimeManager::BeginPlay()
 {
 	Super::BeginPlay();
+	UE_LOG(LogTemp, Log, TEXT("Time Manager has been started"))
 	
 	PerformTimeUpdate(0);
 }
@@ -78,5 +79,6 @@ void ATimeManager::TriggerMinutePassed(const int _Day, const float _Time) const
 	if (OnCallMinutePassed.IsBound())
 	{
 		OnCallMinutePassed.Broadcast(_Day, _Time);
+		UE_LOG(LogTemp, Verbose, TEXT("[Time Manager Side] Triggered Minute Passed Event"))
 	}
 }
