@@ -42,6 +42,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
 	UPrimitiveComponent* HeavyObject = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
+	UPrimitiveComponent* StaticObject = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
 	bool IsGrabbingObject = false;
