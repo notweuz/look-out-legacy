@@ -37,45 +37,35 @@ void UPlayerSideInteractionComponent::TickComponent(const float DeltaTime, const
 
 void UPlayerSideInteractionComponent::Interact()
 {
-	auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
-	FHitResult HitResult;
+    if (!OwnerCharacter) return;
 
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(OwnerCharacter);
+    auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
 
-	const bool bHit = GetWorld()->LineTraceSingleByChannel(
-		HitResult,
-		StartVector,
-		EndVector,
-		ECC_Visibility,
-		QueryParams
-	);
+    FHitResult Hit;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(OwnerCharacter);
 
-	if (bHit)
-	{
-		UPrimitiveComponent* HitComp = HitResult.GetComponent();
+    if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+    {
+        return;
+    }
 
-		UObject* Target = nullptr;
+    UPrimitiveComponent* HitComp = Hit.GetComponent();
+    AActor* HitActor = Hit.GetActor();
 
-		if (HitComp && HitComp->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-		{
-			Target = HitComp;
-		}
-		else if (AActor* HitActor = HitResult.GetActor())
-		{
-			if (HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-			{
-				Target = HitActor;
-			}
-		}
+    UObject* Target = nullptr;
 
-		if (Target)
-		{
-			IInteractable::Execute_Interact(
-				Target,
-				OwnerCharacter,
-				HitComp
-			);
-		}
-	}
+    if (HitComp && HitComp->Implements<UInteractable>())
+    {
+        Target = HitComp;
+    }
+    else if (HitActor && HitActor->Implements<UInteractable>())
+    {
+        Target = HitActor;
+    }
+
+    if (Target)
+    {
+        IInteractable::Execute_Interact(Target, OwnerCharacter);
+    }
 }

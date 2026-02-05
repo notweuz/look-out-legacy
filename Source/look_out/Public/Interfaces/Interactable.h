@@ -19,5 +19,5 @@ class LOOK_OUT_API IInteractable
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
-	void Interact(AActor* Interactor, UPrimitiveComponent* HitComponent);
+	void Interact(AActor* Interactor);
 };
