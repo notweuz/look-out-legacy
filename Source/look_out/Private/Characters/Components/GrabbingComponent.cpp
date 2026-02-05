@@ -40,19 +40,16 @@ void UGrabbingComponent::LightweightObjectRotation(const float InputAxisX, const
 
 EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
 {
-	EGrabbableObjectType Result = None;
-	const UPrimitiveComponent* GrabbedComponent = nullptr;
+	if (StaticObject) return Static;
+	if (HeavyObject) return Heavyweight;
 
-	if (OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
+	if (OwnerCharacter && OwnerCharacter->PhysicsHandle)
 	{
-		GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
+		if (OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
+			return Lightweight;
 	}
 
-	if (StaticObject != nullptr) Result = Static;
-	if (HeavyObject != nullptr) Result = Heavyweight;
-	if (GrabbedComponent) Result = Lightweight;
-
-	return Result;
+	return None;
 }
 
 void UGrabbingComponent::ToggleGrabComponent(const bool State)
@@ -232,7 +229,7 @@ void UGrabbingComponent::ChangeDistance(const float DeltaVector)
 		GrabDistance = FMath::Clamp(GrabDistance + DeltaVector * 5.0f, MinGrabDistance, MaxGrabDistance);
 		return;
 	}
-	
+
 	if (Type == Static)
 	{
 		TargetComponent = StaticObject;
