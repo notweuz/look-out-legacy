@@ -221,19 +221,40 @@ void UGrabbingComponent::ThrowObject()
 
 void UGrabbingComponent::ChangeDistance(const float DeltaVector)
 {
-	if (GrabbedObjectType() == Lightweight)
+	if (FMath::IsNearlyZero(DeltaVector)) return;
+
+	const EGrabbableObjectType Type = GrabbedObjectType();
+
+	UPrimitiveComponent* TargetComponent = nullptr;
+
+	if (Type == Lightweight)
 	{
-		GrabDistance += DeltaVector * 5;
-		GrabDistance = FMath::Clamp(GrabDistance, MinGrabDistance, MaxGrabDistance);
+		GrabDistance = FMath::Clamp(GrabDistance + DeltaVector * 5.0f, MinGrabDistance, MaxGrabDistance);
+		return;
 	}
-	else if (GrabbedObjectType() == Static)
+	
+	if (Type == Static)
 	{
-		if (StaticObject && StaticObject->GetOwner())
+		TargetComponent = StaticObject;
+	}
+	else if (Type == Heavyweight)
+	{
+		TargetComponent = HeavyObject;
+	}
+
+	if (!TargetComponent) return;
+
+	if (TargetComponent->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
+	{
+		IGrabbable::Execute_OnMouseScrollInput(TargetComponent, DeltaVector);
+		return;
+	}
+
+	if (AActor* Owner = TargetComponent->GetOwner())
+	{
+		if (Owner->Implements<UGrabbable>())
 		{
-			if (ABaseStaticObject* ConvertedObject = Cast<ABaseStaticObject>(StaticObject->GetOwner()))
-			{
-				ConvertedObject->OnMouseScrollInput(DeltaVector);
-			}
+			IGrabbable::Execute_OnMouseScrollInput(Owner, DeltaVector);
 		}
 	}
 }

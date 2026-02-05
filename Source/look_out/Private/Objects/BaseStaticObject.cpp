@@ -29,8 +29,3 @@ EGrabbableObjectType ABaseStaticObject::GetGrabbableType()
 {
 	return Static;
 }
-
-void ABaseStaticObject::OnMouseScrollInput_Implementation(float MouseInput)
-{
-	// there's no base implementation (it isn't needed for sure)
-}

@@ -21,4 +21,7 @@ class LOOK_OUT_API IGrabbable
 public:
 	UFUNCTION(Category="Grabbing")
 	virtual EGrabbableObjectType GetGrabbableType();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
+	void OnMouseScrollInput(float MouseInput);
 };

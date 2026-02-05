@@ -25,7 +25,4 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual EGrabbableObjectType GetGrabbableType() override;
-	
-	UFUNCTION(BlueprintNativeEvent, Category="Grabbing")
-	void OnMouseScrollInput(float MouseInput);
 };
