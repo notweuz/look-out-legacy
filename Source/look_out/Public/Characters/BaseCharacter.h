@@ -1,14 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright notice: Fill out in Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/GrabbingComponent.h"
-#include "Components/MovementComponentExtended.h"
-#include "Components/PlayerSideInteractionComponent.h"
-#include "Data/CameraRelatedForwardVectorResult.h"
 #include "GameFramework/Character.h"
+#include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
+
+class USpringArmComponent;
+class UCameraComponent;
+class UPhysicsHandleComponent;
+class UPhysicsConstraintComponent;
+class UMovementComponentExtended;
+class UGrabbingComponent;
+class UPlayerSideInteractionComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
@@ -16,47 +21,42 @@ class LOOK_OUT_API ABaseCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ABaseCharacter();
-	
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	UFUNCTION(BlueprintCallable)
-	virtual void Zoom(bool State);
+	void Zoom(bool bZoomIn);
 
-public:	
-	// Called every frame
+public:
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual FCameraRelatedForwardVectorResult GetForwardVectorRelatedToCamera(float VectorLength);
-	
+	FCameraRelatedForwardVectorResult GetForwardVectorRelatedToCamera(float VectorLength) const;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class USpringArmComponent* SpringArm;
-	
+	USpringArmComponent* SpringArm;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UCameraComponent* Camera;
-	
+	UCameraComponent* Camera;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPhysicsHandleComponent* PhysicsHandle;
-	
+	UPhysicsHandleComponent* PhysicsHandle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPhysicsConstraintComponent* PhysicsConstraint;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float FieldOfView = 90;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
+	float FieldOfView = 90.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UMovementComponentExtended* MovementComponentExtended;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UGrabbingComponent* GrabbingComponent;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPlayerSideInteractionComponent* PSInteractionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPlayerSideInteractionComponent* PlayerInteractionComponent;
 };

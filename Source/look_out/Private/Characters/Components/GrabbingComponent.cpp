@@ -1,3 +1,5 @@
+// Copyright notice: Fill out in Project Settings.
+
 #include "Characters/Components/GrabbingComponent.h"
 
 #include "Camera/CameraComponent.h"
@@ -5,7 +7,6 @@
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Components/CapsuleComponent.h"
 #include "Interfaces/Grabbable.h"
-#include "Objects/BaseStaticObject.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -20,238 +21,233 @@ void UGrabbingComponent::BeginPlay()
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
-void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
-                                       FActorComponentTickFunction* ThisTickFunction)
+void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UGrabbingComponent::LightweightObjectRotation(const float InputAxisX, const float InputAxisY)
-{
-	if (!IsGrabbingObject) return;
-
-	constexpr float RotationSpeed = 1.5f;
-
-	GrabRotation.Yaw += InputAxisX * RotationSpeed;
-	GrabRotation.Pitch += InputAxisY * RotationSpeed;
-
-	GrabRotation.Normalize();
-}
-
-EGrabbableObjectType UGrabbingComponent::GrabbedObjectType()
+EGrabbableObjectType UGrabbingComponent::GetGrabbedObjectType() const
 {
 	if (StaticObject) return Static;
 	if (HeavyObject) return Heavyweight;
 
-	if (OwnerCharacter && OwnerCharacter->PhysicsHandle)
+	if (OwnerCharacter && OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
 	{
-		if (OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
-			return Lightweight;
+		return Lightweight;
 	}
 
 	return None;
 }
 
-void UGrabbingComponent::ToggleGrabComponent(const bool State)
+void UGrabbingComponent::ToggleGrab(bool bGrab)
 {
-	if (State)
+	if (bGrab)
 	{
-		GrabDistance = MaxGrabDistance;
-		const auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
-
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(OwnerCharacter);
-
-		if (FHitResult HitResult; GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector,
-		                                                               ECC_Visibility, QueryParams))
-		{
-			AActor* HitActor = HitResult.GetActor();
-			UPrimitiveComponent* HitActorComponent = HitResult.GetComponent();
-
-			if (HitActor && HitActor->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
-			{
-				if (IGrabbable* GrabbableInterface = Cast<IGrabbable>(HitActor))
-				{
-					if (const EGrabbableObjectType Type = GrabbableInterface->GetGrabbableType(); Type == Lightweight)
-					{
-						GrabRotation = FRotator::ZeroRotator;
-
-						OwnerCharacter->PhysicsHandle->GrabComponentAtLocationWithRotation(
-							HitActorComponent,
-							NAME_None,
-							HitActorComponent->GetComponentLocation(),
-							HitActorComponent->GetComponentRotation()
-						);
-
-						HitActorComponent->SetEnableGravity(false);
-						HitActorComponent->WakeAllRigidBodies();
-
-						IsGrabbingObject = true;
-					}
-					else if (Type == Heavyweight)
-					{
-						HeavyObject = HitActorComponent;
-						OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
-							HitActorComponent, NAME_None,
-							OwnerCharacter->GetCapsuleComponent(), NAME_None
-						);
-						OwnerCharacter->MovementComponentExtended->CanSprint = false;
-						OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
-						OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
-							OwnerCharacter->MovementComponentExtended->DragSpeed);
-						IsGrabbingObject = true;
-					}
-					else if (Type == Static)
-					{
-						StaticObject = HitActorComponent;
-						IsGrabbingObject = true;
-					}
-				}
-			}
-		}
+		GrabObject();
 	}
 	else
 	{
-		if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
-		{
-			UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
-			OwnerCharacter->PhysicsHandle->ReleaseComponent();
-			if (GrabbedComponent)
-			{
-				GrabbedComponent->SetEnableGravity(true);
-				GrabbedComponent->WakeAllRigidBodies();
-			}
-		}
-		else if (ObjectType == Heavyweight)
-		{
-			HeavyObject = nullptr;
-			OwnerCharacter->PhysicsConstraint->BreakConstraint();
-			OwnerCharacter->MovementComponentExtended->CanSprint = true;
-			OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(
-				OwnerCharacter->MovementComponentExtended->WalkSpeed);
-		}
-		else if (ObjectType == Static)
-		{
-			StaticObject = nullptr;
-		}
-		IsGrabbingObject = false;
+		ReleaseObject();
 	}
 }
 
-void UGrabbingComponent::ProcessGrabbing(const float DeltaSeconds)
+void UGrabbingComponent::GrabObject()
 {
-	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
+	GrabDistance = MaxGrabDistance;
+	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
+
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(OwnerCharacter);
+
+	FHitResult Hit;
+	if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
 	{
-		auto [StartVector, EndVector] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
+		return;
+	}
 
-		OwnerCharacter->PhysicsHandle->SetTargetLocation(EndVector);
+	AActor* HitActor = Hit.GetActor();
+	UPrimitiveComponent* HitComponent = Hit.GetComponent();
 
-		if (UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
+	if (!HitActor || !HitActor->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
+	{
+		return;
+	}
+
+	IGrabbable* Grabbable = Cast<IGrabbable>(HitActor);
+
+	if (const EGrabbableObjectType Type = Grabbable->GetGrabbableType(); Type == Lightweight)
+	{
+		GrabRotation = FRotator::ZeroRotator;
+		OwnerCharacter->PhysicsHandle->GrabComponentAtLocationWithRotation(
+			HitComponent, NAME_None, HitComponent->GetComponentLocation(), HitComponent->GetComponentRotation());
+
+		HitComponent->SetEnableGravity(false);
+		HitComponent->WakeAllRigidBodies();
+		IsGrabbingObject = true;
+	}
+	else if (Type == Heavyweight)
+	{
+		HeavyObject = HitComponent;
+		OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
+			HitComponent, NAME_None, OwnerCharacter->GetCapsuleComponent(), NAME_None);
+
+		OwnerCharacter->MovementComponentExtended->CanSprint = false;
+		OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
+		OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
+		IsGrabbingObject = true;
+	}
+	else if (Type == Static)
+	{
+		StaticObject = HitComponent;
+		IsGrabbingObject = true;
+	}
+}
+
+void UGrabbingComponent::ReleaseObject()
+{
+	if (const EGrabbableObjectType Type = GetGrabbedObjectType(); Type == Lightweight)
+	{
+		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
+		OwnerCharacter->PhysicsHandle->ReleaseComponent();
+
+		if (GrabbedComponent)
 		{
-			const FRotator CameraRot = OwnerCharacter->Camera->GetComponentRotation();
-			const FRotator BaseYaw(0.0f, CameraRot.Yaw, 0.0f);
-
-			const FQuat TargetQuat = FQuat(BaseYaw) * FQuat(GrabRotation);
-
-			const FRotator CurrentRot = GrabbedComponent->GetComponentRotation();
-			const FRotator SmoothTargetRot = FMath::RInterpTo(CurrentRot, TargetQuat.Rotator(), DeltaSeconds, 50.0f);
-
-			OwnerCharacter->PhysicsHandle->SetTargetRotation(SmoothTargetRot);
-
+			GrabbedComponent->SetEnableGravity(true);
 			GrabbedComponent->WakeAllRigidBodies();
 		}
 	}
-	else if (ObjectType == Heavyweight)
+	else if (Type == Heavyweight)
 	{
-		UPrimitiveComponent* Component1 = nullptr;
-		FName BoneName1;
-		UPrimitiveComponent* Component2 = nullptr;
-		FName BoneName2;
+		HeavyObject = nullptr;
+		OwnerCharacter->PhysicsConstraint->BreakConstraint();
+		OwnerCharacter->MovementComponentExtended->CanSprint = true;
+		OwnerCharacter->MovementComponentExtended->ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->WalkSpeed);
+	}
+	else if (Type == Static)
+	{
+		StaticObject = nullptr;
+	}
 
-		OwnerCharacter->PhysicsConstraint->GetConstrainedComponents(Component1, BoneName1, Component2, BoneName2);
+	IsGrabbingObject = false;
+}
 
-		if (Component1 && Component2)
+void UGrabbingComponent::ProcessGrabbing(const float DeltaTime)
+{
+	if (const EGrabbableObjectType Type = GetGrabbedObjectType(); Type == Lightweight)
+	{
+		ProcessLightweightGrabbing(DeltaTime);
+	}
+	else if (Type == Heavyweight)
+	{
+		ProcessHeavyweightGrabbing();
+	}
+	else if (Type == Static)
+	{
+		ProcessStaticGrabbing();
+	}
+}
+
+void UGrabbingComponent::ProcessLightweightGrabbing(float DeltaTime) const
+{
+	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
+	OwnerCharacter->PhysicsHandle->SetTargetLocation(End);
+
+	if (UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
+	{
+		const FRotator CameraRot = OwnerCharacter->Camera->GetComponentRotation();
+		const FRotator BaseYaw(0.0f, CameraRot.Yaw, 0.0f);
+		const FQuat TargetQuat = FQuat(BaseYaw) * FQuat(GrabRotation);
+
+		const FRotator CurrentRot = GrabbedComponent->GetComponentRotation();
+		const FRotator SmoothRot = FMath::RInterpTo(CurrentRot, TargetQuat.Rotator(), DeltaTime, 50.0f);
+
+		OwnerCharacter->PhysicsHandle->SetTargetRotation(SmoothRot);
+		GrabbedComponent->WakeAllRigidBodies();
+	}
+}
+
+void UGrabbingComponent::ProcessHeavyweightGrabbing() const
+{
+	UPrimitiveComponent* Component1 = nullptr;
+	FName BoneName1;
+	UPrimitiveComponent* Component2 = nullptr;
+	FName BoneName2;
+
+	OwnerCharacter->PhysicsConstraint->GetConstrainedComponents(Component1, BoneName1, Component2, BoneName2);
+
+	if (Component1 && Component2)
+	{
+		const float Distance = FVector::Dist(Component1->GetComponentLocation(), Component2->GetComponentLocation());
+		if (Distance >= GrabDistance * 1.5f)
 		{
-			if (const float Distance = FVector::Dist(Component1->GetComponentLocation(),
-			                                         Component2->GetComponentLocation()); Distance >= GrabDistance *
-				1.5f)
-			{
-				FVector Diff = Component1->GetComponentLocation() - Component2->GetComponentLocation();
-				Diff.Normalize();
-				OwnerCharacter->LaunchCharacter(Distance * Diff * Component1->GetComponentScale().X * 0.1f, false,
-				                                false);
-			}
+			FVector Diff = Component1->GetComponentLocation() - Component2->GetComponentLocation();
+			Diff.Normalize();
+			OwnerCharacter->LaunchCharacter(Distance * Diff * Component1->GetComponentScale().X * 0.1f, false, false);
 		}
 	}
-	else if (ObjectType == Static)
+}
+
+void UGrabbingComponent::ProcessStaticGrabbing() const
+{
+	if (const UCapsuleComponent* PlayerCapsule = OwnerCharacter->GetCapsuleComponent(); StaticObject && PlayerCapsule)
 	{
-		if (const UCapsuleComponent* PlayerCapsule = OwnerCharacter->GetCapsuleComponent(); StaticObject &&
-			PlayerCapsule)
+		if (const float Distance = FVector::Dist(StaticObject->GetComponentLocation(), PlayerCapsule->GetComponentLocation()); Distance >= GrabDistance * 1.5f)
 		{
-			if (const float Distance = FVector::Dist(StaticObject->GetComponentLocation(),
-			                                         PlayerCapsule->GetComponentLocation()); Distance >= GrabDistance *
-				1.5f)
-			{
-				FVector Diff = StaticObject->GetComponentLocation() - PlayerCapsule->GetComponentLocation();
-				Diff.Normalize();
-				OwnerCharacter->LaunchCharacter(Distance * Diff * StaticObject->GetComponentScale().X * 0.1f, false,
-				                                false);
-			}
+			FVector Diff = StaticObject->GetComponentLocation() - PlayerCapsule->GetComponentLocation();
+			Diff.Normalize();
+			OwnerCharacter->LaunchCharacter(Distance * Diff * StaticObject->GetComponentScale().X * 0.1f, false, false);
 		}
 	}
 }
 
 void UGrabbingComponent::ThrowObject()
 {
-	if (const EGrabbableObjectType ObjectType = GrabbedObjectType(); ObjectType == Lightweight)
-	{
-		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
-		const FVector LaunchImpulse = OwnerCharacter->Camera->GetForwardVector();
+	const EGrabbableObjectType Type = GetGrabbedObjectType();
+	if (Type != Lightweight) return;
 
-		const float Mass = FMath::Max(1.0f, GrabbedComponent->GetMass());
-		const float FinalStrength = FMath::Clamp(Strength / Mass, 500.0f, Strength);
+	UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
+	const FVector ImpulseDirection = OwnerCharacter->Camera->GetForwardVector();
 
-		ToggleGrabComponent(false);
-		GrabbedComponent->AddImpulse(LaunchImpulse * FinalStrength, NAME_None, true);
-	}
+	const float Mass = FMath::Max(1.0f, GrabbedComponent->GetMass());
+	const float FinalStrength = FMath::Clamp(ThrowStrength / Mass, 500.0f, ThrowStrength);
+
+	ToggleGrab(false);
+	GrabbedComponent->AddImpulse(ImpulseDirection * FinalStrength, NAME_None, true);
 }
 
-void UGrabbingComponent::ChangeDistance(const float DeltaVector)
+void UGrabbingComponent::ChangeGrabDistance(const float Delta)
 {
-	if (FMath::IsNearlyZero(DeltaVector)) return;
+	if (FMath::IsNearlyZero(Delta)) return;
 
-	const EGrabbableObjectType Type = GrabbedObjectType();
-
-	UPrimitiveComponent* TargetComponent = nullptr;
+	const EGrabbableObjectType Type = GetGrabbedObjectType();
 
 	if (Type == Lightweight)
 	{
-		GrabDistance = FMath::Clamp(GrabDistance + DeltaVector * 5.0f, MinGrabDistance, MaxGrabDistance);
+		GrabDistance = FMath::Clamp(GrabDistance + Delta * 5.0f, MinGrabDistance, MaxGrabDistance);
 		return;
 	}
 
-	if (Type == Static)
-	{
-		TargetComponent = StaticObject;
-	}
-	else if (Type == Heavyweight)
-	{
-		TargetComponent = HeavyObject;
-	}
+	UPrimitiveComponent* Target = Type == Static ? StaticObject : HeavyObject;
+	if (!Target) return;
 
-	if (!TargetComponent) return;
-
-	if (TargetComponent->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
+	if (Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
-		IGrabbable::Execute_OnMouseScrollInput(TargetComponent, DeltaVector);
+		IGrabbable::Execute_OnMouseScrollInput(Target, Delta);
 		return;
 	}
 
-	if (AActor* Owner = TargetComponent->GetOwner())
+	if (AActor* TargetOwner = Target->GetOwner(); TargetOwner && TargetOwner->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
-		if (Owner->Implements<UGrabbable>())
-		{
-			IGrabbable::Execute_OnMouseScrollInput(Owner, DeltaVector);
-		}
+		IGrabbable::Execute_OnMouseScrollInput(TargetOwner, Delta);
 	}
+}
+
+void UGrabbingComponent::RotateLightweightObject(const float AxisX, const float AxisY)
+{
+	if (!IsGrabbingObject) return;
+
+	constexpr float RotationSpeed = 1.5f;
+	GrabRotation.Yaw += AxisX * RotationSpeed;
+	GrabRotation.Pitch += AxisY * RotationSpeed;
+	GrabRotation.Normalize();
 }

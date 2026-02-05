@@ -1,72 +1,79 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright notice: Fill out in Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Data/WeightCheckResult.h"
 #include "Enums/GrabbableObjectType.h"
 #include "GrabbingComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class ABaseCharacter;
+class UPrimitiveComponent;
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UGrabbingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UGrabbingComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual EGrabbableObjectType GrabbedObjectType();
-	
+	EGrabbableObjectType GetGrabbedObjectType() const;
+
 	UFUNCTION(BlueprintCallable)
-	virtual void ToggleGrabComponent(bool State);
-	
+	void ToggleGrab(bool bGrab);
+
 	UFUNCTION(BlueprintCallable)
-	virtual void ProcessGrabbing(float DeltaSeconds);
-	
+	void ProcessGrabbing(float DeltaTime);
+
 	UFUNCTION(BlueprintCallable)
-	virtual void ChangeDistance(float DeltaVector);
-	
+	void ChangeGrabDistance(float Delta);
+
 	UFUNCTION(BlueprintCallable)
-	virtual void ThrowObject();
+	void ThrowObject();
+
+	UFUNCTION(BlueprintCallable)
+	void RotateLightweightObject(float AxisX, float AxisY);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
 	UPrimitiveComponent* HeavyObject = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grabbing")
 	UPrimitiveComponent* StaticObject = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
 	bool IsGrabbingObject = false;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grabbing")
 	FRotator GrabRotation = FRotator::ZeroRotator;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float Strength = 1500;
-	
+	float ThrowStrength = 1500.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float MaxGrabDistance = 200;
-	
+	float MaxGrabDistance = 200.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float MinGrabDistance = 75;
-	
+	float MinGrabDistance = 75.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float GrabDistance = 200;
-	
-	virtual void LightweightObjectRotation(float InputAxisX, float InputAxisY);
-	
-protected:
+	float GrabDistance = 200.0f;
+
+private:
 	UPROPERTY()
-	class ABaseCharacter* OwnerCharacter;
+	ABaseCharacter* OwnerCharacter;
+
+	void GrabObject();
+	void ReleaseObject();
+
+	void ProcessLightweightGrabbing(float DeltaTime) const;
+	void ProcessHeavyweightGrabbing() const;
+	void ProcessStaticGrabbing() const;
 };

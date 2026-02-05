@@ -1,71 +1,57 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright notice: Fill out in Project Settings.
 
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 
 #include "Characters/BaseCharacter.h"
 #include "Interfaces/Interactable.h"
 
-// Sets default values for this component's properties
 UPlayerSideInteractionComponent::UPlayerSideInteractionComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
 void UPlayerSideInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
-
-// Called every frame
-void UPlayerSideInteractionComponent::TickComponent(const float DeltaTime, const ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPlayerSideInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
-void UPlayerSideInteractionComponent::Interact()
+void UPlayerSideInteractionComponent::Interact() const
 {
-    if (!OwnerCharacter) return;
+	if (!OwnerCharacter) return;
 
-    auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
+	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
 
-    FHitResult Hit;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(OwnerCharacter);
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(OwnerCharacter);
 
-    if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
-    {
-        return;
-    }
+	if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		return;
+	}
 
-    UPrimitiveComponent* HitComp = Hit.GetComponent();
-    AActor* HitActor = Hit.GetActor();
+	UPrimitiveComponent* HitComponent = Hit.GetComponent();
+	AActor* HitActor = Hit.GetActor();
 
-    UObject* Target = nullptr;
+	UObject* InteractableTarget = nullptr;
 
-    if (HitComp && HitComp->Implements<UInteractable>())
-    {
-        Target = HitComp;
-    }
-    else if (HitActor && HitActor->Implements<UInteractable>())
-    {
-        Target = HitActor;
-    }
+	if (HitComponent && HitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		InteractableTarget = HitComponent;
+	}
+	else if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		InteractableTarget = HitActor;
+	}
 
-    if (Target)
-    {
-        IInteractable::Execute_Interact(Target, OwnerCharacter);
-    }
+	if (InteractableTarget)
+	{
+		IInteractable::Execute_Interact(InteractableTarget, OwnerCharacter);
+	}
 }

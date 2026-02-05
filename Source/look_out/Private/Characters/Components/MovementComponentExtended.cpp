@@ -51,14 +51,14 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 
 void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bRotateObject)
 {
-	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GrabbedObjectType() == Lightweight; !HaveToRotateItem)
+	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
 		OwnerCharacter->AddControllerYawInput(InputAxisX);
 		OwnerCharacter->AddControllerPitchInput(InputAxisY);
 	}
 	else
 	{
-		OwnerCharacter->GrabbingComponent->LightweightObjectRotation(InputAxisX, InputAxisY);
+		OwnerCharacter->GrabbingComponent->RotateLightweightObject(InputAxisX, InputAxisY);
 	}
 }
 

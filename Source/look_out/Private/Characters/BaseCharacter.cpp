@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright notice: Fill out in Project Settings.
 
 #include "Characters/BaseCharacter.h"
 
@@ -13,18 +12,15 @@
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
-// Sets default values
 ABaseCharacter::ABaseCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Components
+	// Components initialization
 	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
 	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
-	PSInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PSInteractionComponent"));
+	PlayerInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PlayerInteractionComponent"));
 
-	// Creating camera component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
@@ -34,38 +30,39 @@ ABaseCharacter::ABaseCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
 
-	// Spring Arm Defaults
+	// Spring Arm configuration
 	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->TargetArmLength = 0;
+	SpringArm->TargetArmLength = 0.0f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->bEnableCameraRotationLag = true;
-	SpringArm->CameraLagSpeed = 20;
-	SpringArm->CameraRotationLagSpeed = 20;
-	SpringArm->CameraLagMaxDistance = 10;
+	SpringArm->CameraLagSpeed = 20.0f;
+	SpringArm->CameraRotationLagSpeed = 20.0f;
+	SpringArm->CameraLagMaxDistance = 10.0f;
 
-	// Physics Handle Defaults
-	PhysicsHandle->InterpolationSpeed = 10;
+	// Physics Handle configuration
+	PhysicsHandle->InterpolationSpeed = 10.0f;
 
-	// Physics Constraint Defaults
+	// Physics Constraint configuration
 	PhysicsConstraint->SetLinearXLimit(LCM_Limited, 1.0f);
 	PhysicsConstraint->SetLinearYLimit(LCM_Limited, 1.0f);
 	PhysicsConstraint->SetLinearZLimit(LCM_Limited, 1.0f);
 	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearLimit.bSoftConstraint = true;
-	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 30;
-	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 10;
+	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearLimit.Stiffness = 30.0f;
+	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearLimit.Damping = 10.0f;
 	PhysicsConstraint->ConstraintInstance.ProfileInstance.bLinearPlasticity = true;
 	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearPlasticityType = CCPT_Grow;
-	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearPlasticityThreshold = 0.5;
+	PhysicsConstraint->ConstraintInstance.ProfileInstance.LinearPlasticityThreshold = 0.5f;
 	PhysicsConstraint->SetLinearDriveAccelerationMode(false);
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	GetCharacterMovement()->bIgnoreBaseRotation = true;
-
-	GetCharacterMovement()->Mass = 60;
-	GetCharacterMovement()->bPushForceUsingZOffset = true;
-	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	// Character Movement configuration
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	MovementComp->bOrientRotationToMovement = true;
+	MovementComp->bUseControllerDesiredRotation = true;
+	MovementComp->bIgnoreBaseRotation = true;
+	MovementComp->Mass = 60.0f;
+	MovementComp->bPushForceUsingZOffset = true;
+	MovementComp->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 void ABaseCharacter::BeginPlay()
@@ -73,12 +70,12 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABaseCharacter::Zoom(const bool State)
+void ABaseCharacter::Zoom(bool bZoomIn)
 {
-	Camera->SetFieldOfView(State ? 50 : FieldOfView);
+	Camera->SetFieldOfView(bZoomIn ? 50.0f : FieldOfView);
 }
 
-void ABaseCharacter::Tick(const float DeltaTime)
+void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -93,16 +90,16 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(float VectorLength)
+FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(const float VectorLength) const
 {
 	FCameraRelatedForwardVectorResult Result;
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
-	FVector CameraForwardVector = Camera->GetForwardVector();
+	FVector CameraForward = Camera->GetForwardVector();
+	CameraForward *= VectorLength;
 
-	CameraForwardVector *= VectorLength;
 	Result.StartVector = CameraLocation;
-	Result.EndVector = CameraLocation + CameraForwardVector;
+	Result.EndVector = CameraLocation + CameraForward;
 
 	return Result;
 }
