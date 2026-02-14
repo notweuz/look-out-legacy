@@ -140,12 +140,12 @@ void UPlayerObjectHintsComponent::UpdateWidgetHints(const UActorComponent* Compo
 	if (Implements(UGrabbable::StaticClass()))
 	{
 		Widget->GrabText->SetVisibility(ESlateVisibility::Visible);
-		Widget->GrabText->SetText(FText::FromString(TEXT("ЛКМ - взять")));
+		Widget->GrabText->SetText(FText::FromString(TEXT("LMB - Grab")));
 	}
 	if (Implements(UInteractable::StaticClass()))
 	{
 		Widget->InteractText->SetVisibility(ESlateVisibility::Visible);
-		Widget->InteractText->SetText(FText::FromString(TEXT("E - взаимодействовать")));
+		Widget->InteractText->SetText(FText::FromString(TEXT("E - Interact")));
 	}
 }
 
