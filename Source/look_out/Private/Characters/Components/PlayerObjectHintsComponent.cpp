@@ -43,7 +43,8 @@ void UPlayerObjectHintsComponent::ScanForObject()
 		return;
 	}
 
-	if (UPrimitiveComponent* HitComponent = Hit.GetComponent(); HitComponent && ImplementsAnyHintInterface(HitComponent->GetClass()))
+	if (UPrimitiveComponent* HitComponent = Hit.GetComponent(); HitComponent && ImplementsAnyHintInterface(
+		HitComponent->GetClass()))
 	{
 		ProcessNewComponent(HitComponent);
 	}
@@ -66,26 +67,41 @@ void UPlayerObjectHintsComponent::ProcessNewComponent(UActorComponent* Component
 		return;
 	}
 
-	DestroyHintsWidget();
 	CurrentHintsComponent = Component;
 
-	if (Component && HintsWidgetClass)
+	if (!Component || !HintsWidgetClass)
 	{
-		CreateHintsWidget(Component);
-		UpdateWidgetHints(Component);
+		DestroyHintsWidget();
+		return;
 	}
-}
 
-void UPlayerObjectHintsComponent::CreateHintsWidget(UActorComponent* Component)
-{
 	USceneComponent* AttachTarget = Cast<USceneComponent>(Component);
 	if (!AttachTarget)
 	{
 		AttachTarget = Component->GetOwner()->GetRootComponent();
 	}
-	if (!AttachTarget) return;
+	if (!AttachTarget)
+	{
+		DestroyHintsWidget();
+		return;
+	}
 
-	CurrentWidgetComponent = NewObject<UWidgetComponent>(Component->GetOwner());
+	if (!CurrentWidgetComponent)
+	{
+		CreateHintsWidget(AttachTarget);
+	}
+	else
+	{
+		CurrentWidgetComponent->AttachToComponent(AttachTarget,
+		                                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+
+	UpdateWidgetHints(Component);
+}
+
+void UPlayerObjectHintsComponent::CreateHintsWidget(USceneComponent* AttachTarget)
+{
+	CurrentWidgetComponent = NewObject<UWidgetComponent>(GetOwner());
 	CurrentWidgetComponent->SetupAttachment(AttachTarget);
 	CurrentWidgetComponent->RegisterComponent();
 	CurrentWidgetComponent->SetDrawAtDesiredSize(true);

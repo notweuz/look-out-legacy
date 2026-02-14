@@ -39,7 +39,7 @@ private:
 	void ScanForObject();
 	void ProcessNewComponent(UActorComponent* Component);
 	void UpdateWidgetHints(const UActorComponent* Component) const;
-	void CreateHintsWidget(UActorComponent* Component);
+	void CreateHintsWidget(USceneComponent* AttachTarget);
 	void DestroyHintsWidget();
 
 	static bool ImplementsAnyHintInterface(const UClass* Class);
