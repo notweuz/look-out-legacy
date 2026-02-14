@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "BaseObjectHintsWidget.generated.h"
-
 /**
  * 
  */
@@ -15,21 +15,15 @@ class LOOK_OUT_API UBaseObjectHintsWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText DisplayName;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* DisplayName;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText Description;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* Description;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText StatusText;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* InteractText;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText InteractionHintText;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText GrabHintText;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText StoreHinText;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* GrabText;
 };

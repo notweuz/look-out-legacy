@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/PlayerObjectHintsComponent.h"
 #include "GameFramework/Character.h"
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
@@ -59,4 +60,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerSideInteractionComponent* PlayerInteractionComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
 };

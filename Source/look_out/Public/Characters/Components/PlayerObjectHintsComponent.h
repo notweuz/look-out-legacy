@@ -4,25 +4,43 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Widgets/BaseObjectHintsWidget.h"
 #include "PlayerObjectHintsComponent.generated.h"
 
+class ABaseCharacter;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UPlayerObjectHintsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UPlayerObjectHintsComponent();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBaseObjectHintsWidget> HintsWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	UActorComponent* CurrentHintsComponent;
+
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	UPROPERTY()
+	ABaseCharacter* OwnerCharacter;
 
-		
+	UPROPERTY()
+	UWidgetComponent* CurrentWidgetComponent;
+
+	FTimerHandle TimerHandle;
+
+	void ScanForObject();
+	void ProcessNewComponent(UActorComponent* Component);
+	void UpdateWidgetHints(const UActorComponent* Component) const;
+	void CreateHintsWidget(UActorComponent* Component);
+	void DestroyHintsWidget();
+
+	static bool ImplementsAnyHintInterface(const UClass* Class);
 };
