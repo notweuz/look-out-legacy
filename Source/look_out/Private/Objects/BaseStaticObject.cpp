@@ -29,3 +29,8 @@ EGrabbableObjectType ABaseStaticObject::GetGrabbableType_Implementation()
 {
 	return Static;
 }
+
+FText ABaseStaticObject::GetGrabWidgetText_Implementation()
+{
+	return FText::FromString(TEXT("LMB - Hold"));
+}

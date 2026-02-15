@@ -120,33 +120,14 @@ void UPlayerObjectHintsComponent::DestroyHintsWidget()
 	}
 }
 
-void UPlayerObjectHintsComponent::UpdateWidgetHints(const UActorComponent* Component) const
+void UPlayerObjectHintsComponent::UpdateWidgetHints(UObject* Component) const
 {
 	if (!CurrentWidgetComponent || !Component) return;
 
 	const UBaseObjectHintsWidget* Widget = Cast<UBaseObjectHintsWidget>(CurrentWidgetComponent->GetWidget());
 	if (!Widget) return;
-
-	const UClass* CompClass = Component->GetClass();
-	const AActor* Owner = Component->GetOwner();
-	const UClass* ActorClass = Owner ? Owner->GetClass() : nullptr;
-
-	auto Implements = [&](const TSubclassOf<UInterface> Interface)
-	{
-		return CompClass->ImplementsInterface(Interface)
-			|| (ActorClass && ActorClass->ImplementsInterface(Interface));
-	};
-
-	if (Implements(UGrabbable::StaticClass()))
-	{
-		Widget->GrabText->SetVisibility(ESlateVisibility::Visible);
-		Widget->GrabText->SetText(FText::FromString(TEXT("LMB - Grab")));
-	}
-	if (Implements(UInteractable::StaticClass()))
-	{
-		Widget->InteractText->SetVisibility(ESlateVisibility::Visible);
-		Widget->InteractText->SetText(FText::FromString(TEXT("E - Interact")));
-	}
+	
+	Widget->UpdateFromComponent(Cast<UActorComponent>(Component));
 }
 
 bool UPlayerObjectHintsComponent::ImplementsAnyHintInterface(const UClass* Class)

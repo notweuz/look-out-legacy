@@ -29,3 +29,8 @@ EGrabbableObjectType ABaseHeavyweightObject::GetGrabbableType_Implementation()
 {
 	return Heavyweight;
 }
+
+FText ABaseHeavyweightObject::GetGrabWidgetText_Implementation()
+{
+	return FText::FromString(TEXT("LMB - Drag"));
+}

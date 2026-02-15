@@ -38,7 +38,7 @@ private:
 
 	void ScanForObject();
 	void ProcessNewComponent(UActorComponent* Component);
-	void UpdateWidgetHints(const UActorComponent* Component) const;
+	void UpdateWidgetHints(UObject* Component) const;
 	void CreateHintsWidget(USceneComponent* AttachTarget);
 	void DestroyHintsWidget();
 

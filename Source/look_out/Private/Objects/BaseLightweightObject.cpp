@@ -30,3 +30,8 @@ EGrabbableObjectType ABaseLightweightObject::GetGrabbableType_Implementation()
 	return Lightweight;
 }
 
+FText ABaseLightweightObject::GetGrabWidgetText_Implementation()
+{
+	return FText::FromString(TEXT("LMB - Grab"));
+}
+

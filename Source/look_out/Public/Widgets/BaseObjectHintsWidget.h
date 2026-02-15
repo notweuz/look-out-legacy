@@ -6,9 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "BaseObjectHintsWidget.generated.h"
-/**
- * 
- */
+
 UCLASS()
 class LOOK_OUT_API UBaseObjectHintsWidget : public UUserWidget
 {
@@ -26,4 +24,6 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* GrabText;
+
+	void UpdateFromComponent(UActorComponent* Component) const;
 };

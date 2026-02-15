@@ -18,6 +18,9 @@ class LOOK_OUT_API IInteractable
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
+	FText GetInteractWidgetText();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
 	void Interact(AActor* Interactor);
 };

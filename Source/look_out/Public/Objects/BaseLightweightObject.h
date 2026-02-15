@@ -25,4 +25,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
+	
+	virtual FText GetGrabWidgetText_Implementation() override;
 };
