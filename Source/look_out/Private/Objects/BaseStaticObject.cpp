@@ -25,7 +25,7 @@ void ABaseStaticObject::Tick(float DeltaTime)
 
 }
 
-EGrabbableObjectType ABaseStaticObject::GetGrabbableType()
+EGrabbableObjectType ABaseStaticObject::GetGrabbableType_Implementation()
 {
 	return Static;
 }

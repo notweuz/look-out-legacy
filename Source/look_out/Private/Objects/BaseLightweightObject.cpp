@@ -25,7 +25,7 @@ void ABaseLightweightObject::Tick(const float DeltaTime)
 
 }
 
-EGrabbableObjectType ABaseLightweightObject::GetGrabbableType()
+EGrabbableObjectType ABaseLightweightObject::GetGrabbableType_Implementation()
 {
 	return Lightweight;
 }

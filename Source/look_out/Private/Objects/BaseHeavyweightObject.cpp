@@ -25,7 +25,7 @@ void ABaseHeavyweightObject::Tick(float DeltaTime)
 
 }
 
-EGrabbableObjectType ABaseHeavyweightObject::GetGrabbableType()
+EGrabbableObjectType ABaseHeavyweightObject::GetGrabbableType_Implementation()
 {
 	return Heavyweight;
 }

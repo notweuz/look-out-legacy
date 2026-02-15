@@ -24,5 +24,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual EGrabbableObjectType GetGrabbableType() override;
+	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
 };

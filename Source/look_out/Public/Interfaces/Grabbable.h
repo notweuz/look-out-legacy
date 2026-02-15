@@ -19,8 +19,8 @@ class LOOK_OUT_API IGrabbable
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(Category="Grabbing")
-	virtual EGrabbableObjectType GetGrabbableType();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
+	EGrabbableObjectType GetGrabbableType();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	void OnMouseScrollInput(float MouseInput);

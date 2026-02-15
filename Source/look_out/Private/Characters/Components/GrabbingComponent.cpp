@@ -90,7 +90,7 @@ void UGrabbingComponent::GrabObject()
 
 	IGrabbable* Grabbable = Cast<IGrabbable>(HitActor);
 
-	if (const EGrabbableObjectType Type = Grabbable->GetGrabbableType(); Type == Lightweight)
+	if (const EGrabbableObjectType Type = IGrabbable::Execute_GetGrabbableType(HitActor); Type == Lightweight)
 	{
 		GrabRotation = FRotator::ZeroRotator;
 		OwnerCharacter->PhysicsHandle->GrabComponentAtLocationWithRotation(

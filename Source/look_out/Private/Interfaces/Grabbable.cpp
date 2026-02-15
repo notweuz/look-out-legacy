@@ -4,8 +4,3 @@
 #include "Interfaces/Grabbable.h"
 
 // Add default functionality here for any IGrabbable functions that are not pure virtual.
-
-EGrabbableObjectType IGrabbable::GetGrabbableType()
-{
-	return None;
-}
