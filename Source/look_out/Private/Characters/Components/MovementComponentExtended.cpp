@@ -5,6 +5,7 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/GrabbingComponent.h"
+#include "Core/AdvancedGameUserSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // Sets default values for this component's properties
 UMovementComponentExtended::UMovementComponentExtended()
@@ -49,10 +50,13 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 	OwnerCharacter->AddMovementInput(RightDirection, AxisValue);
 }
 
-void UMovementComponentExtended::Look(const float InputAxisX, const float InputAxisY, const bool bRotateObject)
+void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, const bool bRotateObject)
 {
+	UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings();
 	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
+		InputAxisX *= Settings->MouseSensitivity;
+		InputAxisY *= Settings->MouseSensitivity;
 		OwnerCharacter->AddControllerYawInput(InputAxisX);
 		OwnerCharacter->AddControllerPitchInput(InputAxisY);
 	}
