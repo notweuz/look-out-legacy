@@ -1,0 +1,39 @@
+// Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
+
+#pragma once
+
+UENUM(BlueprintType)
+enum class EStatValueType : uint8
+{
+	None,
+	Int,
+	Float,
+	Bool,
+	String,
+	Name,
+};
+
+USTRUCT(BlueprintType)
+struct LOOK_OUT_API FItemTags
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	EStatValueType Type = EStatValueType::None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	int32 IntValue = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	float FloatValue = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	bool BoolValue = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	FString StringValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	FName NameValue = NAME_None;
+};
