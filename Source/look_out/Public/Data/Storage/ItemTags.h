@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "ItemTags.generated.h"
+
 UENUM(BlueprintType)
 enum class EStatValueType : uint8
 {

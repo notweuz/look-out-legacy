@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Item.generated.h"
+
 USTRUCT(BlueprintType)
 struct LOOK_OUT_API FItem
 {
 	GENERATED_BODY()
 	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TSoftClassPtr<AActor> ItemClass;
 	
