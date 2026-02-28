@@ -24,6 +24,9 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* GrabText;
+	
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* StoreText;
 
 	void UpdateFromComponent(UActorComponent* Component) const;
 };

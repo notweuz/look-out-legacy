@@ -5,6 +5,7 @@
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/Storeable.h"
 
 void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) const
 {
@@ -13,7 +14,8 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	UObject* Target = Component;
 	if (!Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()) &&
 		!Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()) &&
-		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
+		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()) &&
+		!Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
 	{
 		Target = Component->GetOwner();
 	}
@@ -31,6 +33,12 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	{
 		InteractText->SetText(FText::FromString(TEXT("E - Interact")));
 		InteractText->SetVisibility(ESlateVisibility::Visible);
+	}
+	
+	if (Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
+	{
+		StoreText->SetText(FText::FromString(TEXT("RMB - Collect")));
+		StoreText->SetVisibility(ESlateVisibility::Visible);
 	}
 	
 	if (Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
