@@ -17,7 +17,7 @@ public:
 	// Sets default values for this component's properties
 	UStorageComponent();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage", SaveGame)
 	TArray<FItem> Storage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage")
