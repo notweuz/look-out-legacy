@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PlayerObjectHintsComponent.h"
 #include "GameFramework/Character.h"
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerObjectHintsComponent;
+class UInventoryComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UPhysicsHandleComponent;
@@ -63,4 +64,7 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UInventoryComponent* InventoryComponent;
 };

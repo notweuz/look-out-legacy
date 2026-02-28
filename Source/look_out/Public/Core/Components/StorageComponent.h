@@ -45,4 +45,10 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	AActor* RetrieveItem(int32 Index, FTransform SpawnTransform);
+	
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	static UStorageComponent* GetStorageComponentFromActor(AActor* Actor);
+	
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	UStorageComponent* GetStorageLink();
 };

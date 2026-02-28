@@ -34,6 +34,16 @@ void UStorageComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+UStorageComponent* UStorageComponent::GetStorageComponentFromActor(AActor* Actor)
+{
+	return Actor ? Actor->FindComponentByClass<UStorageComponent>() : nullptr;
+}
+
+UStorageComponent* UStorageComponent::GetStorageLink()
+{
+	return this;
+}
+
 AActor* UStorageComponent::RetrieveItem_Implementation(const int32 Index, const FTransform SpawnTransform)
 {
 	if (!Storage.IsValidIndex(Index))
