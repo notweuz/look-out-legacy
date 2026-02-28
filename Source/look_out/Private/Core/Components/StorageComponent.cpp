@@ -118,6 +118,7 @@ void UStorageComponent::AddItem_Implementation(AActor* Actor)
 	NewItem.SavedTags = IStoreable::Execute_GetItemTags(Actor);
 
 	Storage.Add(NewItem);
+	Actor->Destroy();
 }
 
 FItem UStorageComponent::RemoveItem_Implementation(const int32 Index)
