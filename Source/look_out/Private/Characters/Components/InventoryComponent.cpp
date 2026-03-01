@@ -17,6 +17,43 @@ void UInventoryComponent::BeginPlay()
 	Hotbar.SetNum(HotbarSize);
 }
 
+void UInventoryComponent::DropHotbarItem_Implementation()
+{
+	if (!OwnerCharacter) return;
+	
+	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: no item in current hotbar index %d"), CurrentActiveItemIndex);
+		return;
+	}
+
+	const FItem& Item = Hotbar[CurrentActiveItemIndex];
+	const TSubclassOf<AActor> ActorClass = Item.ItemClass.LoadSynchronous();
+	if (!ActorClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		return;
+	}
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	const FVector SpawnLocation = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 100.0f;
+	const FRotator SpawnRotation = OwnerCharacter->GetActorRotation();
+	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnTransform, SpawnParams);
+	if (SpawnedActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to spawn actor from hotbar index %d"), CurrentActiveItemIndex);
+		return;
+	}
+	
+	IStoreable::Execute_ApplyItemTags(SpawnedActor, Item.SavedTags);
+	Hotbar[CurrentActiveItemIndex] = FItem();
+	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: dropped item from hotbar index %d"), CurrentActiveItemIndex);
+}
+
 void UInventoryComponent::CollectItem_Implementation()
 {
 	if (!OwnerCharacter) return;
