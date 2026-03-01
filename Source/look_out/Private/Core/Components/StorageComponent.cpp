@@ -134,36 +134,26 @@ FItem UStorageComponent::RemoveItem_Implementation(const int32 Index)
 	return RemovedItem;
 }
 
-bool UStorageComponent::TransferItem_Implementation(UStorageComponent* OldStorage, const FItem Item)
+bool UStorageComponent::TransferItem_Implementation(UStorageComponent* OldStorage, const int32 ItemIndex)
 {
 	if (!OldStorage)
 	{
 		return false;
 	}
-
-	int32 FoundIndex = INDEX_NONE;
-	for (int32 i = 0; i < OldStorage->Storage.Num(); i++)
+	
+	if (!OldStorage->Storage.IsValidIndex(ItemIndex))
 	{
-		if (OldStorage->Storage[i].ItemClass == Item.ItemClass)
-		{
-			FoundIndex = i;
-			break;
-		}
-	}
-
-	if (FoundIndex == INDEX_NONE)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Item not found in source storage"));
+		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Invalid index %d in source storage"), ItemIndex);
 		return false;
 	}
 
-	if (GetRemainingStorage() < Item.ItemWeight)
+	if (const FItem Item = OldStorage->Storage[ItemIndex]; GetRemainingStorage() < Item.ItemWeight)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Not enough space in target storage"));
 		return false;
 	}
 
-	FItem Removed = OldStorage->RemoveItem(FoundIndex);
+	const FItem Removed = OldStorage->RemoveItem(ItemIndex);
 	Storage.Add(Removed);
 	return true;
 }

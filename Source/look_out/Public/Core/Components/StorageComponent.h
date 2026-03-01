@@ -35,7 +35,7 @@ public:
 	int32 GetRemainingStorage();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
-	bool TransferItem(UStorageComponent* OldStorage, FItem Item);
+	bool TransferItem(UStorageComponent* OldStorage, int32 ItemIndex);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	FItem RemoveItem(int32 Index);
