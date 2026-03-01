@@ -36,7 +36,7 @@ ABaseCharacter::ABaseCharacter()
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
 	HandSceneComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-	// Spring Arm configuration
+	// Spring Arm configurationotb
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->TargetArmLength = 0.0f;
 	SpringArm->bDoCollisionTest = false;

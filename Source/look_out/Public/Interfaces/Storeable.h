@@ -32,4 +32,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
     void ApplyItemTags(const TArray<FItemTag>& Tags);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
+	UTexture2D* GetItemIcon();
 };
