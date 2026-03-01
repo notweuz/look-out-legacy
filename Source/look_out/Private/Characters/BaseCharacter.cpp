@@ -29,10 +29,12 @@ ABaseCharacter::ABaseCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	PhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraint"));
+	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComponent"));
 
 	SpringArm->SetupAttachment(GetMesh());
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
+	HandSceneComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	// Spring Arm configuration
 	SpringArm->bUsePawnControlRotation = true;

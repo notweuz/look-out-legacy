@@ -5,8 +5,6 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/GrabbingComponent.h"
-#include "Interfaces/Grabbable.h"
-#include "Interfaces/Interactable.h"
 #include "Interfaces/Storeable.h"
 
 void UInventoryComponent::BeginPlay()
@@ -15,6 +13,85 @@ void UInventoryComponent::BeginPlay()
 	
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 	Hotbar.SetNum(HotbarSize);
+}
+
+void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
+{
+	if (!OwnerCharacter) return;
+
+	if (Hotbar.IsValidIndex(OldItemIndex) && Hotbar[OldItemIndex].ItemClass)
+	{
+		TArray<AActor*> AttachedActors;
+		OwnerCharacter->HandSceneComponent->GetOwner()->GetAttachedActors(AttachedActors);
+
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			if (!AttachedActor) continue;
+
+			USceneComponent* ParentComp = AttachedActor->GetRootComponent()
+				? AttachedActor->GetRootComponent()->GetAttachParent()
+				: nullptr;
+
+			if (ParentComp != OwnerCharacter->HandSceneComponent) continue;
+
+			if (AttachedActor->Implements<UStoreable>())
+			{
+				Hotbar[OldItemIndex].SavedTags = IStoreable::Execute_GetItemTags(AttachedActor);
+				UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
+			}
+
+			AttachedActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			AttachedActor->Destroy();
+
+			UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Removed hand item from hotbar index %d"), OldItemIndex);
+			break;
+		}
+	}
+
+	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || !Hotbar[CurrentActiveItemIndex].ItemClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: No item at new hotbar index %d"), CurrentActiveItemIndex);
+		return;
+	}
+
+	FItem& NewItem = Hotbar[CurrentActiveItemIndex];
+
+	const TSubclassOf<AActor> ActorClass = NewItem.ItemClass.LoadSynchronous();
+	if (!ActorClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	const FTransform HandTransform = OwnerCharacter->HandSceneComponent->GetComponentTransform();
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, HandTransform, SpawnParams);
+	if (!SpawnedActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to spawn hand item at index %d"), CurrentActiveItemIndex);
+		return;
+	}
+
+	if (SpawnedActor->Implements<UStoreable>() && NewItem.SavedTags.Num() > 0)
+	{
+		IStoreable::Execute_ApplyItemTags(SpawnedActor, NewItem.SavedTags);
+		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Applied saved tags to hand item at index %d"), CurrentActiveItemIndex);
+	}
+
+	if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(SpawnedActor->GetRootComponent()))
+	{
+		PrimComp->SetSimulatePhysics(false);
+		PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	SpawnedActor->AttachToComponent(
+		OwnerCharacter->HandSceneComponent,
+		FAttachmentTransformRules::SnapToTargetIncludingScale
+	);
+
+	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Spawned and attached hand item at index %d"), CurrentActiveItemIndex);
 }
 
 void UInventoryComponent::DropHotbarItem_Implementation()
@@ -43,7 +120,7 @@ void UInventoryComponent::DropHotbarItem_Implementation()
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnTransform, SpawnParams);
-	if (SpawnedActor)
+	if (!SpawnedActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to spawn actor from hotbar index %d"), CurrentActiveItemIndex);
 		return;
@@ -68,7 +145,6 @@ void UInventoryComponent::CollectItem_Implementation()
 	DrawDebugLine(OwnerCharacter->GetWorld(), Start, End, FColor::Green, false, 10.0f);
 #endif
 	
-	
 	if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
 	{
 		return;
@@ -76,17 +152,14 @@ void UInventoryComponent::CollectItem_Implementation()
 
 	AActor* HitActor = Hit.GetActor();
 
-	if (!HitActor && HitActor->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
+	if (!HitActor || !HitActor->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent found a storeable actor %s"), *HitActor->GetName())
+		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: hit actor is null or not storeable"));
 		return;
 	}
 
-	if (HitActor)
-	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
-		AddItem(HitActor);
-	}
+	UE_LOG(LogTemp, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
+	AddItem(HitActor);
 }
 
 void UInventoryComponent::ScrollActiveItem_Implementation(const float Delta)
@@ -98,9 +171,12 @@ void UInventoryComponent::ScrollActiveItem_Implementation(const float Delta)
 	}
 
 	const int32 DeltaInt = FMath::RoundToInt(Delta);
+	const int32 OldActiveItemIndex = CurrentActiveItemIndex;
 	CurrentActiveItemIndex = (CurrentActiveItemIndex + DeltaInt) % HotbarSize;
 	if (CurrentActiveItemIndex < 0)
 	{
 		CurrentActiveItemIndex += HotbarSize;
 	}
+	
+	UpdateHandItem(OldActiveItemIndex);
 }

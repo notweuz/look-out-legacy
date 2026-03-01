@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
 	void DropHotbarItem();
 	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
+	void UpdateHandItem(int OldItemIndex);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory", SaveGame)
 	TArray<FItem> Hotbar;
 	

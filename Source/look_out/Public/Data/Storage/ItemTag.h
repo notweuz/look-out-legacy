@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemTags.generated.h"
+#include "ItemTag.generated.h"
 
 UENUM(BlueprintType)
 enum class EStatValueType : uint8
@@ -17,7 +17,7 @@ enum class EStatValueType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct LOOK_OUT_API FItemTags
+struct LOOK_OUT_API FItemTag
 {
 	GENERATED_BODY()
 	

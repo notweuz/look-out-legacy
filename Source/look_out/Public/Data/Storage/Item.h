@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemTags.h"
+#include "ItemTag.h"
 #include "Item.generated.h"
 
 USTRUCT(BlueprintType)
@@ -22,5 +22,5 @@ public:
 	int32 ItemWeight = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	FItemTags SavedTags;
+	TArray<FItemTag> SavedTags;
 };

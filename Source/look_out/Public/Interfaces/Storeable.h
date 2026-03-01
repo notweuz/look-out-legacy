@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Storage/ItemTags.h"
+#include "Data/Storage/ItemTag.h"
 #include "UObject/Interface.h"
 #include "Storeable.generated.h"
 
@@ -28,8 +28,8 @@ public:
 	int32 GetItemWeight();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
-	FItemTags GetItemTags();
+	TArray<FItemTag> GetItemTags();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
-	void ApplyItemTags(FItemTags Tags);
+    void ApplyItemTags(const TArray<FItemTag>& Tags);
 };
