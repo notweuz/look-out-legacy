@@ -18,21 +18,20 @@ void UInventoryComponent::BeginPlay()
 void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 {
 	if (!OwnerCharacter) return;
+	
+	if (OldItemIndex == CurrentActiveItemIndex) return;
 
-	if (Hotbar.IsValidIndex(OldItemIndex) && Hotbar[OldItemIndex].ItemClass)
+	if (Hotbar.IsValidIndex(OldItemIndex) && !Hotbar[OldItemIndex].ItemClass.IsNull())
 	{
-		TArray<AActor*> AttachedActors;
-		OwnerCharacter->HandSceneComponent->GetOwner()->GetAttachedActors(AttachedActors);
+		TArray<USceneComponent*> ChildComponents;
+		OwnerCharacter->HandSceneComponent->GetChildrenComponents(false, ChildComponents);
 
-		for (AActor* AttachedActor : AttachedActors)
+		for (USceneComponent* ChildComp : ChildComponents)
 		{
-			if (!AttachedActor) continue;
+			if (!ChildComp) continue;
 
-			USceneComponent* ParentComp = AttachedActor->GetRootComponent()
-				? AttachedActor->GetRootComponent()->GetAttachParent()
-				: nullptr;
-
-			if (ParentComp != OwnerCharacter->HandSceneComponent) continue;
+			AActor* AttachedActor = ChildComp->GetOwner();
+			if (!AttachedActor || AttachedActor == OwnerCharacter) continue;
 
 			if (AttachedActor->Implements<UStoreable>())
 			{
@@ -48,7 +47,7 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 		}
 	}
 
-	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || !Hotbar[CurrentActiveItemIndex].ItemClass)
+	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || Hotbar[CurrentActiveItemIndex].ItemClass.IsNull())
 	{
 		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: No item at new hotbar index %d"), CurrentActiveItemIndex);
 		return;
@@ -171,6 +170,7 @@ void UInventoryComponent::ScrollActiveItem_Implementation(const float Delta)
 	}
 
 	const int32 DeltaInt = FMath::RoundToInt(Delta);
+	if (DeltaInt == 0) return;
 	const int32 OldActiveItemIndex = CurrentActiveItemIndex;
 	CurrentActiveItemIndex = (CurrentActiveItemIndex + DeltaInt) % HotbarSize;
 	if (CurrentActiveItemIndex < 0)
