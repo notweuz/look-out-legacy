@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePlayerHotbarSlot.h"
+#include "BasePlayerInventorySlot.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BackgroundBlur.h"
 #include "BasePlayerHotbar.generated.h"
@@ -18,7 +18,7 @@ class LOOK_OUT_API UBasePlayerHotbar : public UUserWidget
 	
 public:
 	UPROPERTY(meta = (BindWidget))
-	TArray<UBasePlayerHotbarSlot*> HotbarSlots;
+	TArray<UBasePlayerInventorySlot*> HotbarSlots;
 	
 	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;
