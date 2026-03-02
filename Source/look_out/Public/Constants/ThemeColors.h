@@ -15,12 +15,6 @@ class LOOK_OUT_API UThemeColors : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor SelectedSlotBackground();
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor SelectedSlotBorder();
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
 	static FLinearColor SlotBackground();
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
@@ -32,6 +26,21 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
 	static FLinearColor MovingSlotBackground();
 	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor GeneralBackground();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor GeneralBorder();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor GeneralClose();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor GeneralSelectedBackground();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor GeneralSelectedBorder();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Utils")
 	static FLinearColor GetLinearColorFromHex(const FString& InHex);
 };
