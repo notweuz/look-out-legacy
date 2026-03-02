@@ -27,5 +27,11 @@ public:
 	static FLinearColor SlotBorder();
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
+	static FLinearColor MovingSlotBorder();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
+	static FLinearColor MovingSlotBackground();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
 	static FLinearColor GetLinearColorFromHex(const FString& InHex);
 };

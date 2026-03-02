@@ -23,6 +23,16 @@ FLinearColor UThemeColors::SlotBorder()
 	return GetLinearColorFromHex("3e3e3e80");
 }
 
+FLinearColor UThemeColors::MovingSlotBorder()
+{
+	return GetLinearColorFromHex("3e3eff80");
+}
+
+FLinearColor UThemeColors::MovingSlotBackground()
+{
+	return GetLinearColorFromHex("#3e3eff40");
+}
+
 FLinearColor UThemeColors::GetLinearColorFromHex(const FString& InHex)
 {
 	return FLinearColor::FromSRGBColor(FColor::FromHex(InHex));
