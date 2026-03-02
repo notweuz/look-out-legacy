@@ -22,15 +22,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot")
 	bool bIsActive = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colors")
-	FLinearColor ActiveColor = FLinearColor::FromSRGBColor(FColor::FromHex("FFA065CC"));
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colors")
-	FLinearColor EmptySlotColor = FLinearColor::FromSRGBColor(FColor::FromHex("3A3A3A80"));
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetSlotImage(UTexture2D* Texture);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetActive(bool IsActive);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void StateChanged(bool IsActive);
 };

@@ -21,35 +21,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hotbar Slots")
 	TArray<FItem> Hotbar;
 	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture1;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture2;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture3;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture4;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture5;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture6;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture7;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture8;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture9;
-	
-	UPROPERTY(meta = (BindWidget))
-	UBasePlayerInventorySlot* SlotTexture10;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hotbar Slots")
+	TArray<UBasePlayerInventorySlot*> Slots;
 
 	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;

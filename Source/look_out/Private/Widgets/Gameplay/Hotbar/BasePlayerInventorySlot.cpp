@@ -25,4 +25,5 @@ void UBasePlayerInventorySlot::SetActive_Implementation(const bool IsActive)
 	{
 		Sprite->SetVisibility(ESlateVisibility::Hidden);
 	}
+	StateChanged(IsActive);
 }
