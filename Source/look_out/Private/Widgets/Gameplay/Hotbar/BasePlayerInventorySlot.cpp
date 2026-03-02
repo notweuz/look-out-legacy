@@ -3,19 +3,6 @@
 #include "Widgets/Gameplay/Hotbar/BasePlayerInventorySlot.h"
 #include "Components/SizeBox.h"
 
-void UBasePlayerInventorySlot::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	if (SlotSizeBox)
-	{
-		SlotSizeBox->SetWidthOverride(SlotSize);
-		SlotSizeBox->SetHeightOverride(SlotSize);
-	}
-
-	ClearSlot();
-}
-
 void UBasePlayerInventorySlot::SetSlotImage_Implementation(UTexture2D* Texture)
 {
 	if (!Sprite) return;
@@ -31,61 +18,11 @@ void UBasePlayerInventorySlot::SetSlotImage_Implementation(UTexture2D* Texture)
 	}
 }
 
-void UBasePlayerInventorySlot::SetActive_Implementation(bool bIsActive)
+void UBasePlayerInventorySlot::SetActive_Implementation(const bool IsActive)
 {
-	if (ColorFill)
-	{
-		ColorFill->SetColorAndOpacity(bIsActive ? ActiveColor : InActiveColor);
-	}
-
-	if (SpriteBorder)
-	{
-		SpriteBorder->SetBrushColor(bIsActive ? ActiveColor : FLinearColor::Transparent);
-	}
-}
-
-void UBasePlayerInventorySlot::SetItemCount_Implementation(int32 Count)
-{
-	if (!ItemCountText) return;
-
-	if (Count > 1)
-	{
-		ItemCountText->SetVisibility(ESlateVisibility::Visible);
-		ItemCountText->SetText(FText::AsNumber(Count));
-	}
-	else
-	{
-		ItemCountText->SetVisibility(ESlateVisibility::Hidden);
-	}
-}
-
-void UBasePlayerInventorySlot::SetSlotIndex_Implementation(int32 Index)
-{
-	if (SlotNumberText)
-	{
-		SlotNumberText->SetText(FText::AsNumber(Index + 1));
-	}
-}
-
-void UBasePlayerInventorySlot::ClearSlot_Implementation()
-{
-	if (Sprite)
+	bIsActive = IsActive;
+	if (!bIsActive)
 	{
 		Sprite->SetVisibility(ESlateVisibility::Hidden);
-	}
-
-	if (ItemCountText)
-	{
-		ItemCountText->SetVisibility(ESlateVisibility::Hidden);
-	}
-
-	if (ColorFill)
-	{
-		ColorFill->SetColorAndOpacity(EmptySlotColor);
-	}
-
-	if (SpriteBorder)
-	{
-		SpriteBorder->SetBrushColor(FLinearColor::Transparent);
 	}
 }
