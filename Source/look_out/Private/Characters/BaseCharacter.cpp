@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Widgets/Gameplay/BasePlayerUI.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -74,6 +75,19 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC && PlayerUIClass)
+	{
+		PlayerUI = CreateWidget<UBasePlayerUI>(PC, PlayerUIClass);
+		if (PlayerUI)
+		{
+			PlayerUI->AddToViewport();
+			UE_LOG(LogTemp, Warning, TEXT("Player UI created"));
+		} else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to setup player UI"));
+		}
+	}
 }
 
 void ABaseCharacter::Zoom(bool bZoomIn)

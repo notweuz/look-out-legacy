@@ -7,6 +7,7 @@
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
 
+class UBasePlayerUI;
 class UPlayerObjectHintsComponent;
 class UInventoryComponent;
 class USpringArmComponent;
@@ -70,4 +71,10 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UInventoryComponent* InventoryComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBasePlayerUI> PlayerUIClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Interface")
+	UBasePlayerUI* PlayerUI;
 };
