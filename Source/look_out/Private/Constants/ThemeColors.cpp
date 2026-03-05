@@ -30,7 +30,7 @@ FLinearColor UThemeColors::GeneralBackground()
 
 FLinearColor UThemeColors::GeneralBorder()
 {
-	return FLinearColor::FromSRGBColor(FColor(59, 59, 59, 216));
+	return FLinearColor::FromSRGBColor(FColor(77, 77, 77, 216));
 }
 
 FLinearColor UThemeColors::GeneralClose()
