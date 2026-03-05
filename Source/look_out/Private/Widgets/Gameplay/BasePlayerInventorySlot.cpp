@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
-#include "Widgets/Gameplay/Hotbar/BasePlayerInventorySlot.h"
+#include "Widgets/Gameplay/BasePlayerInventorySlot.h"
 #include "Components/SizeBox.h"
 
 void UBasePlayerInventorySlot::SetSlotImage_Implementation(UTexture2D* Texture)

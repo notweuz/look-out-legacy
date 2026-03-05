@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePlayerInventorySlot.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BackgroundBlur.h"
 #include "Data/Storage/Item.h"
+#include "Widgets/Gameplay/BasePlayerInventorySlot.h"
 #include "BasePlayerHotbar.generated.h"
 
 /**
@@ -21,34 +21,34 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hotbar Slots")
 	TArray<FItem> Hotbar;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot1;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot2;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot3;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot4;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot5;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot6;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot7;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot8;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot9;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot10;
 	
 	virtual void NativeConstruct() override;
