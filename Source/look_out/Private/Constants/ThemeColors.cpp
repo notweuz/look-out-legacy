@@ -5,50 +5,45 @@
 
 FLinearColor UThemeColors::SlotBackground()
 {
-	return GetLinearColorFromHex("3e3e3e80");
+	return FLinearColor::FromSRGBColor(FColor(62, 62, 62, 127));
 }
 
 FLinearColor UThemeColors::SlotBorder()
 {
-	return GetLinearColorFromHex("3e3e3e80");
+	return FLinearColor::FromSRGBColor(FColor(62, 62, 62, 127));
 }
 
 FLinearColor UThemeColors::MovingSlotBorder()
 {
-	return GetLinearColorFromHex("3e3eff80");
+	return FLinearColor::FromSRGBColor(FColor(35, 138, 255, 127));
 }
 
 FLinearColor UThemeColors::MovingSlotBackground()
 {
-	return GetLinearColorFromHex("#3e3eff40");
+	return FLinearColor::FromSRGBColor(FColor(35, 138, 255, 63));
 }
 
 FLinearColor UThemeColors::GeneralBackground()
 {
-	return GetLinearColorFromHex("1f1f1fd9");
+	return FLinearColor::FromSRGBColor(FColor(31, 31, 31, 216));
 }
 
 FLinearColor UThemeColors::GeneralBorder()
 {
-	return GetLinearColorFromHex("3b3b3bd9");
+	return FLinearColor::FromSRGBColor(FColor(59, 59, 59, 216));
 }
 
 FLinearColor UThemeColors::GeneralClose()
 {
-	return GetLinearColorFromHex("ff6161");
+	return FLinearColor::FromSRGBColor(FColor(255, 97, 97, 255));
 }
 
 FLinearColor UThemeColors::GeneralSelectedBackground()
 {
-	return GetLinearColorFromHex("ff8a2340");
+	return FLinearColor::FromSRGBColor(FColor(255, 137, 35, 63));
 }
 
 FLinearColor UThemeColors::GeneralSelectedBorder()
 {
-	return GetLinearColorFromHex("ff8a2380");
-}
-
-FLinearColor UThemeColors::GetLinearColorFromHex(const FString& InHex)
-{
-	return FLinearColor::FromSRGBColor(FColor::FromHex(InHex));
+	return FLinearColor::FromSRGBColor(FColor(255, 137, 35, 127));
 }

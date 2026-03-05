@@ -40,7 +40,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
 	static FLinearColor GeneralSelectedBorder();
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Utils")
-	static FLinearColor GetLinearColorFromHex(const FString& InHex);
 };
