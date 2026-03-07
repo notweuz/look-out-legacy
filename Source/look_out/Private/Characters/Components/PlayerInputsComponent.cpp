@@ -61,12 +61,12 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_Crouch, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_CrouchEnded);
 		EIC->BindAction(IA_Sprint, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_SprintStarted);
 		EIC->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_SprintEnded);
-		EIC->BindAction(IA_Throw, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_ThrowTriggered);
-		EIC->BindAction(IA_Interact, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_InteractTriggered);
-		EIC->BindAction(IA_Inventory, ETriggerEvent::Completed, this,
+		EIC->BindAction(IA_Throw, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_ThrowTriggered);
+		EIC->BindAction(IA_Interact, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_InteractTriggered);
+		EIC->BindAction(IA_Inventory, ETriggerEvent::Started, this,
 		                &UPlayerInputsComponent::Input_InventoryTriggered);
-		EIC->BindAction(IA_RMB, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_RMBTriggered);
-		EIC->BindAction(IA_LMB, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_LMBTriggered);
+		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
+		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
 	}
 }
 
