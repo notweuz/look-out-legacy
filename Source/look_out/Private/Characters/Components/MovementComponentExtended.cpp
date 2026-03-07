@@ -5,6 +5,7 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/GrabbingComponent.h"
+#include "Characters/Components/PlayerInputsComponent.h"
 #include "Core/AdvancedGameUserSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // Sets default values for this component's properties
@@ -50,9 +51,10 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 	OwnerCharacter->AddMovementInput(RightDirection, AxisValue);
 }
 
-void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY, const bool bRotateObject)
+void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY)
 {
-	UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings();
+	const bool bRotateObject = OwnerCharacter->PlayerInputsComponent->IsActionHeld(OwnerCharacter->PlayerInputsComponent->IA_Rotate);
+	const UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings();
 	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
 		InputAxisX *= Settings->MouseSensitivity;

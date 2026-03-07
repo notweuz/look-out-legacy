@@ -12,8 +12,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Characters/Components/PlayerInputsComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "Widgets/Gameplay/BasePlayerUI.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -26,6 +26,7 @@ ABaseCharacter::ABaseCharacter()
 	PlayerObjectHintsComponent = CreateDefaultSubobject<UPlayerObjectHintsComponent>(TEXT("PlayerObjectHintsComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
+	PlayerInputsComponent = CreateDefaultSubobject<UPlayerInputsComponent>(TEXT("PlayerInputsComponent"));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -96,6 +97,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PlayerInputsComponent->SetupPlayerInput(PlayerInputComponent);
 }
 
 FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(const float VectorLength) const

@@ -8,6 +8,7 @@
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerInputsComponent;
 class UBasePlayerUI;
 class UPlayerObjectHintsComponent;
 class UInventoryComponent;
@@ -58,6 +59,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float FieldOfView = 90.0f;
 
+	// Components
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UMovementComponentExtended* MovementComponentExtended;
 
@@ -75,4 +78,7 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerUIComponent* PlayerUIComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPlayerInputsComponent* PlayerInputsComponent;
 };

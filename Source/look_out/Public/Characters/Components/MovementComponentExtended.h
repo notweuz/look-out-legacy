@@ -16,7 +16,7 @@ public:
 	// Sets default values for this component's properties
 	UMovementComponentExtended();
 
-protected:
+public:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -27,7 +27,7 @@ protected:
 	virtual void MoveRight(float InputAxis);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void Look(float InputAxisX, float InputAxisY, bool bRotateObject);
+	virtual void Look(float InputAxisX, float InputAxisY);
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void JumpAction();
