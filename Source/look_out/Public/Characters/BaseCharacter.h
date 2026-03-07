@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/PlayerUIComponent.h"
 #include "GameFramework/Character.h"
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
@@ -72,9 +73,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UInventoryComponent* InventoryComponent;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UBasePlayerUI> PlayerUIClass;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Interface")
-	UBasePlayerUI* PlayerUI;
+	UPROPERTY(BlueprintReadOnly, Category="Components")
+	UPlayerUIComponent* PlayerUIComponent;
 };
