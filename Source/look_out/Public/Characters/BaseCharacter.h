@@ -73,6 +73,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UInventoryComponent* InventoryComponent;
 	
-	UPROPERTY(BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerUIComponent* PlayerUIComponent;
 };

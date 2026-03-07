@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UBasePlayerUI> PlayerUIClass;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Interface")
+	UPROPERTY(BlueprintReadOnly, Category="Interface")
 	UBasePlayerUI* PlayerUI;
 
 private:
