@@ -34,10 +34,6 @@ void UPlayerObjectHintsComponent::ScanForObject()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(OwnerCharacter);
 
-#if WITH_EDITOR
-	DrawDebugLine(OwnerCharacter->GetWorld(), Start, End, FColor::Magenta, false, 10.0f);
-#endif
-
 	if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
 	{
 		ProcessNewComponent(nullptr);
