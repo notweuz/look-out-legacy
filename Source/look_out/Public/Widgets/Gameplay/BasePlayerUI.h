@@ -16,6 +16,15 @@ class LOOK_OUT_API UBasePlayerUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerHotbar* Hotbar;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UNamedSlot* SoloInventorySlot;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UNamedSlot* InventorySlot1;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UNamedSlot* InventorySlot2;
 };
