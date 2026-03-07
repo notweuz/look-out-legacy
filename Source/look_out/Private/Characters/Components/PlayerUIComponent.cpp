@@ -70,6 +70,7 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
         }
 
         bIsInventoryWindowOpen = false;
+		PC->SetIgnoreLookInput(false);
     	PC->SetInputMode(FInputModeGameOnly());
     	PC->SetShowMouseCursor(false);
         return;
@@ -116,8 +117,12 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
             SoloInventoryWindow = Window;
         }
     }
-
-	PC->SetInputMode(FInputModeUIOnly());
+	
+	PC->SetIgnoreLookInput(true);
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetHideCursorDuringCapture(false);
+	PC->SetInputMode(InputMode);
 	PC->SetShowMouseCursor(true);
     bIsInventoryWindowOpen = true;
 }
