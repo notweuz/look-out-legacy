@@ -24,5 +24,5 @@ struct LOOK_OUT_API FItem
 	TArray<FItemTag> SavedTags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	UTexture2D* ItemIcon;
+	TSoftObjectPtr<UTexture2D> ItemIcon;
 };

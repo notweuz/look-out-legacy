@@ -19,7 +19,7 @@ void UPlayerInventoryWindowWidget::UpdateInventorySlots(TArray<FItem>& ItemList)
 		UBasePlayerInventorySlot* NewSlot = CreateWidget<UBasePlayerInventorySlot>(this, InventorySlotClass);
 		if (!NewSlot) continue;
 
-		NewSlot->SetSlotImage(ItemList[I].ItemIcon);
+		NewSlot->SetSlotImage(ItemList[I].ItemIcon.Get());
 		NewSlot->InventorySlotIndex = I;
 		InventorySlotsBox->AddChild(NewSlot);
 		InventorySlotWidgets.Add(NewSlot);

@@ -13,7 +13,7 @@ void UBasePlayerHotbar::UpdateHotbarSlots_Implementation(TArray<FItem>& ItemList
 {
 	for (int I = 0; I < 10; I++)
 	{
-		Slots[I]->SetSlotImage(ItemList.IsValidIndex(I) ? ItemList[I].ItemIcon : nullptr);
+		Slots[I]->SetSlotImage(ItemList.IsValidIndex(I) ? ItemList[I].ItemIcon.Get() : nullptr);
 		Slots[I]->InventorySlotIndex = I;
 	}
 }
