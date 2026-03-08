@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/BackgroundBlur.h"
 #include "Data/Storage/Item.h"
 #include "Widgets/Gameplay/BasePlayerInventorySlot.h"
 #include "BasePlayerHotbar.generated.h"
@@ -18,9 +17,6 @@ class LOOK_OUT_API UBasePlayerHotbar : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hotbar Slots")
-	TArray<FItem> Hotbar;
-
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot1;
 
@@ -51,6 +47,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBasePlayerInventorySlot* Slot10;
 
+	UPROPERTY()
+	TArray<UBasePlayerInventorySlot*> Slots;
+	
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Hotbar Slots")

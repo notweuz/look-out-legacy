@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Data/Storage/Item.h"
 #include "BasePlayerInventorySlot.generated.h"
 
 UCLASS()
@@ -15,6 +16,9 @@ class LOOK_OUT_API UBasePlayerInventorySlot : public UUserWidget
 public:
 	UPROPERTY(meta = (BindWidget))
 	UImage* Sprite;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory Slot")
+	int InventorySlotIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot")
 	bool bIsActive = false;

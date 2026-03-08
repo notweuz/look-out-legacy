@@ -6,21 +6,14 @@
 void UBasePlayerHotbar::NativeConstruct()
 {
 	Super::NativeConstruct();
+	Slots = { Slot1, Slot2, Slot3, Slot4, Slot5, Slot6, Slot7, Slot8, Slot9, Slot10 };
 }
 
 void UBasePlayerHotbar::UpdateHotbarSlots_Implementation(TArray<FItem>& ItemList)
 {
-	// some shit code bcz why not
-	Hotbar = ItemList;
-	Slot1->SetSlotImage(ItemList.IsValidIndex(0) ? ItemList[0].ItemIcon.Get() : nullptr);
-	Slot2->SetSlotImage(ItemList.IsValidIndex(1) ? ItemList[1].ItemIcon.Get() : nullptr);
-	Slot3->SetSlotImage(ItemList.IsValidIndex(2) ? ItemList[2].ItemIcon.Get() : nullptr);
-	Slot4->SetSlotImage(ItemList.IsValidIndex(3) ? ItemList[3].ItemIcon.Get() : nullptr);
-	Slot5->SetSlotImage(ItemList.IsValidIndex(4) ? ItemList[4].ItemIcon.Get() : nullptr);
-	Slot6->SetSlotImage(ItemList.IsValidIndex(5) ? ItemList[5].ItemIcon.Get() : nullptr);
-	Slot7->SetSlotImage(ItemList.IsValidIndex(6) ? ItemList[6].ItemIcon.Get() : nullptr);
-	Slot8->SetSlotImage(ItemList.IsValidIndex(7) ? ItemList[7].ItemIcon.Get() : nullptr);
-	Slot9->SetSlotImage(ItemList.IsValidIndex(8) ? ItemList[8].ItemIcon.Get() : nullptr);
-	Slot10->SetSlotImage(ItemList.IsValidIndex(9) ? ItemList[9].ItemIcon.Get() : nullptr);
-	// have a nice day
+	for (int I = 0; I < 10; I++)
+	{
+		Slots[I]->SetSlotImage(ItemList.IsValidIndex(I) ? ItemList[I].ItemIcon : nullptr);
+		Slots[I]->InventorySlotIndex = I;
+	}
 }
