@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StructUtils/InstancedStruct.h"
 #include "ItemTag.generated.h"
 
 UENUM(BlueprintType)
@@ -14,6 +15,7 @@ enum class EStatValueType : uint8
 	Bool,
 	String,
 	Name,
+	Struct,
 };
 
 USTRUCT(BlueprintType)
@@ -22,6 +24,9 @@ struct LOOK_OUT_API FItemTag
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	FString TagName;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	EStatValueType Type = EStatValueType::None;
 
@@ -39,4 +44,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	FName NameValue = NAME_None;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	FInstancedStruct StructValue;
 };

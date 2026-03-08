@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "Constants/ThemeColors.h"
+#include "Libraries/ThemeColors.h"
 
 FLinearColor UThemeColors::SlotBackground()
 {
