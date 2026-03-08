@@ -73,25 +73,30 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 
 bool UPlayerInputsComponent::IsActionHeld(const UInputAction* Action) const
 {
-	if (!OwnerCharacter)
-	{
-		return false;
-	}
+	if (!OwnerCharacter) return false;
 
 	const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
-	if (!PC)
-	{
-		return false;
-	}
+	if (!PC) return false;
 
 	const UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-	if (!Subsystem)
-	{
-		return false;
-	}
+	if (!Subsystem) return false;
 
 	return Subsystem->GetPlayerInput()->GetActionValue(Action).Get<bool>();
+}
+
+bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
+{
+	if (!OwnerCharacter) return false;
+
+	const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
+	if (!PC) return false;
+
+	const UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+	if (!Subsystem) return false;
+
+	return Subsystem->GetPlayerInput()->GetKeyState(Key)->bDown;
 }
 
 void UPlayerInputsComponent::Input_MoveForward(const FInputActionValue& Value)

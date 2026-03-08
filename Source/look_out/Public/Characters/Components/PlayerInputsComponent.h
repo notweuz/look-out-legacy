@@ -28,6 +28,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	void SetupPlayerInput(UInputComponent* PlayerInputComponent);
 	bool IsActionHeld(const UInputAction* Action) const;
+	bool IsButtonHeld(const FKey Key) const;
 
 	// Inputs
 
