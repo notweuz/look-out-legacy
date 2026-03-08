@@ -51,6 +51,9 @@ public:
 	TArray<UBasePlayerInventorySlot*> Slots;
 	
 	virtual void NativeConstruct() override;
+	
+	UFUNCTION(BlueprintCallable, Category = "Hotbar Slots")
+	void SetActiveHotbarSlot(int OldIndex, int NewIndex);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Hotbar Slots")
 	void UpdateHotbarSlots(TArray<FItem>& ItemList);

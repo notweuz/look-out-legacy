@@ -30,3 +30,10 @@ void UBasePlayerInventorySlot::SetActive_Implementation(const bool IsActive)
 	}
 	StateChanged(IsActive);
 }
+
+void UBasePlayerInventorySlot::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	if (!Sprite->GetBrush().GetResourceObject()) Sprite->SetVisibility(ESlateVisibility::Hidden);
+}

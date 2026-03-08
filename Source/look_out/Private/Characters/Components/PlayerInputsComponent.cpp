@@ -67,6 +67,7 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		                &UPlayerInputsComponent::Input_InventoryTriggered);
 		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
 		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
+		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
 	}
 }
 

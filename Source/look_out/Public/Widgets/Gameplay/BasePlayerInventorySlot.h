@@ -31,4 +31,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void StateChanged(bool IsActive);
+	
+	virtual void NativeConstruct() override;
 };

@@ -26,7 +26,8 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 	{
 		return;
 	}
-
+	
+	OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar->SetActiveHotbarSlot(OldItemIndex, CurrentActiveItemIndex);
 	if (Hotbar.IsValidIndex(OldItemIndex) && !Hotbar[OldItemIndex].ItemClass.IsNull())
 	{
 		TArray<USceneComponent*> ChildComponents;
