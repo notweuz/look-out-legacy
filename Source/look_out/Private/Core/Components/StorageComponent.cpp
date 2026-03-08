@@ -116,6 +116,7 @@ void UStorageComponent::AddItem_Implementation(AActor* Actor)
 	NewItem.ItemWeight = ItemWeight;
 	NewItem.Quantity = 1;
 	NewItem.SavedTags = IStoreable::Execute_GetItemTags(Actor);
+	NewItem.ItemIcon = IStoreable::Execute_GetItemIcon(Actor);
 
 	Storage.Add(NewItem);
 	Actor->Destroy();
