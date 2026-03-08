@@ -11,8 +11,8 @@ UCLASS()
 class LOOK_OUT_API ABaseStaticObject : public AActor, public IGrabbable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseStaticObject();
 
@@ -20,11 +20,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
-	
+
 	virtual FText GetGrabWidgetText_Implementation() override;
 };

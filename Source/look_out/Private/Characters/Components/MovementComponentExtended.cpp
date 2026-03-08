@@ -53,9 +53,11 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 
 void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY)
 {
-	const bool bRotateObject = OwnerCharacter->PlayerInputsComponent->IsActionHeld(OwnerCharacter->PlayerInputsComponent->IA_Rotate);
+	const bool bRotateObject = OwnerCharacter->PlayerInputsComponent->IsActionHeld(
+		OwnerCharacter->PlayerInputsComponent->IA_Rotate);
 	const UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings();
-	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject && OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
+	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject &&
+		OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
 		InputAxisX *= Settings->MouseSensitivity;
 		InputAxisY *= Settings->MouseSensitivity;
@@ -81,7 +83,10 @@ void UMovementComponentExtended::DoCrouch(const bool State)
 		{
 			OwnerCharacter->Crouch();
 		}
-		else OwnerCharacter->UnCrouch();
+		else
+		{
+			OwnerCharacter->UnCrouch();
+		}
 	}
 	else
 	{

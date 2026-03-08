@@ -5,7 +5,10 @@
 
 void UBasePlayerInventorySlot::SetSlotImage_Implementation(UTexture2D* Texture)
 {
-	if (!Sprite) return;
+	if (!Sprite)
+	{
+		return;
+	}
 
 	if (Texture)
 	{

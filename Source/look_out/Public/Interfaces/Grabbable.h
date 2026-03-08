@@ -21,10 +21,10 @@ class LOOK_OUT_API IGrabbable
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	EGrabbableObjectType GetGrabbableType();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	FText GetGrabWidgetText();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	void OnMouseScrollInput(float MouseInput);
 };

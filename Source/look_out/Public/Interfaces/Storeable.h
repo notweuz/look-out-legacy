@@ -20,19 +20,20 @@ class UStoreable : public UInterface
 class LOOK_OUT_API IStoreable
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
 	FText GetStoreWidgetText();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
 	int32 GetItemWeight();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
 	TArray<FItemTag> GetItemTags();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
-    void ApplyItemTags(const TArray<FItemTag>& Tags);
-	
+	void ApplyItemTags(const TArray<FItemTag>& Tags);
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storing")
 	UTexture2D* GetItemIcon();
 };

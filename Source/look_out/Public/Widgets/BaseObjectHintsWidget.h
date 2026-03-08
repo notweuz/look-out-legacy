@@ -11,20 +11,20 @@ UCLASS()
 class LOOK_OUT_API UBaseObjectHintsWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DisplayName;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Description;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractText;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* GrabText;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* StoreText;
 

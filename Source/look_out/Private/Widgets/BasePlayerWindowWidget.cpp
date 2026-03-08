@@ -7,13 +7,13 @@
 
 void UBasePlayerWindowWidget::OnCloseClicked_Implementation()
 {
-	RemoveFromParent();	
+	RemoveFromParent();
 }
 
 void UBasePlayerWindowWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	if (CloseButton)
 	{
 		CloseButton->OnClicked.Clear();

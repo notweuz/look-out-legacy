@@ -19,6 +19,7 @@ class USaveable : public UInterface
 class LOOK_OUT_API ISaveable
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveSystem")
 	void OnSave(TArray<uint8>& OutData);

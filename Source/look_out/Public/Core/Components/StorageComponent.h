@@ -8,18 +8,18 @@
 #include "StorageComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UStorageComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UStorageComponent();
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage", SaveGame)
 	TArray<FItem> Storage;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage")
 	int32 MaxStorageWeight;
 
@@ -27,13 +27,14 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	int32 GetRemainingStorage();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	bool TransferItem(UStorageComponent* OldStorage, int32 ItemIndex);
 
@@ -42,13 +43,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	void AddItem(AActor* Actor);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	AActor* RetrieveItem(int32 Index, FTransform SpawnTransform);
-	
+
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	static UStorageComponent* GetStorageComponentFromActor(AActor* Actor);
-	
+
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	UStorageComponent* GetStorageLink();
 };

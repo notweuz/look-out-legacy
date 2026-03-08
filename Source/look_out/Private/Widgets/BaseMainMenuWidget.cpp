@@ -8,20 +8,22 @@
 void UBaseMainMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	FString VersionString;
-	
+
 	GConfig->GetString(
-	TEXT("/Script/EngineSettings.GeneralProjectSettings"),
-	TEXT("ProjectVersion"),
-	VersionString,
-	GGameIni
+		TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+		TEXT("ProjectVersion"),
+		VersionString,
+		GGameIni
 	);
-	
+
 	Version->SetText(FText::FromString(VersionString));
-	
+
 	if (ExitButton)
+	{
 		ExitButton->OnClicked.AddDynamic(this, &UBaseMainMenuWidget::OnExitClicked);
+	}
 }
 
 void UBaseMainMenuWidget::OnExitClicked()

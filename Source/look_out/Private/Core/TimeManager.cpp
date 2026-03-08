@@ -14,13 +14,13 @@ ATimeManager::ATimeManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	DirectionalLight = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("DirectionalLight"));
 	ExponentialHeightFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("ExponentialHeightFog"));
 	SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
 	SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
 	VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
-	
+
 	SkyLight->Intensity = 0.025;
 }
 
@@ -29,7 +29,7 @@ void ATimeManager::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Log, TEXT("Time Manager has been started"))
-	
+
 	PerformTimeUpdate(0);
 }
 
@@ -37,7 +37,7 @@ void ATimeManager::BeginPlay()
 void ATimeManager::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	PerformTimeUpdate(DeltaTime);
 }
 
@@ -57,18 +57,19 @@ void ATimeManager::PerformTimeUpdate(const float DeltaTime)
 				TriggerMinutePassed(Day, Time);
 			}
 		}
-		
+
 		if (Time >= DayLength)
 		{
 			Time = 0;
 			Day++;
-		} else
+		}
+		else
 		{
 			const float DayPercent = Time / DayLength;
 			const float SunYaw = DayPercent * 360;
 			const float SunPitch = FMath::Cos(FMath::DegreesToRadians(SunYaw - 180)) * -55;
 			const FRotator SunRotation = FRotator(SunPitch, SunYaw, 0.0f);
-			
+
 			DirectionalLight->SetRelativeRotation(SunRotation);
 		}
 	}

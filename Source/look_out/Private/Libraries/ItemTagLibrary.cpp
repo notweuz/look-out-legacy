@@ -132,14 +132,17 @@ FString UItemTagLibrary::ItemTagToString(const FItemTag& Tag)
 {
 	switch (Tag.Type)
 	{
-	case EStatValueType::Int:    return FString::Printf(TEXT("%s = %d"),     *Tag.TagName, Tag.IntValue);
-	case EStatValueType::Float:  return FString::Printf(TEXT("%s = %.2f"),   *Tag.TagName, Tag.FloatValue);
-	case EStatValueType::Bool:   return FString::Printf(TEXT("%s = %s"),     *Tag.TagName, Tag.BoolValue ? TEXT("true") : TEXT("false"));
+	case EStatValueType::Int: return FString::Printf(TEXT("%s = %d"), *Tag.TagName, Tag.IntValue);
+	case EStatValueType::Float: return FString::Printf(TEXT("%s = %.2f"), *Tag.TagName, Tag.FloatValue);
+	case EStatValueType::Bool: return FString::Printf(TEXT("%s = %s"), *Tag.TagName,
+	                                                  Tag.BoolValue ? TEXT("true") : TEXT("false"));
 	case EStatValueType::String: return FString::Printf(TEXT("%s = \"%s\""), *Tag.TagName, *Tag.StringValue);
-	case EStatValueType::Name:   return FString::Printf(TEXT("%s = %s"),     *Tag.TagName, *Tag.NameValue.ToString());
+	case EStatValueType::Name: return FString::Printf(TEXT("%s = %s"), *Tag.TagName, *Tag.NameValue.ToString());
 	case EStatValueType::Struct: return FString::Printf(TEXT("%s = [Struct: %s]"), *Tag.TagName,
-		Tag.StructValue.IsValid() ? *Tag.StructValue.GetScriptStruct()->GetName() : TEXT("None"));
-	default:                     return FString::Printf(TEXT("%s = None"),   *Tag.TagName);
+	                                                    Tag.StructValue.IsValid()
+		                                                    ? *Tag.StructValue.GetScriptStruct()->GetName()
+		                                                    : TEXT("None"));
+	default: return FString::Printf(TEXT("%s = None"), *Tag.TagName);
 	}
 }
 

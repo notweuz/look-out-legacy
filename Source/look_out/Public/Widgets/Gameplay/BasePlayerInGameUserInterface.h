@@ -13,5 +13,4 @@ UCLASS()
 class LOOK_OUT_API UBasePlayerInGameUserInterface : public UUserWidget
 {
 	GENERATED_BODY()
-	
 };

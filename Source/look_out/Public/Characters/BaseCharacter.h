@@ -49,7 +49,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPhysicsHandleComponent* PhysicsHandle;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* HandSceneComponent;
 
@@ -60,7 +60,7 @@ public:
 	float FieldOfView = 90.0f;
 
 	// Components
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UMovementComponentExtended* MovementComponentExtended;
 
@@ -69,16 +69,16 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerSideInteractionComponent* PlayerInteractionComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UInventoryComponent* InventoryComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerUIComponent* PlayerUIComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerInputsComponent* PlayerInputsComponent;
 };

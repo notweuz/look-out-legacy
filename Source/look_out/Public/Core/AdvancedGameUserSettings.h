@@ -13,13 +13,13 @@ UCLASS()
 class LOOK_OUT_API UAdvancedGameUserSettings : public UGameUserSettings
 {
 	GENERATED_BODY()
-	
+
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Settings")
 	static UAdvancedGameUserSettings* GetAdvancedGameUserSettings();
 
 	UPROPERTY(Config, BlueprintReadWrite, Category = "Controls")
 	float MouseSensitivity = 1.0f;
-	
+
 	virtual void ApplySettings(bool bCheckForCommandLineOverrides) override;
 };

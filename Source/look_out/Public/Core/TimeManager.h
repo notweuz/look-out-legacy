@@ -37,13 +37,13 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	UPROPERTY(BlueprintAssignable, Category="Events")
 	FCallMinutePassedSignature OnCallMinutePassed;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Events")
 	void TriggerMinutePassed(int Day, float Time) const;
-	
+
 	void PerformTimeUpdate(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
@@ -57,20 +57,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
 	float DayLength = 3600;
-	
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UDirectionalLightComponent* DirectionalLight;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UExponentialHeightFogComponent* ExponentialHeightFog;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USkyAtmosphereComponent* SkyAtmosphere;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	USkyLightComponent* SkyLight;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UVolumetricCloudComponent* VolumetricCloud;
 };

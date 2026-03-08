@@ -13,10 +13,10 @@ struct FTimeFormattedResult
 
 	UPROPERTY(BlueprintReadOnly)
 	int Hour = 0;
-	
+
 	UPROPERTY(BlueprintReadOnly)
 	int Minute = 0;
-	
+
 	UPROPERTY(BlueprintReadOnly)
 	int Second = 0;
 };

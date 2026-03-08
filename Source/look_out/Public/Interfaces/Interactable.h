@@ -20,7 +20,7 @@ class LOOK_OUT_API IInteractable
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	FText GetInteractWidgetText();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
 	void Interact(AActor* Interactor);
 };

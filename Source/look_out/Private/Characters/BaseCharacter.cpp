@@ -22,8 +22,10 @@ ABaseCharacter::ABaseCharacter()
 	// Components initialization
 	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
 	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
-	PlayerInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(TEXT("PlayerInteractionComponent"));
-	PlayerObjectHintsComponent = CreateDefaultSubobject<UPlayerObjectHintsComponent>(TEXT("PlayerObjectHintsComponent"));
+	PlayerInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(
+		TEXT("PlayerInteractionComponent"));
+	PlayerObjectHintsComponent = CreateDefaultSubobject<
+		UPlayerObjectHintsComponent>(TEXT("PlayerObjectHintsComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
 	PlayerInputsComponent = CreateDefaultSubobject<UPlayerInputsComponent>(TEXT("PlayerInputsComponent"));

@@ -72,14 +72,23 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 
 bool UPlayerInputsComponent::IsActionHeld(const UInputAction* Action) const
 {
-	if (!OwnerCharacter) return false;
+	if (!OwnerCharacter)
+	{
+		return false;
+	}
 
 	const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
-	if (!PC) return false;
+	if (!PC)
+	{
+		return false;
+	}
 
 	const UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-	if (!Subsystem) return false;
+	if (!Subsystem)
+	{
+		return false;
+	}
 
 	return Subsystem->GetPlayerInput()->GetActionValue(Action).Get<bool>();
 }
@@ -156,7 +165,8 @@ void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
 		OwnerCharacter->GrabbingComponent->ChangeGrabDistance(Delta);
-	} else
+	}
+	else
 	{
 		OwnerCharacter->InventoryComponent->ScrollActiveItem(Delta);
 	}

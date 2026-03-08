@@ -29,8 +29,14 @@ void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick T
 
 EGrabbableObjectType UGrabbingComponent::GetGrabbedObjectType() const
 {
-	if (StaticObject) return Static;
-	if (HeavyObject) return Heavyweight;
+	if (StaticObject)
+	{
+		return Static;
+	}
+	if (HeavyObject)
+	{
+		return Heavyweight;
+	}
 
 	if (OwnerCharacter && OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
 	{
@@ -82,7 +88,7 @@ void UGrabbingComponent::GrabObject()
 #endif
 		return;
 	}
-	
+
 #if WITH_EDITOR
 	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Blue, false, 2.0f);
 	UE_LOG(LogTemp, Log, TEXT("GrabbingComponent hit grabbable actor: %s"), *HitActor->GetName())
@@ -231,7 +237,10 @@ void UGrabbingComponent::ProcessStaticGrabbing() const
 void UGrabbingComponent::ThrowObject()
 {
 	const EGrabbableObjectType Type = GetGrabbedObjectType();
-	if (Type != Lightweight) return;
+	if (Type != Lightweight)
+	{
+		return;
+	}
 
 	UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 	const FVector ImpulseDirection = OwnerCharacter->Camera->GetForwardVector();
@@ -246,7 +255,10 @@ void UGrabbingComponent::ThrowObject()
 
 void UGrabbingComponent::ChangeGrabDistance(const float Delta)
 {
-	if (FMath::IsNearlyZero(Delta)) return;
+	if (FMath::IsNearlyZero(Delta))
+	{
+		return;
+	}
 
 	const EGrabbableObjectType Type = GetGrabbedObjectType();
 
@@ -257,7 +269,10 @@ void UGrabbingComponent::ChangeGrabDistance(const float Delta)
 	}
 
 	UPrimitiveComponent* Target = Type == Static ? StaticObject : HeavyObject;
-	if (!Target) return;
+	if (!Target)
+	{
+		return;
+	}
 
 	if (Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
@@ -274,7 +289,10 @@ void UGrabbingComponent::ChangeGrabDistance(const float Delta)
 
 void UGrabbingComponent::RotateLightweightObject(const float AxisX, const float AxisY)
 {
-	if (!IsGrabbingObject) return;
+	if (!IsGrabbingObject)
+	{
+		return;
+	}
 
 	constexpr float RotationSpeed = 1.5f;
 	GrabRotation.Yaw += AxisX * RotationSpeed;

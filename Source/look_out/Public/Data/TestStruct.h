@@ -13,5 +13,4 @@ UCLASS()
 class LOOK_OUT_API UTestStruct : public UStruct
 {
 	GENERATED_BODY()
-	
 };

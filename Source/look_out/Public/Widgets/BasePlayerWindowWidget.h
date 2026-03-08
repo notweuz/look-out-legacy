@@ -16,19 +16,19 @@ UCLASS()
 class LOOK_OUT_API UBasePlayerWindowWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* CloseButton;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TitleTextBlock;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UNamedSlot* BodySlot;
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Window")
 	void OnCloseClicked();
-	
+
 	virtual void NativeConstruct() override;
 };

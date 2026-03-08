@@ -11,13 +11,19 @@ void UPlayerInventoryWindowWidget::NativeConstruct()
 void UPlayerInventoryWindowWidget::UpdateInventorySlots(TArray<FItem>& ItemList)
 {
 	ClearInventorySlots();
-	
+
 	for (const FItem& Item : ItemList)
 	{
-		if (!InventorySlotClass) continue;
+		if (!InventorySlotClass)
+		{
+			continue;
+		}
 
 		UBasePlayerInventorySlot* NewSlot = CreateWidget<UBasePlayerInventorySlot>(this, InventorySlotClass);
-		if (!NewSlot) continue;
+		if (!NewSlot)
+		{
+			continue;
+		}
 
 		NewSlot->SetSlotImage(Item.ItemIcon.Get());
 		InventorySlotsBox->AddChild(NewSlot);
@@ -36,5 +42,3 @@ void UPlayerInventoryWindowWidget::ClearInventorySlots()
 	}
 	InventorySlotWidgets.Empty();
 }
-
-

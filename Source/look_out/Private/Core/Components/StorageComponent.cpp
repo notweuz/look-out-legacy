@@ -140,7 +140,7 @@ bool UStorageComponent::TransferItem_Implementation(UStorageComponent* OldStorag
 	{
 		return false;
 	}
-	
+
 	if (!OldStorage->Storage.IsValidIndex(ItemIndex))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Invalid index %d in source storage"), ItemIndex);

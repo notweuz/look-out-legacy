@@ -8,12 +8,12 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMinutePassedEvent, int32, Day, float, Time);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UTimeIntegrationComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UTimeIntegrationComponent();
 
 	UPROPERTY(BlueprintAssignable, Category = "Time Events")
@@ -21,17 +21,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Time")
 	ATimeManager* TimeManager;
-	
+
 	UFUNCTION(BlueprintPure, Category = "Time Formatting")
 	FTimeFormattedResult GetTimeFormatted() const;
 
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
 	UFUNCTION()
 	void OnMinutePassedTriggered(int32 Day, float Time);
-}; 
+};

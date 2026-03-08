@@ -78,7 +78,7 @@ private:
 	ABaseCharacter* OwnerCharacter;
 
 	// Input Hooks
-	
+
 	void Input_MoveForward(const FInputActionValue& Value);
 	void Input_MoveSideways(const FInputActionValue& Value);
 	void Input_Look(const FInputActionValue& Value);

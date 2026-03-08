@@ -9,7 +9,10 @@
 
 void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) const
 {
-	if (!Component) return;
+	if (!Component)
+	{
+		return;
+	}
 
 	UObject* Target = Component;
 	if (!Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()) &&
@@ -20,7 +23,10 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 		Target = Component->GetOwner();
 	}
 
-	if (!Target) return;
+	if (!Target)
+	{
+		return;
+	}
 
 	if (Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
@@ -28,19 +34,19 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 		GrabText->SetText(GrabTextValue.IsEmpty() ? FText::FromString(TEXT("LMB - Grab")) : GrabTextValue);
 		GrabText->SetVisibility(ESlateVisibility::Visible);
 	}
-	
+
 	if (Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
 		InteractText->SetText(FText::FromString(TEXT("E - Interact")));
 		InteractText->SetVisibility(ESlateVisibility::Visible);
 	}
-	
+
 	if (Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
 	{
 		StoreText->SetText(FText::FromString(TEXT("RMB - Collect")));
 		StoreText->SetVisibility(ESlateVisibility::Visible);
 	}
-	
+
 	if (Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
 	{
 		if (AActor* OwnerActor = Cast<AActor>(Target))
@@ -49,4 +55,3 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 		}
 	}
 }
-

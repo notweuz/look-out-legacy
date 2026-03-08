@@ -10,20 +10,19 @@ USTRUCT(BlueprintType)
 struct LOOK_OUT_API FItem
 {
 	GENERATED_BODY()
-	
-public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TSoftClassPtr<AActor> ItemClass;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	int32 Quantity = 1;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	int32 ItemWeight = 0;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TArray<FItemTag> SavedTags;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TSoftObjectPtr<UTexture2D> ItemIcon;
 };

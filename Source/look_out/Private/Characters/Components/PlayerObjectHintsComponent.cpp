@@ -25,7 +25,10 @@ void UPlayerObjectHintsComponent::BeginPlay()
 
 void UPlayerObjectHintsComponent::ScanForObject()
 {
-	if (!OwnerCharacter) return;
+	if (!OwnerCharacter)
+	{
+		return;
+	}
 
 	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(
 		OwnerCharacter->PlayerInteractionComponent->InteractDistance);
@@ -119,11 +122,17 @@ void UPlayerObjectHintsComponent::DestroyHintsWidget()
 
 void UPlayerObjectHintsComponent::UpdateWidgetHints(UObject* Component) const
 {
-	if (!CurrentWidgetComponent || !Component) return;
+	if (!CurrentWidgetComponent || !Component)
+	{
+		return;
+	}
 
 	const UBaseObjectHintsWidget* Widget = Cast<UBaseObjectHintsWidget>(CurrentWidgetComponent->GetWidget());
-	if (!Widget) return;
-	
+	if (!Widget)
+	{
+		return;
+	}
+
 	Widget->UpdateFromComponent(Cast<UActorComponent>(Component));
 }
 
