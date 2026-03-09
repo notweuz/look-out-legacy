@@ -71,7 +71,6 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 
 	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || Hotbar[CurrentActiveItemIndex].ItemClass.IsNull())
 	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: No item at new hotbar index %d"), CurrentActiveItemIndex);
 		return;
 	}
 
