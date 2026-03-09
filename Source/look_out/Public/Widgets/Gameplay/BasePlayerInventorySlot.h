@@ -22,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot")
 	bool bIsActive = false;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Inventory Slot")
+	bool bIsHotbar = false;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetSlotImage(UTexture2D* Texture);
