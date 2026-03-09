@@ -117,42 +117,40 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 		return;
 	}
 
-	if (OldItemIndex == CurrentActiveItemIndex)
+	if (OldItemIndex != CurrentActiveItemIndex)
 	{
-		return;
+		OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar->SetActiveHotbarSlot(OldItemIndex, CurrentActiveItemIndex);
 	}
 
-	OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar->SetActiveHotbarSlot(OldItemIndex, CurrentActiveItemIndex);
-	if (Hotbar.IsValidIndex(OldItemIndex) && !Hotbar[OldItemIndex].ItemClass.IsNull())
+	TArray<USceneComponent*> ChildComponents;
+	OwnerCharacter->HandSceneComponent->GetChildrenComponents(false, ChildComponents);
+
+	for (USceneComponent* ChildComp : ChildComponents)
 	{
-		TArray<USceneComponent*> ChildComponents;
-		OwnerCharacter->HandSceneComponent->GetChildrenComponents(false, ChildComponents);
-
-		for (USceneComponent* ChildComp : ChildComponents)
+		if (!ChildComp)
 		{
-			if (!ChildComp)
-			{
-				continue;
-			}
-
-			AActor* AttachedActor = ChildComp->GetOwner();
-			if (!AttachedActor || AttachedActor == OwnerCharacter)
-			{
-				continue;
-			}
-
-			if (AttachedActor->Implements<UStoreable>())
-			{
-				Hotbar[OldItemIndex].SavedTags = IStoreable::Execute_GetItemTags(AttachedActor);
-				UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
-			}
-
-			AttachedActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-			AttachedActor->Destroy();
-
-			UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Removed hand item from hotbar index %d"), OldItemIndex);
-			break;
+			continue;
 		}
+
+		AActor* AttachedActor = ChildComp->GetOwner();
+		if (!AttachedActor || AttachedActor == OwnerCharacter)
+		{
+			continue;
+		}
+
+		if (OldItemIndex != CurrentActiveItemIndex &&
+		    Hotbar.IsValidIndex(OldItemIndex) &&
+		    !Hotbar[OldItemIndex].ItemClass.IsNull() &&
+		    AttachedActor->Implements<UStoreable>())
+		{
+			Hotbar[OldItemIndex].SavedTags = IStoreable::Execute_GetItemTags(AttachedActor);
+			UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
+		}
+
+		AttachedActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		AttachedActor->Destroy();
+
+		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Removed hand item"));
 	}
 
 	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || Hotbar[CurrentActiveItemIndex].ItemClass.IsNull())
@@ -243,6 +241,9 @@ void UInventoryComponent::DropHotbarItem_Implementation()
 	IStoreable::Execute_ApplyItemTags(SpawnedActor, Item.SavedTags);
 	Hotbar[CurrentActiveItemIndex] = FItem();
 	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: dropped item from hotbar index %d"), CurrentActiveItemIndex);
+
+	UpdateHandItem(CurrentActiveItemIndex);
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
 }
 
 void UInventoryComponent::CollectItem_Implementation()

@@ -25,10 +25,6 @@ void UBasePlayerInventorySlot::SetSlotImage_Implementation(UTexture2D* Texture)
 void UBasePlayerInventorySlot::SetActive_Implementation(const bool IsActive)
 {
 	bIsActive = IsActive;
-	if (!bIsActive)
-	{
-		Sprite->SetVisibility(ESlateVisibility::Hidden);
-	}
 	StateChanged(IsActive);
 }
 
