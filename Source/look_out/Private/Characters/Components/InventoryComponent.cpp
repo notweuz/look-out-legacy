@@ -194,7 +194,7 @@ void UInventoryComponent::ScrollActiveItem_Implementation(const float Delta)
 		return;
 	}
 
-	const int32 DeltaInt = FMath::RoundToInt(Delta);
+	const int32 DeltaInt = FMath::RoundToInt(Delta * -1);
 	if (DeltaInt == 0)
 	{
 		return;
