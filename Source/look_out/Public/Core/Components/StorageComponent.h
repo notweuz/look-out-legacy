@@ -23,6 +23,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage")
 	int32 MaxStorageWeight;
 
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	int64 GetCurrentWeight() const;
+
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	bool CanAddItem(const FItem& Item) const;
+
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	bool CanSwapItems(const FItem& Incoming, const FItem& Outgoing) const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -33,23 +42,17 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
-	int32 GetRemainingStorage();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
-	bool TransferItem(UStorageComponent* OldStorage, int32 ItemIndex);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	FItem RemoveItem(int32 Index);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	void AddItem(AActor* Actor);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
-	AActor* RetrieveItem(int32 Index, FTransform SpawnTransform);
 
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	static UStorageComponent* GetStorageComponentFromActor(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	UStorageComponent* GetStorageLink();
+
+protected:
+	static int64 GetItemTotalWeight(const FItem& Item);
 };

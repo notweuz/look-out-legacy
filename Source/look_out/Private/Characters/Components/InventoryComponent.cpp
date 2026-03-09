@@ -7,18 +7,6 @@
 #include "Characters/Components/GrabbingComponent.h"
 #include "Interfaces/Storeable.h"
 
-int64 UInventoryComponent::GetItemTotalWeight(const FItem& Item)
-{
-	if (Item.ItemClass.IsNull())
-	{
-		return 0;
-	}
-
-	const int64 PerItem = FMath::Max<int64>(0, Item.ItemWeight);
-	const int64 Qty = FMath::Max<int64>(0, Item.Quantity);
-	return PerItem * Qty;
-}
-
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -56,10 +44,9 @@ void UInventoryComponent::OnInventoryWindowClicked()
 		return;
 	}
 
-	if (const int64 IncomingWeight = GetItemTotalWeight(TempItem); IncomingWeight > 0 && static_cast<int64>(GetRemainingStorage()) < IncomingWeight)
+	if (!CanAddItem(TempItem))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop (need=%lld, remaining=%d)"),
-		       IncomingWeight, GetRemainingStorage());
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop to storage"));
 		// TODO: UI notification
 		return;
 	}
@@ -67,7 +54,7 @@ void UInventoryComponent::OnInventoryWindowClicked()
 	Storage.Add(TempItem);
 	TempItem = FItem();
 
-	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+	UpdateInventoryUI();
 }
 
 void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot)
@@ -77,32 +64,7 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 		return;
 	}
 
-	const int32 SlotIndex = ClickedSlot->InventorySlotIndex;
-	UE_LOG(LogTemp, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, ClickedSlot->bIsHotbar ? 1 : 0);
-
-	FItem* SlotItemPtr;
-
-	if (ClickedSlot->bIsHotbar)
-	{
-		if (!Hotbar.IsValidIndex(SlotIndex))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid hotbar index %d"), SlotIndex);
-			return;
-		}
-
-		SlotItemPtr = &Hotbar[SlotIndex];
-	}
-	else
-	{
-		if (!Storage.IsValidIndex(SlotIndex))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
-			return;
-		}
-
-		SlotItemPtr = &Storage[SlotIndex];
-	}
-
+	FItem* SlotItemPtr = GetItemForSlot(ClickedSlot);
 	if (!SlotItemPtr)
 	{
 		return;
@@ -115,34 +77,70 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 		return;
 	}
 
-	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull())
+	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
 	{
-		const int64 IncomingWeight = GetItemTotalWeight(TempItem);
-		const int64 OutgoingWeight = GetItemTotalWeight(SlotItem);
-		const int64 NetIncrease = IncomingWeight - OutgoingWeight;
-
-		if (NetIncrease > 0 && static_cast<int64>(GetRemainingStorage()) < NetIncrease)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap (need=%lld, remaining=%d)"),
-			       NetIncrease, GetRemainingStorage());
-			// TODO: UI notification
-			return;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
+		// TODO: UI notification
+		return;
 	}
 
 	Swap(TempItem, SlotItem);
 
 	if (!ClickedSlot->bIsHotbar && SlotItem.ItemClass.IsNull())
 	{
-		Storage.RemoveAt(SlotIndex);
+		const int32 SlotIndex = ClickedSlot->InventorySlotIndex;
+		if (Storage.IsValidIndex(SlotIndex))
+		{
+			Storage.RemoveAt(SlotIndex);
+		}
 	}
 
-	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+	UpdateInventoryUI();
 
-	if (ClickedSlot->bIsHotbar && SlotIndex == CurrentActiveItemIndex)
+	if (ClickedSlot->bIsHotbar && ClickedSlot->InventorySlotIndex == CurrentActiveItemIndex)
 	{
 		UpdateHandItem(CurrentActiveItemIndex);
 	}
+}
+
+FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
+{
+	if (!Slot)
+	{
+		return nullptr;
+	}
+
+	const int32 SlotIndex = Slot->InventorySlotIndex;
+	UE_LOG(LogTemp, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, Slot->bIsHotbar ? 1 : 0);
+
+	if (Slot->bIsHotbar)
+	{
+		if (!Hotbar.IsValidIndex(SlotIndex))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid hotbar index %d"), SlotIndex);
+			return nullptr;
+		}
+
+		return &Hotbar[SlotIndex];
+	}
+
+	if (!Storage.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
+		return nullptr;
+	}
+
+	return &Storage[SlotIndex];
+}
+
+void UInventoryComponent::UpdateInventoryUI() const
+{
+	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI)
+	{
+		return;
+	}
+
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
 }
 
 void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
