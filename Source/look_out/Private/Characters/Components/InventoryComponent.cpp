@@ -295,6 +295,13 @@ void UInventoryComponent::InteractWithItemInHand()
 	       *ItemInHandActor->GetName());
 
 	IInteractable::Execute_Interact(ItemInHandActor, OwnerCharacter);
+
+	if (Hotbar.IsValidIndex(CurrentActiveItemIndex) &&
+	    !Hotbar[CurrentActiveItemIndex].ItemClass.IsNull() &&
+	    ItemInHandActor->Implements<UStoreable>())
+	{
+		Hotbar[CurrentActiveItemIndex].SavedTags = IStoreable::Execute_GetItemTags(ItemInHandActor);
+	}
 }
 
 bool UInventoryComponent::HasItemInHand() const
