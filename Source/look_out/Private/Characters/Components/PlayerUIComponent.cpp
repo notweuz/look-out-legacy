@@ -79,6 +79,7 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 		PC->SetIgnoreLookInput(false);
 		PC->SetInputMode(FInputModeGameOnly());
 		PC->SetShowMouseCursor(false);
+		OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened = false;
 		return;
 	}
 
@@ -135,5 +136,6 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 	InputMode.SetHideCursorDuringCapture(false);
 	PC->SetInputMode(InputMode);
 	PC->SetShowMouseCursor(true);
+	OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened = true;
 	bIsInventoryWindowOpen = true;
 }

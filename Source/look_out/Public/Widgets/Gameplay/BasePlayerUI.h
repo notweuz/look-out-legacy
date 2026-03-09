@@ -27,4 +27,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UNamedSlot* InventorySlot2;
+	
+	UPROPERTY(BlueprintReadWrite, Category="UI")
+	bool bIsAnyInterfaceOpened = false;
 };

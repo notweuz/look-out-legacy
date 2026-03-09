@@ -99,6 +99,11 @@ bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 	return Subsystem->GetPlayerInput()->GetKeyState(Key)->bDown;
 }
 
+bool UPlayerInputsComponent::IsBlockedByOpenedUI() const
+{
+	return OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened;
+}
+
 void UPlayerInputsComponent::Input_MoveForward(const FInputActionValue& Value)
 {
 	OwnerCharacter->MovementComponentExtended->MoveForward(Value.Get<float>());
@@ -117,36 +122,43 @@ void UPlayerInputsComponent::Input_Look(const FInputActionValue& Value)
 
 void UPlayerInputsComponent::Input_JumpStarted()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->MovementComponentExtended->JumpAction();
 }
 
 void UPlayerInputsComponent::Input_CrouchStarted()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->MovementComponentExtended->DoCrouch(true);
 }
 
 void UPlayerInputsComponent::Input_CrouchEnded()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->MovementComponentExtended->DoCrouch(false);
 }
 
 void UPlayerInputsComponent::Input_SprintStarted()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->MovementComponentExtended->ToggleSprint(true);
 }
 
 void UPlayerInputsComponent::Input_SprintEnded()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
 }
 
 void UPlayerInputsComponent::Input_ThrowTriggered()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->GrabbingComponent->ThrowObject();
 }
 
 void UPlayerInputsComponent::Input_InteractTriggered()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->PlayerInteractionComponent->Interact();
 }
 
@@ -157,16 +169,19 @@ void UPlayerInputsComponent::Input_InventoryTriggered()
 
 void UPlayerInputsComponent::Input_RMBTriggered()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->InventoryComponent->CollectItem();
 }
 
 void UPlayerInputsComponent::Input_LMBTriggered()
 {
+	if (IsBlockedByOpenedUI()) return;
 	OwnerCharacter->GrabbingComponent->ToggleGrab(!OwnerCharacter->GrabbingComponent->IsGrabbingObject);
 }
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 {
+	if (IsBlockedByOpenedUI()) return;
 	const float Delta = Value.Get<float>();
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
