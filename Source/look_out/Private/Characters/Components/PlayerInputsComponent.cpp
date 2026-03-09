@@ -69,6 +69,7 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
 		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
 		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
+		EIC->BindAction(IA_Drop, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_DropTriggered);
 	}
 }
 
@@ -207,5 +208,18 @@ void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 	else
 	{
 		OwnerCharacter->InventoryComponent->ScrollActiveItem(Delta);
+	}
+}
+
+void UPlayerInputsComponent::Input_DropTriggered()
+{
+	if (IsBlockedByOpenedUI()) return;
+
+	if (OwnerCharacter && OwnerCharacter->InventoryComponent)
+	{
+		if (OwnerCharacter->InventoryComponent->HasItemInHand())
+		{
+			OwnerCharacter->InventoryComponent->DropHotbarItem();
+		}
 	}
 }
