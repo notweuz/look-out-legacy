@@ -58,6 +58,8 @@ public:
 private:
 	UFUNCTION()
 	void ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot);
+
+	static int64 GetItemTotalWeight(const FItem& Item);
 	
 protected:
 	UPROPERTY()

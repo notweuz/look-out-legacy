@@ -7,6 +7,18 @@
 #include "Characters/Components/GrabbingComponent.h"
 #include "Interfaces/Storeable.h"
 
+int64 UInventoryComponent::GetItemTotalWeight(const FItem& Item)
+{
+	if (Item.ItemClass.IsNull())
+	{
+		return 0;
+	}
+
+	const int64 PerItem = FMath::Max<int64>(0, Item.ItemWeight);
+	const int64 Qty = FMath::Max<int64>(0, Item.Quantity);
+	return PerItem * Qty;
+}
+
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -41,6 +53,14 @@ void UInventoryComponent::OnInventoryWindowClicked()
 
 	if (TempItem.ItemClass.IsNull())
 	{
+		return;
+	}
+
+	if (const int64 IncomingWeight = GetItemTotalWeight(TempItem); IncomingWeight > 0 && static_cast<int64>(GetRemainingStorage()) < IncomingWeight)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop (need=%lld, remaining=%d)"),
+		       IncomingWeight, GetRemainingStorage());
+		// TODO: UI notification
 		return;
 	}
 
@@ -93,6 +113,21 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 	if (TempItem.ItemClass.IsNull() && SlotItem.ItemClass.IsNull())
 	{
 		return;
+	}
+
+	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull())
+	{
+		const int64 IncomingWeight = GetItemTotalWeight(TempItem);
+		const int64 OutgoingWeight = GetItemTotalWeight(SlotItem);
+		const int64 NetIncrease = IncomingWeight - OutgoingWeight;
+
+		if (NetIncrease > 0 && static_cast<int64>(GetRemainingStorage()) < NetIncrease)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap (need=%lld, remaining=%d)"),
+			       NetIncrease, GetRemainingStorage());
+			// TODO: UI notification
+			return;
+		}
 	}
 
 	Swap(TempItem, SlotItem);
