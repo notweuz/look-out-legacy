@@ -163,6 +163,7 @@ void UInventoryComponent::CollectItem_Implementation()
 {
 	if (!OwnerCharacter)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Can't collect item, OwnerCharacter is null for some reasons"))
 		return;
 	}
 

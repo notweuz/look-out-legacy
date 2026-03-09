@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "Hotbar/BasePlayerHotbar.h"
 #include "BasePlayerUI.generated.h"
 
@@ -28,6 +29,18 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UNamedSlot* InventorySlot2;
 	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* FloatingWidgetsCanvasPanel;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* TempItemSpriteImage;
+	
 	UPROPERTY(BlueprintReadWrite, Category="UI")
 	bool bIsAnyInterfaceOpened = false;
+	
+	UFUNCTION(BlueprintCallable, Category="UI")
+	void UpdateTempItemSpriteImage();
+	
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

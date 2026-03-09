@@ -35,7 +35,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory", SaveGame)
 	FItem SecondHand;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory", SaveGame)
+	FItem TempItem;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory", SaveGame)
 	int HotbarSize = 10;
 
