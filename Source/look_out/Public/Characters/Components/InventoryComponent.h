@@ -42,6 +42,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
 	int CurrentActiveItemIndex = -1;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	bool IsHotbarFull() const;
 protected:
 	UPROPERTY()
 	class ABaseCharacter* OwnerCharacter;

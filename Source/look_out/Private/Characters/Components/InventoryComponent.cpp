@@ -15,6 +15,15 @@ void UInventoryComponent::BeginPlay()
 	Hotbar.SetNum(HotbarSize);
 }
 
+bool UInventoryComponent::IsHotbarFull() const
+{
+	for (const FItem& Item : Hotbar)
+	{
+		if (Item.ItemClass.IsNull()) return false;
+	}
+	return true;
+}
+
 void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 {
 	if (!OwnerCharacter)
