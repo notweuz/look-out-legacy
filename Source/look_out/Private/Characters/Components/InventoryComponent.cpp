@@ -34,16 +34,54 @@ void UInventoryComponent::OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, b
 
 void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot)
 {
-	if (!ClickedSlot) return;
+	if (!ClickedSlot || !OwnerCharacter)
+	{
+		return;
+	}
 
-	FItem& SlotItem = ClickedSlot->bIsHotbar && Hotbar.IsValidIndex(ClickedSlot->InventorySlotIndex)
-		? Hotbar[ClickedSlot->InventorySlotIndex]
-		: SecondHand;
+	const int32 SlotIndex = ClickedSlot->InventorySlotIndex;
+	UE_LOG(LogTemp, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, ClickedSlot->bIsHotbar ? 1 : 0);
+
+	FItem* SlotItemPtr;
+
+	if (ClickedSlot->bIsHotbar)
+	{
+		if (!Hotbar.IsValidIndex(SlotIndex))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid hotbar index %d"), SlotIndex);
+			return;
+		}
+
+		SlotItemPtr = &Hotbar[SlotIndex];
+	}
+	else
+	{
+		if (!Storage.IsValidIndex(SlotIndex))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
+			return;
+		}
+
+		SlotItemPtr = &Storage[SlotIndex];
+	}
+
+	if (!SlotItemPtr)
+	{
+		return;
+	}
+
+	FItem& SlotItem = *SlotItemPtr;
+
+	if (TempItem.ItemClass.IsNull() && SlotItem.ItemClass.IsNull())
+	{
+		return;
+	}
 
 	Swap(TempItem, SlotItem);
+
 	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
 
-	if (ClickedSlot->bIsHotbar && ClickedSlot->InventorySlotIndex == CurrentActiveItemIndex)
+	if (ClickedSlot->bIsHotbar && SlotIndex == CurrentActiveItemIndex)
 	{
 		UpdateHandItem(CurrentActiveItemIndex);
 	}
