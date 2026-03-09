@@ -79,6 +79,11 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 
 	Swap(TempItem, SlotItem);
 
+	if (!ClickedSlot->bIsHotbar && SlotItem.ItemClass.IsNull())
+	{
+		Storage.RemoveAt(SlotIndex);
+	}
+
 	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
 
 	if (ClickedSlot->bIsHotbar && SlotIndex == CurrentActiveItemIndex)
