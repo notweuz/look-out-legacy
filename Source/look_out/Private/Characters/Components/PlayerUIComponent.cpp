@@ -5,6 +5,7 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Components/NamedSlot.h"
+#include "Misc/LogCategories.h"
 
 // Sets default values for this component's properties
 UPlayerUIComponent::UPlayerUIComponent()
@@ -30,11 +31,11 @@ void UPlayerUIComponent::BeginPlay()
 		if (PlayerUI)
 		{
 			PlayerUI->AddToViewport();
-			UE_LOG(LogTemp, Warning, TEXT("Player UI created"));
+			UE_LOG(LogUI, Warning, TEXT("Player UI created"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to setup player UI"));
+			UE_LOG(LogUI, Warning, TEXT("Failed to setup player UI"));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #include "Core/Components/TimeIntegrationComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/LogCategories.h"
 
 UTimeIntegrationComponent::UTimeIntegrationComponent()
 {
@@ -31,7 +32,7 @@ void UTimeIntegrationComponent::TickComponent(const float DeltaTime, const ELeve
 
 void UTimeIntegrationComponent::OnMinutePassedTriggered(const int32 Day, const float Time)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("[Time Integration Component Side] Triggered Minute Passed Event"))
+	UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Integration Component Side] Triggered Minute Passed Event"))
 	OnMinutePassed.Broadcast(Day, Time);
 }
 

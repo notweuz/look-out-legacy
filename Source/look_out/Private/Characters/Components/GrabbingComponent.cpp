@@ -7,6 +7,7 @@
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Components/CapsuleComponent.h"
 #include "Interfaces/Grabbable.h"
+#include "Misc/LogCategories.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -48,7 +49,7 @@ EGrabbableObjectType UGrabbingComponent::GetGrabbedObjectType() const
 
 void UGrabbingComponent::ToggleGrab(bool bGrab)
 {
-	UE_LOG(LogTemp, Log, TEXT("Player toggled grabbing to: %s"), bGrab ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogPlayer, Log, TEXT("Player toggled grabbing to: %s"), bGrab ? TEXT("true") : TEXT("false"));
 	if (bGrab)
 	{
 		GrabObject();
@@ -84,14 +85,14 @@ void UGrabbingComponent::GrabObject()
 	{
 #if WITH_EDITOR
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
-		UE_LOG(LogTemp, Log, TEXT("GrabbingComponent hit non-grabbable actor: %s"), *HitActor->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("GrabbingComponent hit non-grabbable actor: %s"), *HitActor->GetName())
 #endif
 		return;
 	}
 
 #if WITH_EDITOR
 	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Blue, false, 2.0f);
-	UE_LOG(LogTemp, Log, TEXT("GrabbingComponent hit grabbable actor: %s"), *HitActor->GetName())
+	UE_LOG(LogPlayer, Log, TEXT("GrabbingComponent hit grabbable actor: %s"), *HitActor->GetName())
 #endif
 
 	IGrabbable* Grabbable = Cast<IGrabbable>(HitActor);
@@ -105,7 +106,7 @@ void UGrabbingComponent::GrabObject()
 		HitComponent->SetEnableGravity(false);
 		HitComponent->WakeAllRigidBodies();
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(),
+		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName())
 	}
 	else if (Type == Heavyweight)
@@ -119,14 +120,14 @@ void UGrabbingComponent::GrabObject()
 		OwnerCharacter->MovementComponentExtended->
 		                ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(),
+		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName())
 	}
 	else if (Type == Static)
 	{
 		StaticObject = HitComponent;
 		IsGrabbingObject = true;
-		UE_LOG(LogTemp, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(),
+		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName())
 	}
 }
@@ -143,11 +144,11 @@ void UGrabbingComponent::ReleaseObject()
 			GrabbedComponent->SetEnableGravity(true);
 			GrabbedComponent->WakeAllRigidBodies();
 		}
-		UE_LOG(LogTemp, Log, TEXT("Player released a Lightweight %s"), *GrabbedComponent->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("Player released a Lightweight %s"), *GrabbedComponent->GetName())
 	}
 	else if (Type == Heavyweight)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player released a Heavyweight %s"), *HeavyObject->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("Player released a Heavyweight %s"), *HeavyObject->GetName())
 		HeavyObject = nullptr;
 		OwnerCharacter->PhysicsConstraint->BreakConstraint();
 		OwnerCharacter->MovementComponentExtended->CanSprint = true;
@@ -156,7 +157,7 @@ void UGrabbingComponent::ReleaseObject()
 	}
 	else if (Type == Static)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Player released a Static %s"), *StaticObject->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("Player released a Static %s"), *StaticObject->GetName())
 		StaticObject = nullptr;
 	}
 
@@ -250,7 +251,7 @@ void UGrabbingComponent::ThrowObject()
 
 	ToggleGrab(false);
 	GrabbedComponent->AddImpulse(ImpulseDirection * FinalStrength, NAME_None, true);
-	UE_LOG(LogTemp, Log, TEXT("Player threw an %s item"), *GrabbedComponent->GetName())
+	UE_LOG(LogPlayer, Log, TEXT("Player threw an %s item"), *GrabbedComponent->GetName())
 }
 
 void UGrabbingComponent::ChangeGrabDistance(const float Delta)

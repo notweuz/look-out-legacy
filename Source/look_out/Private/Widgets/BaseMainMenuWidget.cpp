@@ -4,6 +4,7 @@
 #include "Widgets/BaseMainMenuWidget.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Misc/LogCategories.h"
 
 void UBaseMainMenuWidget::NativeConstruct()
 {
@@ -28,7 +29,7 @@ void UBaseMainMenuWidget::NativeConstruct()
 
 void UBaseMainMenuWidget::OnExitClicked()
 {
-	UE_LOG(LogTemp, Display, TEXT("Exiting game"));
+	UE_LOG(LogUI, Display, TEXT("Exiting game"));
 	UKismetSystemLibrary::QuitGame(
 		this,
 		GetOwningPlayer(),

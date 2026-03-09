@@ -4,6 +4,7 @@
 #include "Core/Components/StorageComponent.h"
 
 #include "Interfaces/Storeable.h"
+#include "Misc/LogCategories.h"
 
 // Sets default values for this component's properties
 UStorageComponent::UStorageComponent()
@@ -84,7 +85,7 @@ void UStorageComponent::AddItem_Implementation(AActor* Actor)
 {
 	if (!Actor || !Actor->Implements<UStoreable>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Actor does not implement IStoreable"));
+		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Actor does not implement IStoreable"));
 		return;
 	}
 
@@ -98,7 +99,7 @@ void UStorageComponent::AddItem_Implementation(AActor* Actor)
 
 	if (!CanAddItem(NewItem))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Not enough storage weight"));
+		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Not enough storage weight"));
 		// TODO: UI notification
 		return;
 	}
@@ -111,7 +112,7 @@ FItem UStorageComponent::RemoveItem_Implementation(const int32 Index)
 {
 	if (!Storage.IsValidIndex(Index))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StorageComponent: Invalid index %d"), Index);
+		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Invalid index %d"), Index);
 		return FItem();
 	}
 

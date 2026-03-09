@@ -8,6 +8,7 @@
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
+#include "Misc/LogCategories.h"
 
 // Sets default values
 ATimeManager::ATimeManager()
@@ -28,7 +29,7 @@ ATimeManager::ATimeManager()
 void ATimeManager::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Log, TEXT("Time Manager has been started"))
+	UE_LOG(LogLookOutGame, Log, TEXT("Time Manager has been started"))
 
 	PerformTimeUpdate(0);
 }
@@ -80,6 +81,6 @@ void ATimeManager::TriggerMinutePassed(const int _Day, const float _Time) const
 	if (OnCallMinutePassed.IsBound())
 	{
 		OnCallMinutePassed.Broadcast(_Day, _Time);
-		UE_LOG(LogTemp, Verbose, TEXT("[Time Manager Side] Triggered Minute Passed Event"))
+		UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Manager Side] Triggered Minute Passed Event"))
 	}
 }

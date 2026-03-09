@@ -7,6 +7,7 @@
 #include "Characters/Components/GrabbingComponent.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Storeable.h"
+#include "Misc/LogCategories.h"
 
 void UInventoryComponent::BeginPlay()
 {
@@ -47,7 +48,7 @@ void UInventoryComponent::OnInventoryWindowClicked()
 
 	if (!CanAddItem(TempItem))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop to storage"));
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop to storage"));
 		// TODO: UI notification
 		return;
 	}
@@ -80,7 +81,7 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 
 	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
 		// TODO: UI notification
 		return;
 	}
@@ -122,13 +123,13 @@ FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 	}
 
 	const int32 SlotIndex = Slot->InventorySlotIndex;
-	UE_LOG(LogTemp, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, Slot->bIsHotbar ? 1 : 0);
+	UE_LOG(LogInventory, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, Slot->bIsHotbar ? 1 : 0);
 
 	if (Slot->bIsHotbar)
 	{
 		if (!Hotbar.IsValidIndex(SlotIndex))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid hotbar index %d"), SlotIndex);
+			UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Invalid hotbar index %d"), SlotIndex);
 			return nullptr;
 		}
 
@@ -137,7 +138,7 @@ FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 
 	if (!Storage.IsValidIndex(SlotIndex))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
 		return nullptr;
 	}
 
@@ -212,13 +213,13 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 		    AttachedActor->Implements<UStoreable>())
 		{
 			Hotbar[OldItemIndex].SavedTags = IStoreable::Execute_GetItemTags(AttachedActor);
-			UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
+			UE_LOG(LogInventory, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
 		}
 
 		AttachedActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		AttachedActor->Destroy();
 
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Removed hand item"));
+		UE_LOG(LogInventory, Log, TEXT("InventoryComponent: Removed hand item"));
 	}
 
 	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || Hotbar[CurrentActiveItemIndex].ItemClass.IsNull())
@@ -231,7 +232,7 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 	const TSubclassOf<AActor> ActorClass = NewItem.ItemClass.LoadSynchronous();
 	if (!ActorClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
 		return;
 	}
 
@@ -242,7 +243,7 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, HandTransform, SpawnParams);
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to spawn hand item at index %d"),
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to spawn hand item at index %d"),
 		       CurrentActiveItemIndex);
 		return;
 	}
@@ -250,7 +251,7 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 	if (SpawnedActor->Implements<UStoreable>() && NewItem.SavedTags.Num() > 0)
 	{
 		IStoreable::Execute_ApplyItemTags(SpawnedActor, NewItem.SavedTags);
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Applied saved tags to hand item at index %d"),
+		UE_LOG(LogInventory, Log, TEXT("InventoryComponent: Applied saved tags to hand item at index %d"),
 		       CurrentActiveItemIndex);
 	}
 
@@ -265,7 +266,7 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 		FAttachmentTransformRules::SnapToTargetIncludingScale
 	);
 
-	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: Spawned and attached hand item at index %d"),
+	UE_LOG(LogInventory, Log, TEXT("InventoryComponent: Spawned and attached hand item at index %d"),
 	       CurrentActiveItemIndex);
 }
 
@@ -280,18 +281,18 @@ void UInventoryComponent::InteractWithItemInHand()
 
 	if (!ItemInHandActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: no actor found in hand to interact with"));
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: no actor found in hand to interact with"));
 		return;
 	}
 
 	if (!ItemInHandActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: actor in hand %s is not interactable"),
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: actor in hand %s is not interactable"),
 		       *ItemInHandActor->GetName());
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: interacting with actor in hand %s"),
+	UE_LOG(LogInventory, Log, TEXT("InventoryComponent: interacting with actor in hand %s"),
 	       *ItemInHandActor->GetName());
 
 	IInteractable::Execute_Interact(ItemInHandActor, OwnerCharacter);
@@ -318,7 +319,7 @@ void UInventoryComponent::DropHotbarItem()
 
 	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: no item in current hotbar index %d"),
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: no item in current hotbar index %d"),
 		       CurrentActiveItemIndex);
 		return;
 	}
@@ -327,7 +328,7 @@ void UInventoryComponent::DropHotbarItem()
 	const TSubclassOf<AActor> ActorClass = Item.ItemClass.LoadSynchronous();
 	if (!ActorClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
 		return;
 	}
 
@@ -341,14 +342,14 @@ void UInventoryComponent::DropHotbarItem()
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnTransform, SpawnParams);
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: Failed to spawn actor from hotbar index %d"),
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to spawn actor from hotbar index %d"),
 		       CurrentActiveItemIndex);
 		return;
 	}
 
 	IStoreable::Execute_ApplyItemTags(SpawnedActor, Item.SavedTags);
 	Hotbar[CurrentActiveItemIndex] = FItem();
-	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: dropped item from hotbar index %d"), CurrentActiveItemIndex);
+	UE_LOG(LogInventory, Log, TEXT("InventoryComponent: dropped item from hotbar index %d"), CurrentActiveItemIndex);
 
 	UpdateHandItem(CurrentActiveItemIndex);
 	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
@@ -358,7 +359,7 @@ void UInventoryComponent::CollectItem()
 {
 	if (!OwnerCharacter)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Can't collect item, OwnerCharacter is null for some reasons"))
+		UE_LOG(LogInventory, Error, TEXT("Can't collect item, OwnerCharacter is null for some reasons"))
 		return;
 	}
 
@@ -382,11 +383,11 @@ void UInventoryComponent::CollectItem()
 
 	if (!HitActor || !HitActor->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryComponent: hit actor is null or not storeable"));
+		UE_LOG(LogInventory, Log, TEXT("InventoryComponent: hit actor is null or not storeable"));
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
+	UE_LOG(LogInventory, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
 	
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
