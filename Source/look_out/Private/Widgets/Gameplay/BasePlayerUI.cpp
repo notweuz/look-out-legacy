@@ -3,6 +3,7 @@
 
 #include "Widgets/Gameplay/BasePlayerUI.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/NamedSlot.h"
 #include "Libraries/UIHelpers.h"
@@ -15,7 +16,7 @@ void UBasePlayerUI::UpdateTempItemSpriteImage()
 	if (!Player->InventoryComponent->TempItem.ItemIcon.IsNull()) 
 	{
 		TempItemSpriteImage->SetBrushFromTexture(Player->InventoryComponent->TempItem.ItemIcon.Get());
-		TempItemSpriteImage->SetVisibility(ESlateVisibility::Visible);
+		TempItemSpriteImage->SetVisibility(ESlateVisibility::HitTestInvisible);
 	} else
 	{
 		TempItemSpriteImage->SetBrushFromTexture(nullptr);
@@ -55,18 +56,14 @@ void UBasePlayerUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	const APlayerController* PC = GetOwningPlayer();
-	if (!PC || !TempItemSpriteImage || !FloatingWidgetsCanvasPanel) return;
-
-	float MouseX, MouseY;
-	PC->GetMousePosition(MouseX, MouseY);
-
-	const FGeometry CanvasGeometry = FloatingWidgetsCanvasPanel->GetCachedGeometry();
-	const FVector2D LocalPos = CanvasGeometry.AbsoluteToLocal(FVector2D(MouseX, MouseY));
-
+	if (!TempItemSpriteImage || !FloatingWidgetsCanvasPanel) return;
 	if (!TempItemSpriteImage->GetBrush().GetResourceObject()) return;
+
+	const FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+
 	if (UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(TempItemSpriteImage->Slot))
 	{
-		Slot->SetPosition(LocalPos);
+		Slot->SetAlignment(FVector2D(0.5f, 0.5f));
+		Slot->SetPosition(MousePos);
 	}
 }
