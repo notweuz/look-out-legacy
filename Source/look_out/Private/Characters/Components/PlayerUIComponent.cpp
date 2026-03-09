@@ -96,7 +96,7 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 			UPlayerInventoryWindowWidget>(PC, InventoryWindowClass); Window1 && InvWidget1 && PlayerUI->InventorySlot1)
 		{
 			Window1->TitleTextBlock->SetText(FText::FromString(TEXT("Inventory")));
-			InvWidget1->UpdateInventorySlots(OwnerInventory->Storage);
+			InvWidget1->UpdateInventorySlots();
 			Window1->CloseButton->SetVisibility(ESlateVisibility::Hidden);
 			Window1->BodySlot->AddChild(InvWidget1);
 			PlayerUI->InventorySlot1->AddChild(Window1);
@@ -108,7 +108,7 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 			UPlayerInventoryWindowWidget>(PC, InventoryWindowClass); Window2 && InvWidget2 && PlayerUI->InventorySlot2)
 		{
 			Window2->TitleTextBlock->SetText(FText::FromString(TEXT("Container")));
-			InvWidget2->UpdateInventorySlots(AdditionalInventory->Storage);
+			InvWidget2->UpdateInventorySlots();
 			Window2->BodySlot->AddChild(InvWidget2);
 			Window2->CloseButton->SetVisibility(ESlateVisibility::Hidden);
 			PlayerUI->InventorySlot2->AddChild(Window2);
@@ -122,7 +122,7 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 		if (Window && InvWidget && PlayerUI->SoloInventorySlot)
 		{
 			Window->TitleTextBlock->SetText(FText::FromString(TEXT("Inventory")));
-			InvWidget->UpdateInventorySlots(OwnerInventory->Storage);
+			InvWidget->UpdateInventorySlots();
 			Window->CloseButton->SetVisibility(ESlateVisibility::Hidden);
 			Window->BodySlot->AddChild(InvWidget);
 			PlayerUI->SoloInventorySlot->AddChild(Window);

@@ -3,15 +3,21 @@
 
 #include "Widgets/Gameplay/Window/PlayerInventoryWindowWidget.h"
 
+#include "Libraries/UIHelpers.h"
+
 void UPlayerInventoryWindowWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
 
-void UPlayerInventoryWindowWidget::UpdateInventorySlots(TArray<FItem>& ItemList)
+void UPlayerInventoryWindowWidget::UpdateInventorySlots()
 {
 	ClearInventorySlots();
 
+	const ABaseCharacter* Player = UUIHelpers::GetBasePlayerFromWidget(this);
+	if (!Player) return;
+	
+	TArray<FItem> ItemList = Player->InventoryComponent->Storage;
 	for (int32 I = 0; I < ItemList.Num(); I++)
 	{
 		if (!InventorySlotClass) continue;

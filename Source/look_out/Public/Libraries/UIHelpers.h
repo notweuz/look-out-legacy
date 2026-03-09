@@ -15,6 +15,7 @@ class LOOK_OUT_API UUIHelpers : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
+public:
 	UFUNCTION(BlueprintPure, Category="UI|Player")
 	static ABaseCharacter* GetBasePlayerFromWidget(const UUserWidget* Widget);
 };

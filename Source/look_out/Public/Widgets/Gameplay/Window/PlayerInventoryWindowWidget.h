@@ -30,7 +30,7 @@ public:
 	TArray<UBasePlayerInventorySlot*> InventorySlotWidgets;
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
-	void UpdateInventorySlots(TArray<FItem>& ItemList);
+	void UpdateInventorySlots();
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	void ClearInventorySlots();

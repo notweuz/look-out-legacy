@@ -56,5 +56,5 @@ public:
 	void SetActiveHotbarSlot(int OldIndex, int NewIndex);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Hotbar Slots")
-	void UpdateHotbarSlots(TArray<FItem>& ItemList);
+	void UpdateHotbarSlots();
 };
