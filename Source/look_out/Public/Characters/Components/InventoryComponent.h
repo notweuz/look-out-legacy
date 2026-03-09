@@ -48,6 +48,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool IsHotbarFull() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void OnInventoryWindowClicked();
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, bool IsRMB);

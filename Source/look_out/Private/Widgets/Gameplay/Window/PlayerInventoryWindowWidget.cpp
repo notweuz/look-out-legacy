@@ -4,10 +4,29 @@
 #include "Widgets/Gameplay/Window/PlayerInventoryWindowWidget.h"
 
 #include "Libraries/UIHelpers.h"
+#include "Characters/BaseCharacter.h"
+#include "Characters/Components/InventoryComponent.h"
+#include "InputCoreTypes.h"
 
 void UPlayerInventoryWindowWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+}
+
+FReply UPlayerInventoryWindowWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
+                                                             const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		if (const ABaseCharacter* Player = UUIHelpers::GetBasePlayerFromWidget(this); Player && Player->InventoryComponent)
+		{
+			Player->InventoryComponent->OnInventoryWindowClicked();
+		}
+
+		return FReply::Handled();
+	}
+
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
 void UPlayerInventoryWindowWidget::UpdateInventorySlots()

@@ -32,6 +32,24 @@ void UInventoryComponent::OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, b
 	}
 }
 
+void UInventoryComponent::OnInventoryWindowClicked()
+{
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+
+	if (TempItem.ItemClass.IsNull())
+	{
+		return;
+	}
+
+	Storage.Add(TempItem);
+	TempItem = FItem();
+
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+}
+
 void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot)
 {
 	if (!ClickedSlot || !OwnerCharacter)
