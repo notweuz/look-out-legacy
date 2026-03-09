@@ -96,7 +96,13 @@ bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
 	if (!Subsystem) return false;
 
-	return Subsystem->GetPlayerInput()->GetKeyState(Key)->bDown;
+	const UPlayerInput* PlayerInput = Subsystem->GetPlayerInput();
+	if (!PlayerInput) return false;
+
+	const FKeyState* KeyState = PlayerInput->GetKeyState(Key);
+	if (!KeyState) return false;
+
+	return KeyState->bDown;
 }
 
 bool UPlayerInputsComponent::IsBlockedByOpenedUI() const
