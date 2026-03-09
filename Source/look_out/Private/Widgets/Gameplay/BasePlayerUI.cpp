@@ -4,6 +4,7 @@
 #include "Widgets/Gameplay/BasePlayerUI.h"
 
 #include "Components/CanvasPanelSlot.h"
+#include "Components/NamedSlot.h"
 #include "Libraries/UIHelpers.h"
 
 void UBasePlayerUI::UpdateTempItemSpriteImage()
@@ -19,6 +20,28 @@ void UBasePlayerUI::UpdateTempItemSpriteImage()
 	{
 		TempItemSpriteImage->SetBrushFromTexture(nullptr);
 		TempItemSpriteImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UBasePlayerUI::UpdateEntireInventory()
+{
+	UpdateTempItemSpriteImage();
+	Hotbar->UpdateHotbarSlots();
+	for (const UNamedSlot* Slot : { SoloInventorySlot, InventorySlot1, InventorySlot2 })
+	{
+		if (!Slot) continue;
+
+		UWidget* Child = Slot->GetContent();
+		if (!Child) continue;
+
+		if (const UBasePlayerWindowWidget* Window = Cast<UBasePlayerWindowWidget>(Child))
+		{
+			if (UPlayerInventoryWindowWidget* InvWidget = Cast<UPlayerInventoryWindowWidget>(
+				Window->BodySlot->GetContent()))
+			{
+				InvWidget->UpdateInventorySlots();
+			}
+		}
 	}
 }
 

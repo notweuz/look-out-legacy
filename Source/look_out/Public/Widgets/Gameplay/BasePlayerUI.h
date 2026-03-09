@@ -38,8 +38,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="UI")
 	bool bIsAnyInterfaceOpened = false;
 	
-	UFUNCTION(BlueprintCallable, Category="UI")
+	UFUNCTION(BlueprintCallable, Category="Inventory UI")
 	void UpdateTempItemSpriteImage();
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory UI")
+	void UpdateEntireInventory();
 	
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;

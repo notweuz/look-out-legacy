@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Containers/StaticArray.h"
 #include "Core/Components/StorageComponent.h"
+#include "Widgets/Gameplay/BasePlayerInventorySlot.h"
 #include "InventoryComponent.generated.h"
 
 /**
@@ -47,6 +48,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool IsHotbarFull() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, bool IsRMB);
+	
+private:
+	UFUNCTION()
+	void ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot);
+	
 protected:
 	UPROPERTY()
 	class ABaseCharacter* OwnerCharacter;

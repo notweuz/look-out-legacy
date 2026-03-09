@@ -24,6 +24,31 @@ bool UInventoryComponent::IsHotbarFull() const
 	return true;
 }
 
+void UInventoryComponent::OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, bool IsRMB)
+{
+	if (!IsRMB)
+	{
+		ProcessItemDragNDrop(ClickedSlot);
+	}
+}
+
+void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot)
+{
+	if (!ClickedSlot) return;
+
+	FItem& SlotItem = ClickedSlot->bIsHotbar && Hotbar.IsValidIndex(ClickedSlot->InventorySlotIndex)
+		? Hotbar[ClickedSlot->InventorySlotIndex]
+		: SecondHand;
+
+	Swap(TempItem, SlotItem);
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+
+	if (ClickedSlot->bIsHotbar && ClickedSlot->InventorySlotIndex == CurrentActiveItemIndex)
+	{
+		UpdateHandItem(CurrentActiveItemIndex);
+	}
+}
+
 void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 {
 	if (!OwnerCharacter)
@@ -35,7 +60,7 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 	{
 		return;
 	}
-	
+
 	OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar->SetActiveHotbarSlot(OldItemIndex, CurrentActiveItemIndex);
 	if (Hotbar.IsValidIndex(OldItemIndex) && !Hotbar[OldItemIndex].ItemClass.IsNull())
 	{
