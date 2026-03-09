@@ -279,6 +279,12 @@ void UInventoryComponent::CollectItem_Implementation()
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
+	
+	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
+	{
+		OwnerCharacter->GrabbingComponent->ToggleGrab(false);
+	}
+	
 	AddItem(HitActor);
 }
 
