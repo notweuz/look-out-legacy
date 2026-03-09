@@ -5,6 +5,7 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/GrabbingComponent.h"
+#include "Interfaces/Interactable.h"
 #include "Interfaces/Storeable.h"
 
 void UInventoryComponent::BeginPlay()
@@ -103,6 +104,16 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 	}
 }
 
+void UInventoryComponent::UpdateInventoryUI() const
+{
+	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI)
+	{
+		return;
+	}
+
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+}
+
 FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 {
 	if (!Slot)
@@ -133,17 +144,41 @@ FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 	return &Storage[SlotIndex];
 }
 
-void UInventoryComponent::UpdateInventoryUI() const
+AActor* UInventoryComponent::GetItemInHandActor() const
 {
-	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI)
+	if (!OwnerCharacter)
 	{
-		return;
+		return nullptr;
 	}
 
-	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+	if (!Hotbar.IsValidIndex(CurrentActiveItemIndex) || Hotbar[CurrentActiveItemIndex].ItemClass.IsNull())
+	{
+		return nullptr;
+	}
+
+	TArray<USceneComponent*> ChildComponents;
+	OwnerCharacter->HandSceneComponent->GetChildrenComponents(false, ChildComponents);
+
+	for (const USceneComponent* ChildComp : ChildComponents)
+	{
+		if (!ChildComp)
+		{
+			continue;
+		}
+
+		AActor* AttachedActor = ChildComp->GetOwner();
+		if (!AttachedActor || AttachedActor == OwnerCharacter)
+		{
+			continue;
+		}
+
+		return AttachedActor;
+	}
+
+	return nullptr;
 }
 
-void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
+void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 {
 	if (!OwnerCharacter)
 	{
@@ -234,7 +269,40 @@ void UInventoryComponent::UpdateHandItem_Implementation(int OldItemIndex)
 	       CurrentActiveItemIndex);
 }
 
-void UInventoryComponent::DropHotbarItem_Implementation()
+void UInventoryComponent::InteractWithItemInHand()
+{
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+
+	AActor* ItemInHandActor = GetItemInHandActor();
+
+	if (!ItemInHandActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: no actor found in hand to interact with"));
+		return;
+	}
+
+	if (!ItemInHandActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InventoryComponent: actor in hand %s is not interactable"),
+		       *ItemInHandActor->GetName());
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("InventoryComponent: interacting with actor in hand %s"),
+	       *ItemInHandActor->GetName());
+
+	IInteractable::Execute_Interact(ItemInHandActor, OwnerCharacter);
+}
+
+bool UInventoryComponent::HasItemInHand() const
+{
+	return GetItemInHandActor() != nullptr;
+}
+
+void UInventoryComponent::DropHotbarItem()
 {
 	if (!OwnerCharacter)
 	{
@@ -279,7 +347,7 @@ void UInventoryComponent::DropHotbarItem_Implementation()
 	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
 }
 
-void UInventoryComponent::CollectItem_Implementation()
+void UInventoryComponent::CollectItem()
 {
 	if (!OwnerCharacter)
 	{
@@ -321,7 +389,7 @@ void UInventoryComponent::CollectItem_Implementation()
 	AddItem(HitActor);
 }
 
-void UInventoryComponent::ScrollActiveItem_Implementation(const float Delta)
+void UInventoryComponent::ScrollActiveItem(const float Delta)
 {
 	if (HotbarSize == 0)
 	{

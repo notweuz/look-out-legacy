@@ -9,6 +9,7 @@
 #include "Characters/Components/GrabbingComponent.h"
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
+#include "Characters/Components/InventoryComponent.h"
 
 // Sets default values for this component's properties
 UPlayerInputsComponent::UPlayerInputsComponent()
@@ -176,6 +177,16 @@ void UPlayerInputsComponent::Input_InventoryTriggered()
 void UPlayerInputsComponent::Input_RMBTriggered()
 {
 	if (IsBlockedByOpenedUI()) return;
+
+	if (OwnerCharacter && OwnerCharacter->InventoryComponent)
+	{
+		if (OwnerCharacter->InventoryComponent->HasItemInHand())
+		{
+			OwnerCharacter->InventoryComponent->InteractWithItemInHand();
+			return;
+		}
+	}
+
 	OwnerCharacter->InventoryComponent->CollectItem();
 }
 

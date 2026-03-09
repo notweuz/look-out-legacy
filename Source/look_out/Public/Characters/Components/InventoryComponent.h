@@ -19,18 +19,24 @@ class LOOK_OUT_API UInventoryComponent : public UStorageComponent
 public:
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ScrollActiveItem(float Delta);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CollectItem();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void DropHotbarItem();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Inventory")
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void UpdateHandItem(int OldItemIndex);
-
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void InteractWithItemInHand();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
+	bool HasItemInHand() const;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory", SaveGame)
 	TArray<FItem> Hotbar;
 
@@ -60,6 +66,8 @@ private:
 	void ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot);
 
 	FItem* GetItemForSlot(const UBasePlayerInventorySlot* Slot);
+
+	AActor* GetItemInHandActor() const;
 
 	void UpdateInventoryUI() const;
 	
