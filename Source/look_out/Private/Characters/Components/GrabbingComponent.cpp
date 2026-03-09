@@ -12,7 +12,7 @@
 
 UGrabbingComponent::UGrabbingComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UGrabbingComponent::BeginPlay()

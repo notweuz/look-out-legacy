@@ -7,7 +7,7 @@
 
 UPlayerSideInteractionComponent::UPlayerSideInteractionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UPlayerSideInteractionComponent::BeginPlay()
