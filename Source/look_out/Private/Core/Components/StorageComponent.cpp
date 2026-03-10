@@ -71,6 +71,33 @@ void UStorageComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+FActorAsItemResult UStorageComponent::GetActorAsItemResult(AActor* Actor)
+{
+	FActorAsItemResult Result;
+	
+	if (!Actor || !Actor->Implements<UStoreable>())
+	{
+		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Actor does not implement IStoreable"));
+		Result.Actor = nullptr;
+		Result.Success = false;
+		return Result;
+	}
+
+	const int32 ItemWeight = IStoreable::Execute_GetItemWeight(Actor);
+	FItem NewItem;
+	NewItem.ItemClass = Actor->GetClass();
+	NewItem.ItemWeight = ItemWeight;
+	NewItem.Quantity = 1;
+	NewItem.SavedTags = IStoreable::Execute_GetItemTags(Actor);
+	NewItem.ItemIcon = IStoreable::Execute_GetItemIcon(Actor);
+	
+	Result.Success = true;
+	Result.Item = NewItem;
+	Result.Actor = Actor;
+	
+	return Result;
+}
+
 UStorageComponent* UStorageComponent::GetStorageComponentFromActor(AActor* Actor)
 {
 	return Actor ? Actor->FindComponentByClass<UStorageComponent>() : nullptr;
@@ -83,28 +110,17 @@ UStorageComponent* UStorageComponent::GetStorageLink()
 
 void UStorageComponent::AddItem_Implementation(AActor* Actor)
 {
-	if (!Actor || !Actor->Implements<UStoreable>())
-	{
-		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Actor does not implement IStoreable"));
-		return;
-	}
-
-	const int32 ItemWeight = IStoreable::Execute_GetItemWeight(Actor);
-	FItem NewItem;
-	NewItem.ItemClass = Actor->GetClass();
-	NewItem.ItemWeight = ItemWeight;
-	NewItem.Quantity = 1;
-	NewItem.SavedTags = IStoreable::Execute_GetItemTags(Actor);
-	NewItem.ItemIcon = IStoreable::Execute_GetItemIcon(Actor);
-
-	if (!CanAddItem(NewItem))
+	FActorAsItemResult Result = GetActorAsItemResult(Actor);
+	if (!Result.Success) return;
+	
+	if (!CanAddItem(Result.Item))
 	{
 		UE_LOG(LogLookOutGame, Warning, TEXT("StorageComponent: Not enough storage weight"));
 		// TODO: UI notification
 		return;
 	}
 
-	Storage.Add(NewItem);
+	Storage.Add(Result.Item);
 	Actor->Destroy();
 }
 

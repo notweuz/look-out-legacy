@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/ActorAsItemResult.h"
 #include "Data/Storage/Item.h"
 #include "StorageComponent.generated.h"
 
@@ -46,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Storage")
 	void AddItem(AActor* Actor);
+	
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	FActorAsItemResult GetActorAsItemResult(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	static UStorageComponent* GetStorageComponentFromActor(AActor* Actor);

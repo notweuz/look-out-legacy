@@ -81,7 +81,8 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 
 	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
 	{
-		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
+		UE_LOG(LogInventory, Warning,
+		       TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
 		// TODO: UI notification
 		return;
 	}
@@ -108,6 +109,28 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 void UInventoryComponent::UpdateInventoryUI() const
 {
 	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI)
+	{
+		return;
+	}
+
+	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+}
+
+void UInventoryComponent::UpdateHotbarUI() const
+{
+	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI || !
+		OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar)
+	{
+		return;
+	}
+
+	OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar->UpdateHotbarSlots();
+}
+
+void UInventoryComponent::UpdateEntireUI() const
+{
+	if (!OwnerCharacter || !OwnerCharacter->PlayerUIComponent || !OwnerCharacter->PlayerUIComponent->PlayerUI || !
+		OwnerCharacter->PlayerUIComponent->PlayerUI->Hotbar)
 	{
 		return;
 	}
@@ -208,9 +231,9 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 		}
 
 		if (OldItemIndex != CurrentActiveItemIndex &&
-		    Hotbar.IsValidIndex(OldItemIndex) &&
-		    !Hotbar[OldItemIndex].ItemClass.IsNull() &&
-		    AttachedActor->Implements<UStoreable>())
+			Hotbar.IsValidIndex(OldItemIndex) &&
+			!Hotbar[OldItemIndex].ItemClass.IsNull() &&
+			AttachedActor->Implements<UStoreable>())
 		{
 			Hotbar[OldItemIndex].SavedTags = IStoreable::Execute_GetItemTags(AttachedActor);
 			UE_LOG(LogInventory, Log, TEXT("InventoryComponent: Saved tags for hotbar index %d"), OldItemIndex);
@@ -232,7 +255,8 @@ void UInventoryComponent::UpdateHandItem(int OldItemIndex)
 	const TSubclassOf<AActor> ActorClass = NewItem.ItemClass.LoadSynchronous();
 	if (!ActorClass)
 	{
-		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"),
+		       CurrentActiveItemIndex);
 		return;
 	}
 
@@ -298,8 +322,8 @@ void UInventoryComponent::InteractWithItemInHand()
 	IInteractable::Execute_Interact(ItemInHandActor, OwnerCharacter);
 
 	if (Hotbar.IsValidIndex(CurrentActiveItemIndex) &&
-	    !Hotbar[CurrentActiveItemIndex].ItemClass.IsNull() &&
-	    ItemInHandActor->Implements<UStoreable>())
+		!Hotbar[CurrentActiveItemIndex].ItemClass.IsNull() &&
+		ItemInHandActor->Implements<UStoreable>())
 	{
 		Hotbar[CurrentActiveItemIndex].SavedTags = IStoreable::Execute_GetItemTags(ItemInHandActor);
 	}
@@ -328,7 +352,8 @@ void UInventoryComponent::DropHotbarItem()
 	const TSubclassOf<AActor> ActorClass = Item.ItemClass.LoadSynchronous();
 	if (!ActorClass)
 	{
-		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"), CurrentActiveItemIndex);
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Failed to load class at index %d"),
+		       CurrentActiveItemIndex);
 		return;
 	}
 
@@ -352,7 +377,7 @@ void UInventoryComponent::DropHotbarItem()
 	UE_LOG(LogInventory, Log, TEXT("InventoryComponent: dropped item from hotbar index %d"), CurrentActiveItemIndex);
 
 	UpdateHandItem(CurrentActiveItemIndex);
-	OwnerCharacter->PlayerUIComponent->PlayerUI->UpdateEntireInventory();
+	UpdateEntireUI();
 }
 
 void UInventoryComponent::CollectItem()
@@ -388,13 +413,29 @@ void UInventoryComponent::CollectItem()
 	}
 
 	UE_LOG(LogInventory, Log, TEXT("InventoryComponent executing on %s"), *HitActor->GetName())
-	
+
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
 		OwnerCharacter->GrabbingComponent->ToggleGrab(false);
 	}
-	
-	AddItem(HitActor);
+
+	if (!IsHotbarFull())
+	{
+		if (auto [Actor, Item, Success] = GetActorAsItemResult(HitActor); Success)
+		{
+			UE_LOG(LogInventory, Log, TEXT("Found empty storage in hotbar, trying to store actor there"))
+			Actor->Destroy();
+			Hotbar[Hotbar.IndexOfByPredicate([](const FItem& I)
+			{
+				return I.ItemClass.IsNull();
+			})] = Item;
+			UpdateEntireUI();
+		}
+	}
+	else
+	{
+		AddItem(HitActor);
+	}
 }
 
 void UInventoryComponent::ScrollActiveItem(const float Delta)

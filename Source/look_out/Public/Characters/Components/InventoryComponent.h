@@ -71,6 +71,10 @@ private:
 
 	void UpdateInventoryUI() const;
 	
+	void UpdateHotbarUI() const;
+	
+	void UpdateEntireUI() const;
+	
 protected:
 	UPROPERTY()
 	class ABaseCharacter* OwnerCharacter;
