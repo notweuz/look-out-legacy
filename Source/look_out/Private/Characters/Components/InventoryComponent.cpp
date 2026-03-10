@@ -425,11 +425,16 @@ void UInventoryComponent::CollectItem()
 		{
 			UE_LOG(LogInventory, Log, TEXT("Found empty storage in hotbar, trying to store actor there"))
 			Actor->Destroy();
-			Hotbar[Hotbar.IndexOfByPredicate([](const FItem& I)
+			int EmptyIndex = Hotbar.IndexOfByPredicate([](const FItem& I)
 			{
 				return I.ItemClass.IsNull();
-			})] = Item;
+			});
+			Hotbar[EmptyIndex] = Item;
 			UpdateEntireUI();
+			if (EmptyIndex == CurrentActiveItemIndex)
+			{
+				UpdateHandItem(CurrentActiveItemIndex);
+			}
 		}
 	}
 	else
