@@ -79,7 +79,7 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 		return;
 	}
 
-	if (!ClickedSlot->bIsHotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
+	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
 	{
 		UE_LOG(LogInventory, Warning,
 		       TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
@@ -89,7 +89,7 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 
 	Swap(TempItem, SlotItem);
 
-	if (!ClickedSlot->bIsHotbar && SlotItem.ItemClass.IsNull())
+	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && SlotItem.ItemClass.IsNull())
 	{
 		const int32 SlotIndex = ClickedSlot->InventorySlotIndex;
 		if (Storage.IsValidIndex(SlotIndex))
@@ -100,7 +100,7 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 
 	UpdateInventoryUI();
 
-	if (ClickedSlot->bIsHotbar && ClickedSlot->InventorySlotIndex == CurrentActiveItemIndex)
+	if (ClickedSlot->InventorySlotType == EInventorySlotType::Hotbar && ClickedSlot->InventorySlotIndex == CurrentActiveItemIndex)
 	{
 		UpdateHandItem(CurrentActiveItemIndex);
 	}
@@ -146,9 +146,9 @@ FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 	}
 
 	const int32 SlotIndex = Slot->InventorySlotIndex;
-	UE_LOG(LogInventory, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, Slot->bIsHotbar ? 1 : 0);
+	UE_LOG(LogInventory, Display, TEXT("Clicked on slot %d (bIsHotbar=%d)"), SlotIndex, Slot->InventorySlotType == EInventorySlotType::Hotbar ? 1 : 0);
 
-	if (Slot->bIsHotbar)
+	if (Slot->InventorySlotType == EInventorySlotType::Hotbar)
 	{
 		if (!Hotbar.IsValidIndex(SlotIndex))
 		{

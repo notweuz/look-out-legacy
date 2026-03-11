@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
-#include "Data/Storage/Item.h"
+#include "Enums/InventorySlotType.h"
 #include "BasePlayerInventorySlot.generated.h"
 
 UCLASS()
@@ -24,7 +24,7 @@ public:
 	bool bIsActive = false;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Slot")
-	bool bIsHotbar = false;
+	TEnumAsByte<EInventorySlotType> InventorySlotType;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetSlotImage(UTexture2D* Texture);

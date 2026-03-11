@@ -46,6 +46,7 @@ void UPlayerInventoryWindowWidget::UpdateInventorySlots()
 
 		NewSlot->SetSlotImage(ItemList[I].ItemIcon.Get());
 		NewSlot->InventorySlotIndex = I;
+		NewSlot->InventorySlotType = PlayerInventory;
 		InventorySlotsBox->AddChild(NewSlot);
 		InventorySlotWidgets.Add(NewSlot);
 	}
