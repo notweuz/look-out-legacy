@@ -155,6 +155,10 @@ void UGrabbingComponent::GrabObject()
 	else if (Type == Static)
 	{
 		StaticObject = HitComponent;
+		OwnerCharacter->MovementComponentExtended->CanSprint = false;
+		OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
+		OwnerCharacter->MovementComponentExtended->
+		                ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->DragSpeed);
 		IsGrabbingObject = true;
 		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Static %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName());
@@ -202,6 +206,9 @@ void UGrabbingComponent::ReleaseObject()
 		}
 
 		StaticObject = nullptr;
+		OwnerCharacter->MovementComponentExtended->CanSprint = true;
+		OwnerCharacter->MovementComponentExtended->
+		                ChangeWalkSpeed(OwnerCharacter->MovementComponentExtended->WalkSpeed);
 	}
 
 	IsGrabbingObject = false;
