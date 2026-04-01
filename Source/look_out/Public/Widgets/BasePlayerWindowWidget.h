@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Components/CanvasPanel.h"
 #include "Components/TextBlock.h"
+#include "Input/Reply.h"
 #include "BasePlayerWindowWidget.generated.h"
 
 /**
@@ -31,4 +31,12 @@ public:
 	void OnCloseClicked();
 
 	virtual void NativeConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+private:
+	bool bIsDraggingWindow = false;
+	FVector2D DragStartMousePosition = FVector2D::ZeroVector;
+	FVector2D DragStartWindowTranslation = FVector2D::ZeroVector;
 };

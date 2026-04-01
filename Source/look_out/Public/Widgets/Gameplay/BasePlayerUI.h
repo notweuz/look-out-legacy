@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/BackgroundBlur.h"
+#include "Components/Border.h"
 #include "Components/CanvasPanel.h"
 #include "Hotbar/BasePlayerHotbar.h"
 #include "BasePlayerUI.generated.h"
@@ -37,12 +39,24 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, Category="UI")
 	bool bIsAnyInterfaceOpened = false;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBackgroundBlur> InventoryBackgroundBlur;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> InventoryDimBorder;
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory UI")
 	void UpdateTempItemSpriteImage();
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory UI")
 	void UpdateEntireInventory();
+
+	UFUNCTION(BlueprintCallable, Category="Inventory UI")
+	void SetInterfaceOpenState(bool bIsOpened);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory UI")
+	void UpdateInventoryBackdrop();
 	
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;

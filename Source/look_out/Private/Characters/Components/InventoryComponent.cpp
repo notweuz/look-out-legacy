@@ -36,6 +36,11 @@ void UInventoryComponent::OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, b
 
 void UInventoryComponent::OnInventoryWindowClicked()
 {
+	OnInventoryWindowClickedFor(this);
+}
+
+void UInventoryComponent::OnInventoryWindowClickedFor(UStorageComponent* TargetStorage)
+{
 	if (!OwnerCharacter)
 	{
 		return;
@@ -46,14 +51,19 @@ void UInventoryComponent::OnInventoryWindowClicked()
 		return;
 	}
 
-	if (!CanAddItem(TempItem))
+	if (!TargetStorage)
+	{
+		TargetStorage = this;
+	}
+
+	if (!TargetStorage->CanAddItem(TempItem))
 	{
 		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Not enough storage weight for drag&drop to storage"));
 		// TODO: UI notification
 		return;
 	}
 
-	Storage.Add(TempItem);
+	TargetStorage->Storage.Add(TempItem);
 	TempItem = FItem();
 
 	UpdateInventoryUI();
@@ -79,7 +89,17 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 		return;
 	}
 
-	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && !TempItem.ItemClass.IsNull() && !CanSwapItems(TempItem, SlotItem))
+	UStorageComponent* TargetStorage = ClickedSlot->InventorySlotType == EInventorySlotType::Hotbar
+		                                   ? this
+		                                   : ClickedSlot->LinkedStorage.Get();
+
+	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && !TargetStorage)
+	{
+		return;
+	}
+
+	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && !TempItem.ItemClass.IsNull() &&
+		!TargetStorage->CanSwapItems(TempItem, SlotItem))
 	{
 		UE_LOG(LogInventory, Warning,
 		       TEXT("InventoryComponent: Not enough storage weight for drag&drop swap to storage"));
@@ -92,9 +112,9 @@ void UInventoryComponent::ProcessItemDragNDrop(UBasePlayerInventorySlot* Clicked
 	if (ClickedSlot->InventorySlotType != EInventorySlotType::Hotbar && SlotItem.ItemClass.IsNull())
 	{
 		const int32 SlotIndex = ClickedSlot->InventorySlotIndex;
-		if (Storage.IsValidIndex(SlotIndex))
+		if (TargetStorage->Storage.IsValidIndex(SlotIndex))
 		{
-			Storage.RemoveAt(SlotIndex);
+			TargetStorage->Storage.RemoveAt(SlotIndex);
 		}
 	}
 
@@ -159,13 +179,19 @@ FItem* UInventoryComponent::GetItemForSlot(const UBasePlayerInventorySlot* Slot)
 		return &Hotbar[SlotIndex];
 	}
 
-	if (!Storage.IsValidIndex(SlotIndex))
+	if (!Slot->LinkedStorage)
+	{
+		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Slot has no linked storage"));
+		return nullptr;
+	}
+
+	if (!Slot->LinkedStorage->Storage.IsValidIndex(SlotIndex))
 	{
 		UE_LOG(LogInventory, Warning, TEXT("InventoryComponent: Invalid storage index %d"), SlotIndex);
 		return nullptr;
 	}
 
-	return &Storage[SlotIndex];
+	return &Slot->LinkedStorage->Storage[SlotIndex];
 }
 
 AActor* UInventoryComponent::GetItemInHandActor() const

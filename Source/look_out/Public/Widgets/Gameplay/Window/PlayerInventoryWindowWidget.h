@@ -9,6 +9,8 @@
 #include "Widgets/Gameplay/BasePlayerInventorySlot.h"
 #include "PlayerInventoryWindowWidget.generated.h"
 
+class UStorageComponent;
+
 /**
  * 
  */
@@ -31,6 +33,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category="Inventory")
 	TArray<UBasePlayerInventorySlot*> InventorySlotWidgets;
+
+	UPROPERTY(BlueprintReadWrite, Category="Inventory")
+	TObjectPtr<UStorageComponent> LinkedStorage;
+
+	UPROPERTY(BlueprintReadWrite, Category="Inventory")
+	TEnumAsByte<EInventorySlotType> WindowSlotType = EInventorySlotType::PlayerInventory;
+
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	void SetupInventoryWindow(UStorageComponent* InStorage, EInventorySlotType InSlotType);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	void UpdateInventorySlots();

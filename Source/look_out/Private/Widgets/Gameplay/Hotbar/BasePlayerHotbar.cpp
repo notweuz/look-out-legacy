@@ -30,5 +30,6 @@ void UBasePlayerHotbar::UpdateHotbarSlots_Implementation()
 		Slots[I]->SetSlotImage(ItemList.IsValidIndex(I) ? ItemList[I].ItemIcon.Get() : nullptr);
 		Slots[I]->InventorySlotType = Hotbar;
 		Slots[I]->InventorySlotIndex = I;
+		Slots[I]->LinkedStorage = Player->InventoryComponent;
 	}
 }

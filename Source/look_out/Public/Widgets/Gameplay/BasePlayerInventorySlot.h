@@ -8,6 +8,8 @@
 #include "Enums/InventorySlotType.h"
 #include "BasePlayerInventorySlot.generated.h"
 
+class UStorageComponent;
+
 UCLASS()
 class LOOK_OUT_API UBasePlayerInventorySlot : public UUserWidget
 {
@@ -25,6 +27,9 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Slot")
 	TEnumAsByte<EInventorySlotType> InventorySlotType;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Inventory Slot")
+	TObjectPtr<UStorageComponent> LinkedStorage;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetSlotImage(UTexture2D* Texture);

@@ -60,6 +60,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void OnSlotClicked(UBasePlayerInventorySlot* ClickedSlot, bool IsRMB);
+
+	void OnInventoryWindowClickedFor(UStorageComponent* TargetStorage);
 	
 private:
 	UFUNCTION()

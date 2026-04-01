@@ -5,12 +5,20 @@
 
 #include "Libraries/UIHelpers.h"
 #include "Characters/BaseCharacter.h"
+#include "Core/Components/StorageComponent.h"
 #include "Characters/Components/InventoryComponent.h"
 #include "InputCoreTypes.h"
 
 void UPlayerInventoryWindowWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+}
+
+void UPlayerInventoryWindowWidget::SetupInventoryWindow(UStorageComponent* InStorage, const EInventorySlotType InSlotType)
+{
+	LinkedStorage = InStorage;
+	WindowSlotType = InSlotType;
+	UpdateInventorySlots();
 }
 
 FReply UPlayerInventoryWindowWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
@@ -20,7 +28,7 @@ FReply UPlayerInventoryWindowWidget::NativeOnMouseButtonDown(const FGeometry& In
 	{
 		if (const ABaseCharacter* Player = UUIHelpers::GetBasePlayerFromWidget(this); Player && Player->InventoryComponent)
 		{
-			Player->InventoryComponent->OnInventoryWindowClicked();
+			Player->InventoryComponent->OnInventoryWindowClickedFor(LinkedStorage);
 		}
 
 		return FReply::Handled();
@@ -33,20 +41,21 @@ void UPlayerInventoryWindowWidget::UpdateInventorySlots()
 {
 	ClearInventorySlots();
 
-	const ABaseCharacter* Player = UUIHelpers::GetBasePlayerFromWidget(this);
-	if (!Player) return;
+	if (!LinkedStorage || !InventorySlotsBox || !InventorySlotClass)
+	{
+		return;
+	}
 	
-	TArray<FItem> ItemList = Player->InventoryComponent->Storage;
+	const TArray<FItem>& ItemList = LinkedStorage->Storage;
 	for (int32 I = 0; I < ItemList.Num(); I++)
 	{
-		if (!InventorySlotClass) continue;
-
 		UBasePlayerInventorySlot* NewSlot = CreateWidget<UBasePlayerInventorySlot>(this, InventorySlotClass);
 		if (!NewSlot) continue;
 
 		NewSlot->SetSlotImage(ItemList[I].ItemIcon.Get());
 		NewSlot->InventorySlotIndex = I;
-		NewSlot->InventorySlotType = PlayerInventory;
+		NewSlot->InventorySlotType = WindowSlotType;
+		NewSlot->LinkedStorage = LinkedStorage;
 		InventorySlotsBox->AddChild(NewSlot);
 		InventorySlotWidgets.Add(NewSlot);
 	}

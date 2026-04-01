@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Components/StorageComponent.h"
 #include "InventoryComponent.h"
 #include "Components/ActorComponent.h"
 #include "Widgets/BasePlayerWindowWidget.h"
@@ -12,6 +13,7 @@
 
 
 class ABaseCharacter;
+class UNamedSlot;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UPlayerUIComponent : public UActorComponent
@@ -44,18 +46,31 @@ public:
 	TSubclassOf<UBasePlayerWindowWidget> PlayerWindowClass;
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
-	void ToggleInventoryWindow(UInventoryComponent* AdditionalInventory);
+	void ToggleInventoryWindow(UStorageComponent* AdditionalInventory);
 
 	UPROPERTY(BlueprintReadWrite, Category="Interface")
 	bool bIsInventoryWindowOpen = false;
 
 private:
+	void CloseInventoryWindows();
+	void ApplyInventoryInputMode(bool bInventoryOpened) const;
+	UBasePlayerWindowWidget* CreateInventoryWindow(
+		UStorageComponent* StorageToDisplay,
+		UNamedSlot* TargetSlot,
+		const FText& WindowTitle,
+		EInventorySlotType SlotType,
+		const FVector2D& InitialOffset = FVector2D::ZeroVector
+	) const;
+
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;
 
 	UPROPERTY()
-	UBasePlayerWindowWidget* SoloInventoryWindow;
+	TObjectPtr<UBasePlayerWindowWidget> SoloInventoryWindow;
 
 	UPROPERTY()
-	UBasePlayerWindowWidget* AdditionalInventoryWindow;
+	TObjectPtr<UBasePlayerWindowWidget> AdditionalInventoryWindow;
+
+	UPROPERTY()
+	TObjectPtr<UStorageComponent> OpenedAdditionalInventory;
 };

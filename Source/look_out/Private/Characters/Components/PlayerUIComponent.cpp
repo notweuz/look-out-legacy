@@ -50,9 +50,27 @@ void UPlayerUIComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalInventory)
+void UPlayerUIComponent::CloseInventoryWindows()
 {
-	if (!PlayerWindowClass || !InventoryWindowClass || !OwnerCharacter || !PlayerUI)
+	if (SoloInventoryWindow)
+	{
+		SoloInventoryWindow->RemoveFromParent();
+		SoloInventoryWindow = nullptr;
+	}
+
+	if (AdditionalInventoryWindow)
+	{
+		AdditionalInventoryWindow->RemoveFromParent();
+		AdditionalInventoryWindow = nullptr;
+	}
+
+	OpenedAdditionalInventory = nullptr;
+	bIsInventoryWindowOpen = false;
+}
+
+void UPlayerUIComponent::ApplyInventoryInputMode(const bool bInventoryOpened) const
+{
+	if (!OwnerCharacter)
 	{
 		return;
 	}
@@ -63,24 +81,68 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 		return;
 	}
 
-	if (bIsInventoryWindowOpen)
-	{
-		if (SoloInventoryWindow)
-		{
-			SoloInventoryWindow->RemoveFromParent();
-			SoloInventoryWindow = nullptr;
-		}
-		if (AdditionalInventoryWindow)
-		{
-			AdditionalInventoryWindow->RemoveFromParent();
-			AdditionalInventoryWindow = nullptr;
-		}
+	PC->SetIgnoreLookInput(bInventoryOpened);
 
-		bIsInventoryWindowOpen = false;
-		PC->SetIgnoreLookInput(false);
+	if (bInventoryOpened)
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		PC->SetInputMode(InputMode);
+	}
+	else
+	{
 		PC->SetInputMode(FInputModeGameOnly());
-		PC->SetShowMouseCursor(false);
-		OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened = false;
+	}
+
+	PC->SetShowMouseCursor(bInventoryOpened);
+
+	if (PlayerUI)
+	{
+		PlayerUI->SetInterfaceOpenState(bInventoryOpened);
+	}
+}
+
+UBasePlayerWindowWidget* UPlayerUIComponent::CreateInventoryWindow(
+	UStorageComponent* StorageToDisplay,
+	UNamedSlot* TargetSlot,
+	const FText& WindowTitle,
+	const EInventorySlotType SlotType,
+	const FVector2D& InitialOffset
+) const
+{
+	if (!OwnerCharacter || !TargetSlot || !PlayerWindowClass || !InventoryWindowClass || !StorageToDisplay)
+	{
+		return nullptr;
+	}
+
+	APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
+	if (!PC)
+	{
+		return nullptr;
+	}
+
+	UBasePlayerWindowWidget* Window = CreateWidget<UBasePlayerWindowWidget>(PC, PlayerWindowClass);
+	UPlayerInventoryWindowWidget* InventoryWidget = CreateWidget<UPlayerInventoryWindowWidget>(PC, InventoryWindowClass);
+	if (!Window || !InventoryWidget)
+	{
+		return nullptr;
+	}
+
+	Window->TitleTextBlock->SetText(WindowTitle);
+	Window->CloseButton->SetVisibility(ESlateVisibility::Hidden);
+	Window->SetRenderTranslation(InitialOffset);
+	InventoryWidget->SetupInventoryWindow(StorageToDisplay, SlotType);
+	Window->BodySlot->AddChild(InventoryWidget);
+	TargetSlot->AddChild(Window);
+
+	return Window;
+}
+
+void UPlayerUIComponent::ToggleInventoryWindow(UStorageComponent* AdditionalInventory)
+{
+	if (!PlayerWindowClass || !InventoryWindowClass || !OwnerCharacter || !PlayerUI)
+	{
 		return;
 	}
 
@@ -90,53 +152,49 @@ void UPlayerUIComponent::ToggleInventoryWindow(UInventoryComponent* AdditionalIn
 		return;
 	}
 
-	if (AdditionalInventory)
-	{
-		UBasePlayerWindowWidget* Window1 = CreateWidget<UBasePlayerWindowWidget>(PC, PlayerWindowClass);
-		if (UPlayerInventoryWindowWidget* InvWidget1 = CreateWidget<
-			UPlayerInventoryWindowWidget>(PC, InventoryWindowClass); Window1 && InvWidget1 && PlayerUI->InventorySlot1)
-		{
-			Window1->TitleTextBlock->SetText(FText::FromString(TEXT("Inventory")));
-			InvWidget1->UpdateInventorySlots();
-			Window1->CloseButton->SetVisibility(ESlateVisibility::Hidden);
-			Window1->BodySlot->AddChild(InvWidget1);
-			PlayerUI->InventorySlot1->AddChild(Window1);
-			SoloInventoryWindow = Window1;
-		}
+	const bool bRequestedStorageView = AdditionalInventory != nullptr;
+	const bool bSameLayoutAlreadyOpen = bIsInventoryWindowOpen &&
+		OpenedAdditionalInventory == AdditionalInventory;
 
-		UBasePlayerWindowWidget* Window2 = CreateWidget<UBasePlayerWindowWidget>(PC, PlayerWindowClass);
-		if (UPlayerInventoryWindowWidget* InvWidget2 = CreateWidget<
-			UPlayerInventoryWindowWidget>(PC, InventoryWindowClass); Window2 && InvWidget2 && PlayerUI->InventorySlot2)
-		{
-			Window2->TitleTextBlock->SetText(FText::FromString(TEXT("Container")));
-			InvWidget2->UpdateInventorySlots();
-			Window2->BodySlot->AddChild(InvWidget2);
-			Window2->CloseButton->SetVisibility(ESlateVisibility::Hidden);
-			PlayerUI->InventorySlot2->AddChild(Window2);
-			AdditionalInventoryWindow = Window2;
-		}
+	if (bSameLayoutAlreadyOpen || (bIsInventoryWindowOpen && !bRequestedStorageView))
+	{
+		CloseInventoryWindows();
+		ApplyInventoryInputMode(false);
+		return;
+	}
+
+	CloseInventoryWindows();
+
+	if (bRequestedStorageView)
+	{
+		SoloInventoryWindow = CreateInventoryWindow(
+			OwnerInventory,
+			PlayerUI->InventorySlot1,
+			FText::FromString(TEXT("Inventory")),
+			EInventorySlotType::PlayerInventory,
+			FVector2D(-80.0f, 0.0f)
+		);
+
+		AdditionalInventoryWindow = CreateInventoryWindow(
+			AdditionalInventory,
+			PlayerUI->InventorySlot2,
+			FText::FromString(TEXT("Container")),
+			EInventorySlotType::ExternalInventory,
+			FVector2D(80.0f, 0.0f)
+		);
+
+		OpenedAdditionalInventory = AdditionalInventory;
 	}
 	else
 	{
-		UBasePlayerWindowWidget* Window = CreateWidget<UBasePlayerWindowWidget>(PC, PlayerWindowClass);
-		UPlayerInventoryWindowWidget* InvWidget = CreateWidget<UPlayerInventoryWindowWidget>(PC, InventoryWindowClass);
-		if (Window && InvWidget && PlayerUI->SoloInventorySlot)
-		{
-			Window->TitleTextBlock->SetText(FText::FromString(TEXT("Inventory")));
-			InvWidget->UpdateInventorySlots();
-			Window->CloseButton->SetVisibility(ESlateVisibility::Hidden);
-			Window->BodySlot->AddChild(InvWidget);
-			PlayerUI->SoloInventorySlot->AddChild(Window);
-			SoloInventoryWindow = Window;
-		}
+		SoloInventoryWindow = CreateInventoryWindow(
+			OwnerInventory,
+			PlayerUI->SoloInventorySlot,
+			FText::FromString(TEXT("Inventory")),
+			EInventorySlotType::PlayerInventory
+		);
 	}
 
-	PC->SetIgnoreLookInput(true);
-	FInputModeGameAndUI InputMode;
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(false);
-	PC->SetInputMode(InputMode);
-	PC->SetShowMouseCursor(true);
-	OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened = true;
-	bIsInventoryWindowOpen = true;
+	bIsInventoryWindowOpen = SoloInventoryWindow != nullptr || AdditionalInventoryWindow != nullptr;
+	ApplyInventoryInputMode(bIsInventoryWindowOpen);
 }
