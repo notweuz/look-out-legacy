@@ -23,9 +23,25 @@ void UPlayerSideInteractionComponent::TickComponent(float DeltaTime, ELevelTick 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+UObject* UPlayerSideInteractionComponent::ResolveInteractableTarget(const FHitResult& Hit) const
+{
+	if (UPrimitiveComponent* HitComponent = Hit.GetComponent();
+		HitComponent && HitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		return HitComponent;
+	}
+
+	if (AActor* HitActor = Hit.GetActor(); HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		return HitActor;
+	}
+
+	return nullptr;
+}
+
 void UPlayerSideInteractionComponent::Interact() const
 {
-	if (!OwnerCharacter)
+	if (!OwnerCharacter || !GetWorld())
 	{
 		return;
 	}
@@ -46,38 +62,27 @@ void UPlayerSideInteractionComponent::Interact() const
 		return;
 	}
 
-	UPrimitiveComponent* HitComponent = Hit.GetComponent();
 	AActor* HitActor = Hit.GetActor();
-
-	UObject* InteractableTarget = nullptr;
-
-	if (HitComponent && HitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-	{
-		UE_LOG(LogPlayer, Log, TEXT("PSIComponent found an interactable actor component %s"), *HitComponent->GetName())
-		InteractableTarget = HitComponent;
-	}
-	else if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-	{
-		UE_LOG(LogPlayer, Log, TEXT("PSIComponent found an interactable actor %s"), *HitActor->GetName())
-		InteractableTarget = HitActor;
-	}
+	UObject* InteractableTarget = ResolveInteractableTarget(Hit);
 
 #if WITH_EDITOR
 	if (InteractableTarget)
 	{
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Blue, false, 2.0f);
-		UE_LOG(LogPlayer, Log, TEXT("PSIComponent hit interactable actor: %s"), *HitActor->GetName())
+		const FString HitName = HitActor ? HitActor->GetName() : InteractableTarget->GetName();
+		UE_LOG(LogPlayer, Log, TEXT("PSIComponent hit interactable actor: %s"), *HitName);
 	}
 	else
 	{
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
-		UE_LOG(LogPlayer, Log, TEXT("PSIComponent hit non-interactable actor: %s"), *HitActor->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("PSIComponent hit non-interactable actor: %s"),
+		       HitActor ? *HitActor->GetName() : TEXT("None"));
 	}
 #endif
 
 	if (InteractableTarget)
 	{
-		UE_LOG(LogPlayer, Log, TEXT("PSIComponent executing interaction on %s"), *InteractableTarget->GetName())
+		UE_LOG(LogPlayer, Log, TEXT("PSIComponent executing interaction on %s"), *InteractableTarget->GetName());
 		IInteractable::Execute_Interact(InteractableTarget, OwnerCharacter);
 	}
 }

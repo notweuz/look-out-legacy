@@ -32,4 +32,6 @@ public:
 private:
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;
+
+	UObject* ResolveInteractableTarget(const FHitResult& Hit) const;
 };

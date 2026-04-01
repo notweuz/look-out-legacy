@@ -29,4 +29,7 @@ public:
 	UTextBlock* StoreText;
 
 	void UpdateFromComponent(UActorComponent* Component) const;
+
+private:
+	void ResetHints() const;
 };

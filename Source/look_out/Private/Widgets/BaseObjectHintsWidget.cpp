@@ -7,8 +7,41 @@
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Storeable.h"
 
+void UBaseObjectHintsWidget::ResetHints() const
+{
+	if (DisplayName)
+	{
+		DisplayName->SetText(FText::GetEmpty());
+	}
+
+	if (Description)
+	{
+		Description->SetText(FText::GetEmpty());
+	}
+
+	if (InteractText)
+	{
+		InteractText->SetText(FText::GetEmpty());
+		InteractText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (GrabText)
+	{
+		GrabText->SetText(FText::GetEmpty());
+		GrabText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (StoreText)
+	{
+		StoreText->SetText(FText::GetEmpty());
+		StoreText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
 void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) const
 {
+	ResetHints();
+
 	if (!Component)
 	{
 		return;
@@ -28,26 +61,49 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 		return;
 	}
 
+	if (DisplayName)
+	{
+		if (const AActor* TargetActor = Cast<AActor>(Target))
+		{
+			DisplayName->SetText(FText::FromString(TargetActor->GetActorNameOrLabel()));
+		}
+		else
+		{
+			DisplayName->SetText(FText::FromString(Target->GetName()));
+		}
+	}
+
 	if (Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()))
 	{
-		FText GrabTextValue = IGrabbable::Execute_GetGrabWidgetText(Target);
-		GrabText->SetText(GrabTextValue.IsEmpty() ? FText::FromString(TEXT("LMB - Grab")) : GrabTextValue);
-		GrabText->SetVisibility(ESlateVisibility::Visible);
+		if (GrabText)
+		{
+			const FText GrabTextValue = IGrabbable::Execute_GetGrabWidgetText(Target);
+			GrabText->SetText(GrabTextValue.IsEmpty() ? FText::FromString(TEXT("LMB - Grab")) : GrabTextValue);
+			GrabText->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 
 	if (Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		InteractText->SetText(FText::FromString(TEXT("E - Interact")));
-		InteractText->SetVisibility(ESlateVisibility::Visible);
+		if (InteractText)
+		{
+			const FText InteractHint = IInteractable::Execute_GetInteractWidgetText(Target);
+			InteractText->SetText(InteractHint.IsEmpty() ? FText::FromString(TEXT("E - Interact")) : InteractHint);
+			InteractText->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 
 	if (Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
 	{
-		StoreText->SetText(FText::FromString(TEXT("RMB - Collect")));
-		StoreText->SetVisibility(ESlateVisibility::Visible);
+		if (StoreText)
+		{
+			const FText StoreHint = IStoreable::Execute_GetStoreWidgetText(Target);
+			StoreText->SetText(StoreHint.IsEmpty() ? FText::FromString(TEXT("RMB - Collect")) : StoreHint);
+			StoreText->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 
-	if (Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
+	if (Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()) && Description)
 	{
 		if (AActor* OwnerActor = Cast<AActor>(Target))
 		{

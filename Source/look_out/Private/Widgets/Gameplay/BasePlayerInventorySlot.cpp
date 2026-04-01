@@ -1,6 +1,8 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 #include "Widgets/Gameplay/BasePlayerInventorySlot.h"
+
+#include "Characters/Components/InventoryComponent.h"
 #include "Components/SizeBox.h"
 #include "Libraries/UIHelpers.h"
 
@@ -32,7 +34,10 @@ void UBasePlayerInventorySlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (!Sprite->GetBrush().GetResourceObject()) Sprite->SetVisibility(ESlateVisibility::Hidden);
+	if (Sprite && !Sprite->GetBrush().GetResourceObject())
+	{
+		Sprite->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 FReply UBasePlayerInventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -42,7 +47,10 @@ FReply UBasePlayerInventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeom
 		if (const FKey EffectingButton = InMouseEvent.GetEffectingButton(); EffectingButton == EKeys::LeftMouseButton ||
 			EffectingButton == EKeys::RightMouseButton)
 		{
-			Player->InventoryComponent->OnSlotClicked(this, EffectingButton == EKeys::RightMouseButton);
+			if (Player->InventoryComponent)
+			{
+				Player->InventoryComponent->OnSlotClicked(this, EffectingButton == EKeys::RightMouseButton);
+			}
 		}
 	}
 

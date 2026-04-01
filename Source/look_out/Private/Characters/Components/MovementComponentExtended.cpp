@@ -8,14 +8,11 @@
 #include "Characters/Components/PlayerInputsComponent.h"
 #include "Core/AdvancedGameUserSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values for this component's properties
 UMovementComponentExtended::UMovementComponentExtended()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
 }
 
 
@@ -28,9 +25,33 @@ void UMovementComponentExtended::BeginPlay()
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
+bool UMovementComponentExtended::HasMovementOwner() const
+{
+	return OwnerCharacter != nullptr;
+}
+
+UCharacterMovementComponent* UMovementComponentExtended::GetCharacterMovementComponent() const
+{
+	return OwnerCharacter ? OwnerCharacter->GetCharacterMovement() : nullptr;
+}
+
+float UMovementComponentExtended::GetMouseSensitivity() const
+{
+	if (const UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings())
+	{
+		return Settings->MouseSensitivity;
+	}
+
+	return 1.0f;
+}
 
 void UMovementComponentExtended::MoveForward(const float AxisValue)
 {
+	if (!HasMovementOwner())
+	{
+		return;
+	}
+
 	const FRotator ControlRotation = OwnerCharacter->GetControlRotation();
 
 	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
@@ -42,6 +63,11 @@ void UMovementComponentExtended::MoveForward(const float AxisValue)
 
 void UMovementComponentExtended::MoveRight(const float AxisValue)
 {
+	if (!HasMovementOwner())
+	{
+		return;
+	}
+
 	const FRotator ControlRotation = OwnerCharacter->GetControlRotation();
 
 	const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
@@ -53,14 +79,19 @@ void UMovementComponentExtended::MoveRight(const float AxisValue)
 
 void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY)
 {
+	if (!HasMovementOwner() || !OwnerCharacter->PlayerInputsComponent || !OwnerCharacter->GrabbingComponent)
+	{
+		return;
+	}
+
 	const bool bRotateObject = OwnerCharacter->PlayerInputsComponent->IsActionHeld(
 		OwnerCharacter->PlayerInputsComponent->IA_Rotate);
-	const UAdvancedGameUserSettings* Settings = UAdvancedGameUserSettings::GetAdvancedGameUserSettings();
 	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject &&
 		OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
-		InputAxisX *= Settings->MouseSensitivity;
-		InputAxisY *= Settings->MouseSensitivity;
+		const float MouseSensitivity = GetMouseSensitivity();
+		InputAxisX *= MouseSensitivity;
+		InputAxisY *= MouseSensitivity;
 		OwnerCharacter->AddControllerYawInput(InputAxisX);
 		OwnerCharacter->AddControllerPitchInput(InputAxisY);
 	}
@@ -72,11 +103,19 @@ void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY)
 
 void UMovementComponentExtended::JumpAction()
 {
-	OwnerCharacter->Jump();
+	if (HasMovementOwner())
+	{
+		OwnerCharacter->Jump();
+	}
 }
 
 void UMovementComponentExtended::DoCrouch(const bool State)
 {
+	if (!HasMovementOwner())
+	{
+		return;
+	}
+
 	if (State)
 	{
 		if (OwnerCharacter->CanCrouch())
@@ -120,6 +159,9 @@ void UMovementComponentExtended::ToggleSprint(const bool State)
 
 void UMovementComponentExtended::ChangeWalkSpeed(const float _WalkSpeed)
 {
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = _WalkSpeed;
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeedCrouched = _WalkSpeed / 2;
+	if (UCharacterMovementComponent* CharacterMovement = GetCharacterMovementComponent())
+	{
+		CharacterMovement->MaxWalkSpeed = _WalkSpeed;
+		CharacterMovement->MaxWalkSpeedCrouched = _WalkSpeed / 2.0f;
+	}
 }

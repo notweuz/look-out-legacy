@@ -26,6 +26,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	UPROPERTY()
@@ -41,6 +42,7 @@ private:
 	void UpdateWidgetHints(UObject* Component) const;
 	void CreateHintsWidget(USceneComponent* AttachTarget);
 	void DestroyHintsWidget();
+	USceneComponent* ResolveAttachTarget(UActorComponent* Component) const;
 
 	static bool ImplementsAnyHintInterface(const UClass* Class);
 };

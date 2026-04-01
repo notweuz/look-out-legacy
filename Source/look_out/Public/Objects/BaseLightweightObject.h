@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/Save/ActorSaveData.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Grabbable.h"
+#include "Interfaces/Saveable.h"
 #include "BaseLightweightObject.generated.h"
 
 UCLASS(Blueprintable, BlueprintType)
-class LOOK_OUT_API ABaseLightweightObject : public AActor, public IGrabbable
+class LOOK_OUT_API ABaseLightweightObject : public AActor, public IGrabbable, public ISaveable
 {
 	GENERATED_BODY()
 
@@ -21,10 +23,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
-
 	virtual FText GetGrabWidgetText_Implementation() override;
+	virtual void OnSave_Implementation(TArray<uint8>& OutData) override;
+	virtual void OnLoad_Implementation(const TArray<uint8>& InData) override;
+	virtual FString GetSaveID_Implementation() const override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="Save System")
+	FGuid PersistentActorId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Save System")
+	bool bGeneratePersistentActorIdOnBeginPlay = true;
+
+protected:
+	void EnsurePersistentActorId();
 };

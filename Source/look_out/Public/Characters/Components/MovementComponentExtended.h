@@ -62,4 +62,9 @@ public:
 protected:
 	UPROPERTY()
 	class ABaseCharacter* OwnerCharacter;
+
+private:
+	bool HasMovementOwner() const;
+	class UCharacterMovementComponent* GetCharacterMovementComponent() const;
+	float GetMouseSensitivity() const;
 };

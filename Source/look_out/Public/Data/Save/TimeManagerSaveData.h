@@ -3,36 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemTag.h"
-#include "Item.generated.h"
+#include "TimeManagerSaveData.generated.h"
 
 USTRUCT(BlueprintType)
-struct LOOK_OUT_API FItem
+struct LOOK_OUT_API FTimeManagerSaveData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	TSoftClassPtr<AActor> ItemClass;
+	FGuid SaveId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	int32 Quantity = 1;
+	int32 Day = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	int32 ItemWeight = 0;
+	float Time = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	TArray<FItemTag> SavedTags;
+	float DayLength = 3600.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	TSoftObjectPtr<UTexture2D> ItemIcon;
+	float RealHoursPerDay = 1.0f;
 
-	bool IsValid() const
-	{
-		return !ItemClass.IsNull();
-	}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	float TimeDilation = 1.0f;
 
-	void Reset()
-	{
-		*this = FItem();
-	}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+	bool bTimeStopped = false;
 };

@@ -52,7 +52,7 @@ void UPlayerInventoryWindowWidget::UpdateInventorySlots()
 		UBasePlayerInventorySlot* NewSlot = CreateWidget<UBasePlayerInventorySlot>(this, InventorySlotClass);
 		if (!NewSlot) continue;
 
-		NewSlot->SetSlotImage(ItemList[I].ItemIcon.Get());
+		NewSlot->SetSlotImage(ItemList[I].ItemIcon.LoadSynchronous());
 		NewSlot->InventorySlotIndex = I;
 		NewSlot->InventorySlotType = WindowSlotType;
 		NewSlot->LinkedStorage = LinkedStorage;
@@ -63,6 +63,11 @@ void UPlayerInventoryWindowWidget::UpdateInventorySlots()
 
 void UPlayerInventoryWindowWidget::ClearInventorySlots()
 {
+	if (InventorySlotsBox)
+	{
+		InventorySlotsBox->ClearChildren();
+	}
+
 	for (UBasePlayerInventorySlot* Slot : InventorySlotWidgets)
 	{
 		if (Slot)

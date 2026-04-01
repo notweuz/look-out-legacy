@@ -4,7 +4,7 @@
 
 UTimeIntegrationComponent::UTimeIntegrationComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UTimeIntegrationComponent::BeginPlay()
@@ -30,9 +30,19 @@ void UTimeIntegrationComponent::TickComponent(const float DeltaTime, const ELeve
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UTimeIntegrationComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (TimeManager)
+	{
+		TimeManager->OnCallMinutePassed.RemoveDynamic(this, &UTimeIntegrationComponent::OnMinutePassedTriggered);
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void UTimeIntegrationComponent::OnMinutePassedTriggered(const int32 Day, const float Time)
 {
-	UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Integration Component Side] Triggered Minute Passed Event"))
+	UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Integration Component Side] Triggered Minute Passed Event"));
 	OnMinutePassed.Broadcast(Day, Time);
 }
 

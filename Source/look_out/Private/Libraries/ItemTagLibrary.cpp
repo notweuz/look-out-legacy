@@ -148,14 +148,14 @@ FString UItemTagLibrary::ItemTagToString(const FItemTag& Tag)
 
 bool UItemTagLibrary::ItemTagHasName(const FItemTag& Tag, const FString& TagName)
 {
-	return Tag.TagName.Equals(TagName, ESearchCase::IgnoreCase);
+	return Tag.HasName(TagName);
 }
 
 bool UItemTagLibrary::FindItemTagByName(const TArray<FItemTag>& Tags, const FString& TagName, FItemTag& OutTag)
 {
 	for (const FItemTag& Tag : Tags)
 	{
-		if (Tag.TagName.Equals(TagName, ESearchCase::IgnoreCase))
+		if (Tag.HasName(TagName))
 		{
 			OutTag = Tag;
 			return true;
@@ -167,5 +167,5 @@ bool UItemTagLibrary::FindItemTagByName(const TArray<FItemTag>& Tags, const FStr
 
 bool UItemTagLibrary::IsItemTagType(const FItemTag& Tag, EStatValueType ExpectedType)
 {
-	return Tag.Type == ExpectedType;
+	return Tag.IsType(ExpectedType);
 }

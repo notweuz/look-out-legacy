@@ -8,7 +8,24 @@
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
+#include "Data/Save/TimeManagerSaveData.h"
 #include "Misc/LogCategories.h"
+#include "Serialization/MemoryReader.h"
+#include "Serialization/MemoryWriter.h"
+
+namespace TimeManagerPrivate
+{
+	void SerializeSaveData(FArchive& Archive, FTimeManagerSaveData& SaveData)
+	{
+		Archive << SaveData.SaveId;
+		Archive << SaveData.Day;
+		Archive << SaveData.Time;
+		Archive << SaveData.DayLength;
+		Archive << SaveData.RealHoursPerDay;
+		Archive << SaveData.TimeDilation;
+		Archive << SaveData.bTimeStopped;
+	}
+}
 
 // Sets default values
 ATimeManager::ATimeManager()
@@ -23,13 +40,15 @@ ATimeManager::ATimeManager()
 	VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
 
 	SkyLight->Intensity = 0.025;
+	EnsureSaveId();
 }
 
 // Called when the game starts or when spawned
 void ATimeManager::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogLookOutGame, Log, TEXT("Time Manager has been started"))
+	EnsureSaveId();
+	UE_LOG(LogLookOutGame, Log, TEXT("Time Manager has been started"));
 
 	PerformTimeUpdate(0);
 }
@@ -40,6 +59,14 @@ void ATimeManager::Tick(const float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	PerformTimeUpdate(DeltaTime);
+}
+
+void ATimeManager::EnsureSaveId()
+{
+	if (!PersistentSaveId.IsValid())
+	{
+		PersistentSaveId = FGuid::NewGuid();
+	}
 }
 
 void ATimeManager::PerformTimeUpdate(const float DeltaTime)
@@ -81,6 +108,50 @@ void ATimeManager::TriggerMinutePassed(const int _Day, const float _Time) const
 	if (OnCallMinutePassed.IsBound())
 	{
 		OnCallMinutePassed.Broadcast(_Day, _Time);
-		UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Manager Side] Triggered Minute Passed Event"))
+		UE_LOG(LogLookOutGame, Verbose, TEXT("[Time Manager Side] Triggered Minute Passed Event"));
 	}
+}
+
+void ATimeManager::OnSave_Implementation(TArray<uint8>& OutData)
+{
+	EnsureSaveId();
+
+	FTimeManagerSaveData SaveData;
+	SaveData.SaveId = PersistentSaveId;
+	SaveData.Day = Day;
+	SaveData.Time = Time;
+	SaveData.DayLength = DayLength;
+	SaveData.RealHoursPerDay = RealHoursPerDay;
+	SaveData.TimeDilation = TimeDilation;
+	SaveData.bTimeStopped = bTimeStopped;
+
+	FMemoryWriter Writer(OutData, true);
+	TimeManagerPrivate::SerializeSaveData(Writer, SaveData);
+}
+
+void ATimeManager::OnLoad_Implementation(const TArray<uint8>& InData)
+{
+	if (InData.Num() == 0)
+	{
+		return;
+	}
+
+	FTimeManagerSaveData SaveData;
+	FMemoryReader Reader(InData, true);
+	TimeManagerPrivate::SerializeSaveData(Reader, SaveData);
+
+	PersistentSaveId = SaveData.SaveId;
+	Day = SaveData.Day;
+	Time = SaveData.Time;
+	DayLength = SaveData.DayLength;
+	RealHoursPerDay = SaveData.RealHoursPerDay;
+	TimeDilation = SaveData.TimeDilation;
+	bTimeStopped = SaveData.bTimeStopped;
+	LastMinute = FMath::FloorToInt(Time / 2.5f);
+	PerformTimeUpdate(0.0f);
+}
+
+FString ATimeManager::GetSaveID_Implementation() const
+{
+	return PersistentSaveId.IsValid() ? PersistentSaveId.ToString(EGuidFormats::DigitsWithHyphens) : FString();
 }

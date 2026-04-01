@@ -3,23 +3,38 @@
 
 #include "Objects/BaseHeavyweightObject.h"
 
-// Sets default values
-ABaseHeavyweightObject::ABaseHeavyweightObject()
+#include "Components/PrimitiveComponent.h"
+#include "Serialization/MemoryReader.h"
+#include "Serialization/MemoryWriter.h"
+
+namespace BaseHeavyweightObjectPrivate
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	void SerializeSaveData(FArchive& Archive, FActorSaveData& SaveData)
+	{
+		Archive << SaveData.PersistentActorId;
+		Archive << SaveData.Transform;
+		Archive << SaveData.bHiddenInGame;
+		Archive << SaveData.bCollisionEnabled;
+	}
 }
 
-// Called when the game starts or when spawned
+ABaseHeavyweightObject::ABaseHeavyweightObject()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
 void ABaseHeavyweightObject::BeginPlay()
 {
 	Super::BeginPlay();
+	EnsurePersistentActorId();
 }
 
-// Called every frame
-void ABaseHeavyweightObject::Tick(float DeltaTime)
+void ABaseHeavyweightObject::EnsurePersistentActorId()
 {
-	Super::Tick(DeltaTime);
+	if (bGeneratePersistentActorIdOnBeginPlay && !PersistentActorId.IsValid())
+	{
+		PersistentActorId = FGuid::NewGuid();
+	}
 }
 
 EGrabbableObjectType ABaseHeavyweightObject::GetGrabbableType_Implementation()
@@ -30,4 +45,49 @@ EGrabbableObjectType ABaseHeavyweightObject::GetGrabbableType_Implementation()
 FText ABaseHeavyweightObject::GetGrabWidgetText_Implementation()
 {
 	return FText::FromString(TEXT("LMB - Drag"));
+}
+
+void ABaseHeavyweightObject::OnSave_Implementation(TArray<uint8>& OutData)
+{
+	EnsurePersistentActorId();
+
+	FActorSaveData SaveData;
+	SaveData.PersistentActorId = PersistentActorId;
+	SaveData.Transform = GetActorTransform();
+	SaveData.bHiddenInGame = IsHidden();
+
+	if (const UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(GetRootComponent()))
+	{
+		SaveData.bCollisionEnabled = Primitive->GetCollisionEnabled() != ECollisionEnabled::NoCollision;
+	}
+
+	FMemoryWriter Writer(OutData, true);
+	BaseHeavyweightObjectPrivate::SerializeSaveData(Writer, SaveData);
+}
+
+void ABaseHeavyweightObject::OnLoad_Implementation(const TArray<uint8>& InData)
+{
+	if (InData.Num() == 0)
+	{
+		return;
+	}
+
+	FActorSaveData SaveData;
+	FMemoryReader Reader(InData, true);
+	BaseHeavyweightObjectPrivate::SerializeSaveData(Reader, SaveData);
+
+	PersistentActorId = SaveData.PersistentActorId;
+	SetActorTransform(SaveData.Transform);
+	SetActorHiddenInGame(SaveData.bHiddenInGame);
+
+	if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(GetRootComponent()))
+	{
+		Primitive->SetCollisionEnabled(
+			SaveData.bCollisionEnabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+	}
+}
+
+FString ABaseHeavyweightObject::GetSaveID_Implementation() const
+{
+	return PersistentActorId.IsValid() ? PersistentActorId.ToString(EGuidFormats::DigitsWithHyphens) : FString();
 }

@@ -13,7 +13,7 @@
 
 UGrabbingComponent::UGrabbingComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UGrabbingComponent::BeginPlay()
@@ -26,11 +26,6 @@ void UGrabbingComponent::TickComponent(const float DeltaTime, const ELevelTick T
                                        FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (IsGrabbingObject)
-	{
-		ProcessGrabbing(DeltaTime);
-	}
 }
 
 bool UGrabbingComponent::HasRequiredComponents() const

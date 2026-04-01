@@ -19,13 +19,27 @@ void UPlayerObjectHintsComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
-	GetWorld()->GetTimerManager().SetTimer(
-		TimerHandle, this, &UPlayerObjectHintsComponent::ScanForObject, 0.1f, true);
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			TimerHandle, this, &UPlayerObjectHintsComponent::ScanForObject, 0.1f, true);
+	}
+}
+
+void UPlayerObjectHintsComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	}
+
+	DestroyHintsWidget();
+	Super::EndPlay(EndPlayReason);
 }
 
 void UPlayerObjectHintsComponent::ScanForObject()
 {
-	if (!OwnerCharacter)
+	if (!OwnerCharacter || !GetWorld() || !OwnerCharacter->PlayerInteractionComponent)
 	{
 		return;
 	}
@@ -59,6 +73,21 @@ void UPlayerObjectHintsComponent::ScanForObject()
 	}
 }
 
+USceneComponent* UPlayerObjectHintsComponent::ResolveAttachTarget(UActorComponent* Component) const
+{
+	if (USceneComponent* SceneComponent = Cast<USceneComponent>(Component))
+	{
+		return SceneComponent;
+	}
+
+	if (Component && Component->GetOwner())
+	{
+		return Component->GetOwner()->GetRootComponent();
+	}
+
+	return nullptr;
+}
+
 void UPlayerObjectHintsComponent::ProcessNewComponent(UActorComponent* Component)
 {
 	if (Component == CurrentHintsComponent)
@@ -75,11 +104,7 @@ void UPlayerObjectHintsComponent::ProcessNewComponent(UActorComponent* Component
 		return;
 	}
 
-	USceneComponent* AttachTarget = Cast<USceneComponent>(Component);
-	if (!AttachTarget)
-	{
-		AttachTarget = Component->GetOwner()->GetRootComponent();
-	}
+	USceneComponent* AttachTarget = ResolveAttachTarget(Component);
 	if (!AttachTarget)
 	{
 		DestroyHintsWidget();
@@ -101,7 +126,12 @@ void UPlayerObjectHintsComponent::ProcessNewComponent(UActorComponent* Component
 
 void UPlayerObjectHintsComponent::CreateHintsWidget(USceneComponent* AttachTarget)
 {
-	CurrentWidgetComponent = NewObject<UWidgetComponent>(GetOwner());
+	if (!AttachTarget || !GetOwner())
+	{
+		return;
+	}
+
+	CurrentWidgetComponent = NewObject<UWidgetComponent>(GetOwner(), UWidgetComponent::StaticClass());
 	CurrentWidgetComponent->SetupAttachment(AttachTarget);
 	CurrentWidgetComponent->RegisterComponent();
 	CurrentWidgetComponent->SetDrawAtDesiredSize(true);
@@ -127,7 +157,7 @@ void UPlayerObjectHintsComponent::UpdateWidgetHints(UObject* Component) const
 		return;
 	}
 
-	const UBaseObjectHintsWidget* Widget = Cast<UBaseObjectHintsWidget>(CurrentWidgetComponent->GetWidget());
+	UBaseObjectHintsWidget* Widget = Cast<UBaseObjectHintsWidget>(CurrentWidgetComponent->GetWidget());
 	if (!Widget)
 	{
 		return;
@@ -138,6 +168,11 @@ void UPlayerObjectHintsComponent::UpdateWidgetHints(UObject* Component) const
 
 bool UPlayerObjectHintsComponent::ImplementsAnyHintInterface(const UClass* Class)
 {
+	if (!Class)
+	{
+		return false;
+	}
+
 	return Class->ImplementsInterface(UInteractable::StaticClass())
 		|| Class->ImplementsInterface(UGrabbable::StaticClass())
 		|| Class->ImplementsInterface(UStoreable::StaticClass())

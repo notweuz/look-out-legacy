@@ -46,4 +46,14 @@ struct LOOK_OUT_API FItemTag
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	FInstancedStruct StructValue;
+
+	bool HasName(const FString& InTagName) const
+	{
+		return TagName.Equals(InTagName, ESearchCase::IgnoreCase);
+	}
+
+	bool IsType(const EStatValueType ExpectedType) const
+	{
+		return Type == ExpectedType;
+	}
 };

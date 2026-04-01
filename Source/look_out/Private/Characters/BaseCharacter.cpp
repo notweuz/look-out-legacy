@@ -8,6 +8,7 @@
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Characters/Components/PlayerObjectHintsComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
+#include "Characters/Components/PlayerUIComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -89,6 +90,11 @@ void ABaseCharacter::Zoom(bool bZoomIn)
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GrabbingComponent && GrabbingComponent->IsGrabbingObject)
+	{
+		GrabbingComponent->ProcessGrabbing(DeltaTime);
+	}
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
