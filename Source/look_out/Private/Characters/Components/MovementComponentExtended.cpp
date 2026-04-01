@@ -30,6 +30,14 @@ bool UMovementComponentExtended::HasMovementOwner() const
 	return OwnerCharacter != nullptr;
 }
 
+bool UMovementComponentExtended::IsDraggingHeavyObject() const
+{
+	return OwnerCharacter &&
+		OwnerCharacter->GrabbingComponent &&
+		OwnerCharacter->GrabbingComponent->IsGrabbingObject &&
+		OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Heavyweight;
+}
+
 UCharacterMovementComponent* UMovementComponentExtended::GetCharacterMovementComponent() const
 {
 	return OwnerCharacter ? OwnerCharacter->GetCharacterMovement() : nullptr;
@@ -89,7 +97,12 @@ void UMovementComponentExtended::Look(float InputAxisX, float InputAxisY)
 	if (const bool HaveToRotateItem = OwnerCharacter->GrabbingComponent->IsGrabbingObject && bRotateObject &&
 		OwnerCharacter->GrabbingComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
 	{
-		const float MouseSensitivity = GetMouseSensitivity();
+		float MouseSensitivity = GetMouseSensitivity();
+		if (IsDraggingHeavyObject())
+		{
+			MouseSensitivity *= HeavyDragLookSensitivityMultiplier;
+		}
+
 		InputAxisX *= MouseSensitivity;
 		InputAxisY *= MouseSensitivity;
 		OwnerCharacter->AddControllerYawInput(InputAxisX);

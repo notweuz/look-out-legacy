@@ -10,6 +10,7 @@
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Characters/Components/PlayerUIComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Enums/GrabbableObjectType.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
@@ -80,6 +81,13 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (SpringArm)
+	{
+		DefaultCameraLagSpeed = SpringArm->CameraLagSpeed;
+		DefaultCameraRotationLagSpeed = SpringArm->CameraRotationLagSpeed;
+		DefaultCameraLagMaxDistance = SpringArm->CameraLagMaxDistance;
+	}
 }
 
 void ABaseCharacter::Zoom(bool bZoomIn)
@@ -90,6 +98,8 @@ void ABaseCharacter::Zoom(bool bZoomIn)
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateCameraDragResponse(DeltaTime);
 
 	if (GrabbingComponent && GrabbingComponent->IsGrabbingObject)
 	{
@@ -124,4 +134,31 @@ FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamer
 	Result.EndVector = CameraLocation + CameraForward;
 
 	return Result;
+}
+
+void ABaseCharacter::UpdateCameraDragResponse(const float DeltaTime)
+{
+	if (!SpringArm || !GrabbingComponent)
+	{
+		return;
+	}
+
+	const bool bIsDraggingHeavyObject =
+		GrabbingComponent->IsGrabbingObject && GrabbingComponent->GetGrabbedObjectType() == Heavyweight;
+	const float TargetCameraLagSpeed = bIsDraggingHeavyObject ? HeavyDragCameraLagSpeed : DefaultCameraLagSpeed;
+	const float TargetCameraRotationLagSpeed = bIsDraggingHeavyObject
+		                                           ? HeavyDragCameraRotationLagSpeed
+		                                           : DefaultCameraRotationLagSpeed;
+	const float TargetCameraLagMaxDistance = bIsDraggingHeavyObject
+		                                         ? HeavyDragCameraLagMaxDistance
+		                                         : DefaultCameraLagMaxDistance;
+
+	SpringArm->CameraLagSpeed = FMath::FInterpTo(
+		SpringArm->CameraLagSpeed, TargetCameraLagSpeed, DeltaTime, HeavyDragCameraResponseInterpSpeed);
+	SpringArm->CameraRotationLagSpeed = FMath::FInterpTo(
+		SpringArm->CameraRotationLagSpeed, TargetCameraRotationLagSpeed, DeltaTime,
+		HeavyDragCameraResponseInterpSpeed);
+	SpringArm->CameraLagMaxDistance = FMath::FInterpTo(
+		SpringArm->CameraLagMaxDistance, TargetCameraLagMaxDistance, DeltaTime,
+		HeavyDragCameraResponseInterpSpeed);
 }

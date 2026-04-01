@@ -34,6 +34,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Zoom(bool bZoomIn);
 
+	void UpdateCameraDragResponse(float DeltaTime);
+
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -59,6 +61,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float FieldOfView = 90.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
+	float HeavyDragCameraLagSpeed = 6.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
+	float HeavyDragCameraRotationLagSpeed = 7.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
+	float HeavyDragCameraLagMaxDistance = 24.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
+	float HeavyDragCameraResponseInterpSpeed = 4.0f;
+
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
@@ -81,4 +95,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerInputsComponent* PlayerInputsComponent;
+
+private:
+	float DefaultCameraLagSpeed = 0.0f;
+	float DefaultCameraRotationLagSpeed = 0.0f;
+	float DefaultCameraLagMaxDistance = 0.0f;
 };

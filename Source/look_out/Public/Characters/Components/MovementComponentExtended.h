@@ -53,6 +53,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float DragSpeed = 90;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
+	float HeavyDragLookSensitivityMultiplier = 0.45f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="States")
 	bool CanSprint = true;
 
@@ -65,6 +68,7 @@ protected:
 
 private:
 	bool HasMovementOwner() const;
+	bool IsDraggingHeavyObject() const;
 	class UCharacterMovementComponent* GetCharacterMovementComponent() const;
 	float GetMouseSensitivity() const;
 };
