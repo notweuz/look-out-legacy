@@ -10,6 +10,7 @@
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Characters/Components/InventoryComponent.h"
+#include "Characters/Components/PlayerUIComponent.h"
 
 // Sets default values for this component's properties
 UPlayerInputsComponent::UPlayerInputsComponent()
@@ -28,15 +29,14 @@ void UPlayerInputsComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
-
-	if (const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController()))
+	if (!OwnerCharacter)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
-				PC->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(IMC_BaseMapping, 0);
-		}
+		return;
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = GetInputSubsystem(); Subsystem && IMC_BaseMapping)
+	{
+		Subsystem->AddMappingContext(IMC_BaseMapping, 0);
 	}
 }
 
@@ -73,30 +73,50 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 	}
 }
 
+APlayerController* UPlayerInputsComponent::GetPlayerController() const
+{
+	return OwnerCharacter ? Cast<APlayerController>(OwnerCharacter->GetController()) : nullptr;
+}
+
+UEnhancedInputLocalPlayerSubsystem* UPlayerInputsComponent::GetInputSubsystem() const
+{
+	const APlayerController* PC = GetPlayerController();
+	if (!PC)
+	{
+		return nullptr;
+	}
+
+	return ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+}
+
+bool UPlayerInputsComponent::CanProcessGameplayInput() const
+{
+	return OwnerCharacter && !IsBlockedByOpenedUI();
+}
+
 bool UPlayerInputsComponent::IsActionHeld(const UInputAction* Action) const
 {
-	if (!OwnerCharacter) return false;
+	if (!Action)
+	{
+		return false;
+	}
 
-	const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
-	if (!PC) return false;
-
-	const UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-	if (!Subsystem) return false;
+	const UEnhancedInputLocalPlayerSubsystem* Subsystem = GetInputSubsystem();
+	if (!Subsystem || !Subsystem->GetPlayerInput())
+	{
+		return false;
+	}
 
 	return Subsystem->GetPlayerInput()->GetActionValue(Action).Get<bool>();
 }
 
 bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 {
-	if (!OwnerCharacter) return false;
-
-	const APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController());
-	if (!PC) return false;
-
-	const UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-	if (!Subsystem) return false;
+	const UEnhancedInputLocalPlayerSubsystem* Subsystem = GetInputSubsystem();
+	if (!Subsystem)
+	{
+		return false;
+	}
 
 	const UPlayerInput* PlayerInput = Subsystem->GetPlayerInput();
 	if (!PlayerInput) return false;
@@ -109,83 +129,97 @@ bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 
 bool UPlayerInputsComponent::IsBlockedByOpenedUI() const
 {
-	return OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened;
+	return OwnerCharacter &&
+		OwnerCharacter->PlayerUIComponent &&
+		OwnerCharacter->PlayerUIComponent->PlayerUI &&
+		OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened;
 }
 
 void UPlayerInputsComponent::Input_MoveForward(const FInputActionValue& Value)
 {
-	OwnerCharacter->MovementComponentExtended->MoveForward(Value.Get<float>());
+	if (OwnerCharacter && OwnerCharacter->MovementComponentExtended)
+	{
+		OwnerCharacter->MovementComponentExtended->MoveForward(Value.Get<float>());
+	}
 }
 
 void UPlayerInputsComponent::Input_MoveSideways(const FInputActionValue& Value)
 {
-	OwnerCharacter->MovementComponentExtended->MoveRight(Value.Get<float>());
+	if (OwnerCharacter && OwnerCharacter->MovementComponentExtended)
+	{
+		OwnerCharacter->MovementComponentExtended->MoveRight(Value.Get<float>());
+	}
 }
 
 void UPlayerInputsComponent::Input_Look(const FInputActionValue& Value)
 {
+	if (!OwnerCharacter || !OwnerCharacter->MovementComponentExtended)
+	{
+		return;
+	}
+
 	const FVector2D Axis = Value.Get<FVector2D>();
 	OwnerCharacter->MovementComponentExtended->Look(Axis.X, Axis.Y);
 }
 
 void UPlayerInputsComponent::Input_JumpStarted()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
 	OwnerCharacter->MovementComponentExtended->JumpAction();
 }
 
 void UPlayerInputsComponent::Input_CrouchStarted()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
 	OwnerCharacter->MovementComponentExtended->DoCrouch(true);
 }
 
 void UPlayerInputsComponent::Input_CrouchEnded()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
 	OwnerCharacter->MovementComponentExtended->DoCrouch(false);
 }
 
 void UPlayerInputsComponent::Input_SprintStarted()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
 	OwnerCharacter->MovementComponentExtended->ToggleSprint(true);
 }
 
 void UPlayerInputsComponent::Input_SprintEnded()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
 	OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
 }
 
 void UPlayerInputsComponent::Input_ThrowTriggered()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->GrabbingComponent) return;
 	OwnerCharacter->GrabbingComponent->ThrowObject();
 }
 
 void UPlayerInputsComponent::Input_InteractTriggered()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerInteractionComponent) return;
 	OwnerCharacter->PlayerInteractionComponent->Interact();
 }
 
 void UPlayerInputsComponent::Input_InventoryTriggered()
 {
-	OwnerCharacter->PlayerUIComponent->ToggleInventoryWindow(nullptr);
+	if (OwnerCharacter && OwnerCharacter->PlayerUIComponent)
+	{
+		OwnerCharacter->PlayerUIComponent->ToggleInventoryWindow(nullptr);
+	}
 }
 
 void UPlayerInputsComponent::Input_RMBTriggered()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->InventoryComponent) return;
 
-	if (OwnerCharacter && OwnerCharacter->InventoryComponent)
+	if (OwnerCharacter->InventoryComponent->HasItemInHand())
 	{
-		if (OwnerCharacter->InventoryComponent->HasItemInHand())
-		{
-			OwnerCharacter->InventoryComponent->InteractWithItemInHand();
-			return;
-		}
+		OwnerCharacter->InventoryComponent->InteractWithItemInHand();
+		return;
 	}
 
 	OwnerCharacter->InventoryComponent->CollectItem();
@@ -193,13 +227,15 @@ void UPlayerInputsComponent::Input_RMBTriggered()
 
 void UPlayerInputsComponent::Input_LMBTriggered()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent) return;
 	OwnerCharacter->GrabbingComponent->ToggleGrab(!OwnerCharacter->GrabbingComponent->IsGrabbingObject);
 }
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent ||
+		!OwnerCharacter->InventoryComponent) return;
+
 	const float Delta = Value.Get<float>();
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
@@ -213,13 +249,10 @@ void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 
 void UPlayerInputsComponent::Input_DropTriggered()
 {
-	if (IsBlockedByOpenedUI()) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->InventoryComponent) return;
 
-	if (OwnerCharacter && OwnerCharacter->InventoryComponent)
+	if (OwnerCharacter->InventoryComponent->HasItemInHand())
 	{
-		if (OwnerCharacter->InventoryComponent->HasItemInHand())
-		{
-			OwnerCharacter->InventoryComponent->DropHotbarItem();
-		}
+		OwnerCharacter->InventoryComponent->DropHotbarItem();
 	}
 }

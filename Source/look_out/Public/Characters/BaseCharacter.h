@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PlayerUIComponent.h"
 #include "GameFramework/Character.h"
 #include "Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
@@ -19,6 +18,7 @@ class UPhysicsConstraintComponent;
 class UMovementComponentExtended;
 class UGrabbingComponent;
 class UPlayerSideInteractionComponent;
+class UPlayerUIComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter

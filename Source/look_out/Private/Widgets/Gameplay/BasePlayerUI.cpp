@@ -5,14 +5,18 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Characters/Components/InventoryComponent.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
 #include "Components/NamedSlot.h"
+#include "Widgets/BasePlayerWindowWidget.h"
+#include "Widgets/Gameplay/Window/PlayerInventoryWindowWidget.h"
 #include "Libraries/UIHelpers.h"
 
 void UBasePlayerUI::UpdateTempItemSpriteImage()
 {
 	ABaseCharacter* Player = UUIHelpers::GetBasePlayerFromWidget(this);
-	if (!Player) return;
+	if (!Player || !Player->InventoryComponent || !TempItemSpriteImage) return;
 	
 	if (!Player->InventoryComponent->TempItem.ItemIcon.IsNull()) 
 	{
@@ -28,7 +32,11 @@ void UBasePlayerUI::UpdateTempItemSpriteImage()
 void UBasePlayerUI::UpdateEntireInventory()
 {
 	UpdateTempItemSpriteImage();
-	Hotbar->UpdateHotbarSlots();
+	if (Hotbar)
+	{
+		Hotbar->UpdateHotbarSlots();
+	}
+
 	for (const UNamedSlot* Slot : { SoloInventorySlot, InventorySlot1, InventorySlot2 })
 	{
 		if (!Slot) continue;
@@ -59,7 +67,7 @@ void UBasePlayerUI::UpdateInventoryBackdrop()
 
 	if (InventoryBackgroundBlur)
 	{
-		InventoryBackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
+		InventoryBackgroundBlur->SetVisibility(Visibility);
 	}
 
 	if (InventoryDimBorder)

@@ -24,6 +24,10 @@ void UPlayerUIComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
+	if (!OwnerCharacter)
+	{
+		return;
+	}
 
 	if (APlayerController* PC = Cast<APlayerController>(OwnerCharacter->GetController()); PC && PlayerUIClass)
 	{
@@ -125,6 +129,11 @@ UBasePlayerWindowWidget* UPlayerUIComponent::CreateInventoryWindow(
 	UBasePlayerWindowWidget* Window = CreateWidget<UBasePlayerWindowWidget>(PC, PlayerWindowClass);
 	UPlayerInventoryWindowWidget* InventoryWidget = CreateWidget<UPlayerInventoryWindowWidget>(PC, InventoryWindowClass);
 	if (!Window || !InventoryWidget)
+	{
+		return nullptr;
+	}
+
+	if (!Window->TitleTextBlock || !Window->CloseButton || !Window->BodySlot)
 	{
 		return nullptr;
 	}

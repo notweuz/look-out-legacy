@@ -89,22 +89,26 @@ void ABaseCharacter::Zoom(bool bZoomIn)
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (GrabbingComponent->IsGrabbingObject)
-	{
-		GrabbingComponent->ProcessGrabbing(DeltaTime);
-	}
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputsComponent->SetupPlayerInput(PlayerInputComponent);
+
+	if (PlayerInputsComponent)
+	{
+		PlayerInputsComponent->SetupPlayerInput(PlayerInputComponent);
+	}
 }
 
 FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamera(const float VectorLength) const
 {
 	FCameraRelatedForwardVectorResult Result;
+
+	if (!Camera)
+	{
+		return Result;
+	}
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
 	FVector CameraForward = Camera->GetForwardVector();

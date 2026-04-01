@@ -71,6 +71,8 @@ private:
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;
 
+	bool HasRequiredComponents() const;
+	AActor* GetTargetActorForScrollInput() const;
 	void GrabObject();
 	void ReleaseObject();
 

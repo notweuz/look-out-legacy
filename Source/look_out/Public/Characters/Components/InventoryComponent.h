@@ -68,8 +68,15 @@ private:
 	void ProcessItemDragNDrop(UBasePlayerInventorySlot* ClickedSlot);
 
 	FItem* GetItemForSlot(const UBasePlayerInventorySlot* Slot);
-
 	AActor* GetItemInHandActor() const;
+	AActor* SpawnActorFromItem(
+		const FItem& Item,
+		const FTransform& SpawnTransform,
+		ESpawnActorCollisionHandlingMethod CollisionHandling) const;
+	bool IsValidHotbarIndex(int32 Index) const;
+	void SaveActorStateToHotbarIndex(int32 HotbarIndex, AActor* Actor);
+	void RemoveHandItemActors(int32 PreviousHotbarIndex);
+	class UBasePlayerUI* GetPlayerUI() const;
 
 	void UpdateInventoryUI() const;
 	

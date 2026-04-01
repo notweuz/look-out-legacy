@@ -8,6 +8,8 @@
 #include "PlayerInputsComponent.generated.h"
 
 class ABaseCharacter;
+class APlayerController;
+class UEnhancedInputLocalPlayerSubsystem;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LOOK_OUT_API UPlayerInputsComponent : public UActorComponent
@@ -81,6 +83,10 @@ public:
 private:
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;
+
+	APlayerController* GetPlayerController() const;
+	class UEnhancedInputLocalPlayerSubsystem* GetInputSubsystem() const;
+	bool CanProcessGameplayInput() const;
 
 	// Input Hooks
 
