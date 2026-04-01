@@ -447,9 +447,11 @@ void UInventoryComponent::DropHotbarItem()
 		return;
 	}
 
-	const FVector SpawnLocation = OwnerCharacter->GetActorLocation() +
-		OwnerCharacter->GetActorForwardVector() * InventoryComponentPrivate::DropSpawnDistance;
-	const FRotator SpawnRotation = OwnerCharacter->GetActorRotation();
+	const auto [CameraStart, CameraEnd] = OwnerCharacter->GetForwardVectorRelatedToCamera(
+		InventoryComponentPrivate::DropSpawnDistance);
+	const FVector CameraForward = (CameraEnd - CameraStart).GetSafeNormal();
+	const FVector SpawnLocation = CameraStart + CameraForward * InventoryComponentPrivate::DropSpawnDistance;
+	const FRotator SpawnRotation = CameraForward.Rotation();
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
 	AActor* SpawnedActor = SpawnActorFromItem(
