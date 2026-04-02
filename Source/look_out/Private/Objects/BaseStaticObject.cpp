@@ -4,6 +4,7 @@
 #include "Objects/BaseStaticObject.h"
 
 #include "Components/PrimitiveComponent.h"
+#include "Libraries/SaveSystemUtils.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
 
@@ -31,7 +32,7 @@ void ABaseStaticObject::BeginPlay()
 
 void ABaseStaticObject::EnsurePersistentActorId()
 {
-	if (bGeneratePersistentActorIdOnBeginPlay && !PersistentActorId.IsValid())
+	if (bGeneratePersistentActorIdOnBeginPlay && !PersistentActorId.IsValid() && !FSaveSystemUtils::IsLevelPlacedActor(this))
 	{
 		PersistentActorId = FGuid::NewGuid();
 	}
@@ -89,5 +90,10 @@ void ABaseStaticObject::OnLoad_Implementation(const TArray<uint8>& InData)
 
 FString ABaseStaticObject::GetSaveID_Implementation() const
 {
+	if (FSaveSystemUtils::IsLevelPlacedActor(this))
+	{
+		return FSaveSystemUtils::BuildStableLevelActorId(this);
+	}
+
 	return PersistentActorId.IsValid() ? PersistentActorId.ToString(EGuidFormats::DigitsWithHyphens) : FString();
 }

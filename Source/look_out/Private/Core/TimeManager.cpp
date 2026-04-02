@@ -9,6 +9,7 @@
 #include "Components/SkyLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
 #include "Data/Save/TimeManagerSaveData.h"
+#include "Libraries/SaveSystemUtils.h"
 #include "Misc/LogCategories.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
@@ -63,7 +64,7 @@ void ATimeManager::Tick(const float DeltaTime)
 
 void ATimeManager::EnsureSaveId()
 {
-	if (!PersistentSaveId.IsValid())
+	if (!PersistentSaveId.IsValid() && !FSaveSystemUtils::IsLevelPlacedActor(this))
 	{
 		PersistentSaveId = FGuid::NewGuid();
 	}
@@ -153,5 +154,10 @@ void ATimeManager::OnLoad_Implementation(const TArray<uint8>& InData)
 
 FString ATimeManager::GetSaveID_Implementation() const
 {
+	if (FSaveSystemUtils::IsLevelPlacedActor(this))
+	{
+		return FSaveSystemUtils::BuildStableLevelActorId(this);
+	}
+
 	return PersistentSaveId.IsValid() ? PersistentSaveId.ToString(EGuidFormats::DigitsWithHyphens) : FString();
 }
