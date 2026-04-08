@@ -7,7 +7,7 @@
 #include "ItemDefinition.generated.h"
 
 UCLASS(BlueprintType)
-class INVENTORY_API UItemDefinition : public UPrimaryDataAsset
+class LOOK_OUT_API UItemDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
