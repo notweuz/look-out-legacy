@@ -39,3 +39,19 @@ void ABaseLightweightObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
 {
 	SaveUtils::Load(this, InBytes);
 }
+
+UItemDefinition* ABaseLightweightObject::GetDefinition_Implementation()
+{
+	if (Definition)
+	{
+		return Definition;
+	}
+	
+	Definition = NewObject<UItemDefinition>(this, UItemDefinition::StaticClass());
+	Definition->ActorClass = ActorClass;
+	Definition->Weight = Weight;
+	Definition->Icon = Icon;
+	Definition->DisplayName = DisplayName;
+		
+	return Definition;
+}

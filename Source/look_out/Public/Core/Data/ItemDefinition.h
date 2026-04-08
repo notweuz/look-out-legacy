@@ -22,8 +22,5 @@ public:
 	TObjectPtr<UTexture2D> Icon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
-	TObjectPtr<UStaticMesh> Mesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
-	TSoftClassPtr<AActor> WorldActorClass;
+	TSoftClassPtr<AActor> ActorClass;
 };
