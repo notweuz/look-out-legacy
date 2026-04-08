@@ -3,6 +3,8 @@
 
 #include "Objects/BaseStaticObject.h"
 
+#include "Utils/SaveUtils.h"
+
 ABaseStaticObject::ABaseStaticObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,4 +28,14 @@ EGrabbableObjectType ABaseStaticObject::GetGrabbableType_Implementation()
 FText ABaseStaticObject::GetGrabWidgetText_Implementation()
 {
 	return FText::FromString(TEXT("LMB - Hold"));
+}
+
+void ABaseStaticObject::OnSave_Implementation(TArray<uint8>& OutBytes)
+{
+	SaveUtils::Save(this, OutBytes);
+}
+
+void ABaseStaticObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
+{
+	SaveUtils::Load(this, InBytes);
 }

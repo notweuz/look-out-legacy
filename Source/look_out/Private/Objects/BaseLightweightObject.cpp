@@ -3,6 +3,8 @@
 
 #include "Objects/BaseLightweightObject.h"
 
+#include "Utils/SaveUtils.h"
+
 ABaseLightweightObject::ABaseLightweightObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,4 +28,14 @@ EGrabbableObjectType ABaseLightweightObject::GetGrabbableType_Implementation()
 FText ABaseLightweightObject::GetGrabWidgetText_Implementation()
 {
 	return FText::FromString(TEXT("LMB - Grab"));
+}
+
+void ABaseLightweightObject::OnSave_Implementation(TArray<uint8>& OutBytes)
+{
+	SaveUtils::Save(this, OutBytes);
+}
+
+void ABaseLightweightObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
+{
+	SaveUtils::Load(this, InBytes);
 }

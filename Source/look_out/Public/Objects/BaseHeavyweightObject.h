@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Grabbable.h"
+#include "Interfaces/Saveable.h"
 #include "BaseHeavyweightObject.generated.h"
 
 UCLASS()
-class LOOK_OUT_API ABaseHeavyweightObject : public AActor, public IGrabbable
+class LOOK_OUT_API ABaseHeavyweightObject : public AActor, public IGrabbable, public ISaveable
 {
 	GENERATED_BODY()
 
@@ -21,9 +22,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UPROPERTY(SaveGame)
+	FGuid SaveId = FGuid::NewGuid();
+	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
-
 	virtual FText GetGrabWidgetText_Implementation() override;
+
+	virtual FGuid GetSaveId_Implementation() override { return SaveId; }
+	virtual void OnSave_Implementation(TArray<uint8>& OutBytes) override;
+	virtual void OnLoad_Implementation(const TArray<uint8>& InBytes) override;
 };
