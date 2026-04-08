@@ -10,29 +10,24 @@ UTimeIntegrationComponent::UTimeIntegrationComponent()
 void UTimeIntegrationComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	BindToTimeManager();
-}
 
-void UTimeIntegrationComponent::BindToTimeManager()
-{
-	if (TimeManager)
+	if (!TimeManager)
 	{
-		TimeManager->OnCallMinutePassed.RemoveDynamic(this, &UTimeIntegrationComponent::OnMinutePassedTriggered);
+		TimeManager = Cast<ATimeManager>(
+			UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass())
+		);
 	}
-
-	if (!GetWorld())
-	{
-		TimeManager = nullptr;
-		return;
-	}
-
-	TimeManager = TimeManager ? TimeManager : Cast<ATimeManager>(
-		UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
 
 	if (TimeManager)
 	{
 		TimeManager->OnCallMinutePassed.AddDynamic(this, &UTimeIntegrationComponent::OnMinutePassedTriggered);
 	}
+}
+
+void UTimeIntegrationComponent::TickComponent(const float DeltaTime, const ELevelTick TickType,
+                                              FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void UTimeIntegrationComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -55,20 +50,21 @@ FTimeFormattedResult UTimeIntegrationComponent::GetTimeFormatted() const
 {
 	FTimeFormattedResult Result;
 
-	if (!TimeManager || TimeManager->DayLength <= 0.0f)
+	if (!TimeManager)
 	{
 		return Result;
 	}
 
 	Result.Day = TimeManager->Day;
 
-	const float NormalizedHours = (TimeManager->Time / TimeManager->DayLength) * 24.0f;
-	const float TotalMinutes = NormalizedHours * 60.0f;
-	const float TotalSeconds = TotalMinutes * 60.0f;
+	const float CurrentTime = TimeManager->Time;
+	const float DayLength = TimeManager->DayLength;
 
-	Result.Hour = FMath::FloorToInt(NormalizedHours);
-	Result.Minute = FMath::FloorToInt(TotalMinutes) % 60;
-	Result.Second = FMath::FloorToInt(TotalSeconds) % 60;
+	const float NormalizedTime = CurrentTime / DayLength * 24.0f;
+
+	Result.Hour = FMath::FloorToInt(NormalizedTime);
+	Result.Minute = FMath::FloorToInt((NormalizedTime - Result.Hour) * 60.0f);
+	Result.Second = FMath::FloorToInt(((NormalizedTime - Result.Hour) * 60.0f - Result.Minute) * 60.0f);
 
 	return Result;
 }
