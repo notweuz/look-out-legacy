@@ -59,9 +59,6 @@ public:
 	float ThrowStrength = 1500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
-	float MaxGrabDistance = 200.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")
 	float MinGrabDistance = 75.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Base Values")

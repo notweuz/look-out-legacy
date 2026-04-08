@@ -44,7 +44,7 @@ void UPlayerObjectHintsComponent::ScanForObject()
 	}
 
 	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(
-		OwnerCharacter->PlayerInteractionComponent->InteractDistance);
+		OwnerCharacter->InteractionDistance);
 
 	FHitResult Hit;
 	FCollisionQueryParams Params;

@@ -55,8 +55,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPhysicsConstraintComponent* PhysicsConstraint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
 	float FieldOfView = 90.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interactions")
+	float InteractionDistance = 200.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Heavy Drag")
 	float HeavyDragCameraLagSpeed = 6.0f;

@@ -92,7 +92,7 @@ void UPlayerGrabComponent::GrabObject()
 		return;
 	}
 
-	GrabDistance = MaxGrabDistance;
+	GrabDistance = OwnerCharacter->InteractionDistance;
 	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(GrabDistance);
 
 	FCollisionQueryParams Params;
@@ -340,7 +340,7 @@ void UPlayerGrabComponent::ChangeGrabDistance(const float Delta)
 
 	if (Type == Lightweight)
 	{
-		GrabDistance = FMath::Clamp(GrabDistance + Delta * 5.0f, MinGrabDistance, MaxGrabDistance);
+		GrabDistance = FMath::Clamp(GrabDistance + Delta * 5.0f, MinGrabDistance,  OwnerCharacter->InteractionDistance);
 		return;
 	}
 

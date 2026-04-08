@@ -26,9 +26,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Interact() const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Interaction")
-	float InteractDistance = 200.0f;
-
 private:
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;

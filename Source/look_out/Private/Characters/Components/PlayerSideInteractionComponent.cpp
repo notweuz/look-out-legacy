@@ -46,7 +46,7 @@ void UPlayerSideInteractionComponent::Interact() const
 		return;
 	}
 
-	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(InteractDistance);
+	const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(OwnerCharacter->InteractionDistance);
 
 	FHitResult Hit;
 	FCollisionQueryParams Params;
