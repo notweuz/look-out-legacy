@@ -29,11 +29,11 @@ protected:
 	FTimeFormattedResult GetTimeFormatted() const;
 
 public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	void BindToTimeManager();
+
 	UFUNCTION()
 	void OnMinutePassedTriggered(int32 Day, float Time);
 };
