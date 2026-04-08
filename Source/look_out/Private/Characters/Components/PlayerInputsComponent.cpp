@@ -6,8 +6,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Characters/BaseCharacter.h"
-#include "Characters/Components/GrabbingComponent.h"
-#include "Characters/Components/MovementComponentExtended.h"
+#include "Characters/Components/PlayerGrabComponent.h"
+#include "Characters/Components/PlayerMovementComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 
 // Sets default values for this component's properties
@@ -126,65 +126,65 @@ bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 
 void UPlayerInputsComponent::Input_MoveForward(const FInputActionValue& Value)
 {
-	if (OwnerCharacter && OwnerCharacter->MovementComponentExtended)
+	if (OwnerCharacter && OwnerCharacter->PlayerMovementController)
 	{
-		OwnerCharacter->MovementComponentExtended->MoveForward(Value.Get<float>());
+		OwnerCharacter->PlayerMovementController->MoveForward(Value.Get<float>());
 	}
 }
 
 void UPlayerInputsComponent::Input_MoveSideways(const FInputActionValue& Value)
 {
-	if (OwnerCharacter && OwnerCharacter->MovementComponentExtended)
+	if (OwnerCharacter && OwnerCharacter->PlayerMovementController)
 	{
-		OwnerCharacter->MovementComponentExtended->MoveRight(Value.Get<float>());
+		OwnerCharacter->PlayerMovementController->MoveRight(Value.Get<float>());
 	}
 }
 
 void UPlayerInputsComponent::Input_Look(const FInputActionValue& Value)
 {
-	if (!OwnerCharacter || !OwnerCharacter->MovementComponentExtended)
+	if (!OwnerCharacter || !OwnerCharacter->PlayerMovementController)
 	{
 		return;
 	}
 
 	const FVector2D Axis = Value.Get<FVector2D>();
-	OwnerCharacter->MovementComponentExtended->Look(Axis.X, Axis.Y);
+	OwnerCharacter->PlayerMovementController->Look(Axis.X, Axis.Y);
 }
 
 void UPlayerInputsComponent::Input_JumpStarted()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
-	OwnerCharacter->MovementComponentExtended->JumpAction();
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
+	OwnerCharacter->PlayerMovementController->JumpAction();
 }
 
 void UPlayerInputsComponent::Input_CrouchStarted()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
-	OwnerCharacter->MovementComponentExtended->DoCrouch(true);
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
+	OwnerCharacter->PlayerMovementController->DoCrouch(true);
 }
 
 void UPlayerInputsComponent::Input_CrouchEnded()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
-	OwnerCharacter->MovementComponentExtended->DoCrouch(false);
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
+	OwnerCharacter->PlayerMovementController->DoCrouch(false);
 }
 
 void UPlayerInputsComponent::Input_SprintStarted()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
-	OwnerCharacter->MovementComponentExtended->ToggleSprint(true);
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
+	OwnerCharacter->PlayerMovementController->ToggleSprint(true);
 }
 
 void UPlayerInputsComponent::Input_SprintEnded()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->MovementComponentExtended) return;
-	OwnerCharacter->MovementComponentExtended->ToggleSprint(false);
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
+	OwnerCharacter->PlayerMovementController->ToggleSprint(false);
 }
 
 void UPlayerInputsComponent::Input_ThrowTriggered()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->GrabbingComponent) return;
-	OwnerCharacter->GrabbingComponent->ThrowObject();
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerGrabComponent) return;
+	OwnerCharacter->PlayerGrabComponent->ThrowObject();
 }
 
 void UPlayerInputsComponent::Input_InteractTriggered()
@@ -205,17 +205,17 @@ void UPlayerInputsComponent::Input_RMBTriggered()
 
 void UPlayerInputsComponent::Input_LMBTriggered()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent) return;
-	OwnerCharacter->GrabbingComponent->ToggleGrab(!OwnerCharacter->GrabbingComponent->IsGrabbingObject);
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->PlayerGrabComponent) return;
+	OwnerCharacter->PlayerGrabComponent->ToggleGrab(!OwnerCharacter->PlayerGrabComponent->IsGrabbingObject);
 }
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->PlayerGrabComponent) return;
 
 	const float Delta = Value.Get<float>();
-	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
+	if (OwnerCharacter->PlayerGrabComponent->IsGrabbingObject)
 	{
-		OwnerCharacter->GrabbingComponent->ChangeGrabDistance(Delta);
+		OwnerCharacter->PlayerGrabComponent->ChangeGrabDistance(Delta);
 	}
 }

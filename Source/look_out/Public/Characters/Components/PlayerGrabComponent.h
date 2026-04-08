@@ -5,18 +5,18 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Enums/GrabbableObjectType.h"
-#include "GrabbingComponent.generated.h"
+#include "PlayerGrabComponent.generated.h"
 
 class ABaseCharacter;
 class UPrimitiveComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class LOOK_OUT_API UGrabbingComponent : public UActorComponent
+class LOOK_OUT_API UPlayerGrabComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UGrabbingComponent();
+	UPlayerGrabComponent();
 
 protected:
 	virtual void BeginPlay() override;

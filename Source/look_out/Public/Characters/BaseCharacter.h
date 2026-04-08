@@ -13,8 +13,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UPhysicsHandleComponent;
 class UPhysicsConstraintComponent;
-class UMovementComponentExtended;
-class UGrabbingComponent;
+class UPlayerMovementComponent;
+class UPlayerGrabComponent;
 class UPlayerSideInteractionComponent;
 
 UCLASS(Blueprintable, BlueprintType)
@@ -73,10 +73,10 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UMovementComponentExtended* MovementComponentExtended;
+	UPlayerMovementComponent* PlayerMovementController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UGrabbingComponent* GrabbingComponent;
+	UPlayerGrabComponent* PlayerGrabComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerSideInteractionComponent* PlayerInteractionComponent;

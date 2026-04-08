@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "MovementComponentExtended.generated.h"
+#include "PlayerMovementComponent.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class LOOK_OUT_API UMovementComponentExtended : public UActorComponent
+class LOOK_OUT_API UPlayerMovementComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UMovementComponentExtended();
+	UPlayerMovementComponent();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;

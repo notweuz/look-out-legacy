@@ -3,8 +3,8 @@
 #include "Characters/BaseCharacter.h"
 
 #include "Camera/CameraComponent.h"
-#include "Characters/Components/GrabbingComponent.h"
-#include "Characters/Components/MovementComponentExtended.h"
+#include "Characters/Components/PlayerGrabComponent.h"
+#include "Characters/Components/PlayerMovementComponent.h"
 #include "Characters/Components/PlayerObjectHintsComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -20,8 +20,8 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Components initialization
-	MovementComponentExtended = CreateDefaultSubobject<UMovementComponentExtended>(TEXT("MovementComponentExtended"));
-	GrabbingComponent = CreateDefaultSubobject<UGrabbingComponent>(TEXT("GrabbingComponent"));
+	PlayerMovementController = CreateDefaultSubobject<UPlayerMovementComponent>(TEXT("PlayerMovementController"));
+	PlayerGrabComponent = CreateDefaultSubobject<UPlayerGrabComponent>(TEXT("PlayerGrabComponent"));
 	PlayerInteractionComponent = CreateDefaultSubobject<UPlayerSideInteractionComponent>(
 		TEXT("PlayerInteractionComponent"));
 	PlayerObjectHintsComponent = CreateDefaultSubobject<
@@ -97,9 +97,9 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 	UpdateCameraDragResponse(DeltaTime);
 
-	if (GrabbingComponent && GrabbingComponent->IsGrabbingObject)
+	if (PlayerGrabComponent && PlayerGrabComponent->IsGrabbingObject)
 	{
-		GrabbingComponent->ProcessGrabbing(DeltaTime);
+		PlayerGrabComponent->ProcessGrabbing(DeltaTime);
 	}
 }
 
@@ -134,13 +134,13 @@ FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamer
 
 void ABaseCharacter::UpdateCameraDragResponse(const float DeltaTime)
 {
-	if (!SpringArm || !GrabbingComponent)
+	if (!SpringArm || !PlayerGrabComponent)
 	{
 		return;
 	}
 
 	const bool bIsDraggingHeavyObject =
-		GrabbingComponent->IsGrabbingObject && GrabbingComponent->GetGrabbedObjectType() == Heavyweight;
+		PlayerGrabComponent->IsGrabbingObject && PlayerGrabComponent->GetGrabbedObjectType() == Heavyweight;
 	const float TargetCameraLagSpeed = bIsDraggingHeavyObject ? HeavyDragCameraLagSpeed : DefaultCameraLagSpeed;
 	const float TargetCameraRotationLagSpeed = bIsDraggingHeavyObject
 		                                           ? HeavyDragCameraRotationLagSpeed
