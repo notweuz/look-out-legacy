@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Enums/GrabbableObjectType.h"
+#include "Core/Enums/GrabbableObjectType.h"
 #include "PlayerGrabComponent.generated.h"
 
 class ABaseCharacter;

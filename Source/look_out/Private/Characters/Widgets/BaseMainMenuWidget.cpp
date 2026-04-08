@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "Widgets/BaseMainMenuWidget.h"
+#include "Characters/Widgets/BaseMainMenuWidget.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/LogCategories.h"

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/ItemDefinition.h"
+#include "Core/Data/ItemDefinition.h"
 #include "UObject/Interface.h"
 #include "Pickupable.generated.h"
 

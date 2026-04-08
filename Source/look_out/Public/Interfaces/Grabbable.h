@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Enums/GrabbableObjectType.h"
+#include "Core/Enums/GrabbableObjectType.h"
 #include "UObject/Interface.h"
 #include "Grabbable.generated.h"
 

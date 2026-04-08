@@ -8,7 +8,7 @@
 #include "Characters/Components/PlayerObjectHintsComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Enums/GrabbableObjectType.h"
+#include "Core/Enums/GrabbableObjectType.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"

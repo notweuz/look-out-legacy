@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Core/TimeManager.h"
-#include "Data/TimeFormattedResult.h"
+#include "Core/Data/TimeFormattedResult.h"
 #include "TimeIntegrationComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMinutePassedEvent, int32, Day, float, Time);

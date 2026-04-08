@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Data/CameraRelatedForwardVectorResult.h"
+#include "Core/Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
 
 class UPlayerInputsComponent;

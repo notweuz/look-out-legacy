@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
-#include "Widgets/BaseObjectHintsWidget.h"
+#include "Characters/Widgets/BaseObjectHintsWidget.h"
 
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
