@@ -5,7 +5,6 @@
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
-#include "Interfaces/Storeable.h"
 
 void UBaseObjectHintsWidget::ResetHints() const
 {
@@ -50,8 +49,7 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	UObject* Target = Component;
 	if (!Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()) &&
 		!Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()) &&
-		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()) &&
-		!Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
+		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
 	{
 		Target = Component->GetOwner();
 	}
@@ -90,16 +88,6 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 			const FText InteractHint = IInteractable::Execute_GetInteractWidgetText(Target);
 			InteractText->SetText(InteractHint.IsEmpty() ? FText::FromString(TEXT("E - Interact")) : InteractHint);
 			InteractText->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
-
-	if (Target->GetClass()->ImplementsInterface(UStoreable::StaticClass()))
-	{
-		if (StoreText)
-		{
-			const FText StoreHint = IStoreable::Execute_GetStoreWidgetText(Target);
-			StoreText->SetText(StoreHint.IsEmpty() ? FText::FromString(TEXT("RMB - Collect")) : StoreHint);
-			StoreText->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 

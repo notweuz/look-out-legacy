@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/Saveable.h"
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
@@ -14,16 +13,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
 );
 
 UCLASS()
-class LOOK_OUT_API ATimeManager : public AActor, public ISaveable
+class LOOK_OUT_API ATimeManager : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ATimeManager();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
@@ -36,7 +33,6 @@ protected:
 	int LastMinute = 0;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(BlueprintAssignable, Category="Events")
@@ -46,7 +42,6 @@ public:
 	void TriggerMinutePassed(int Day, float Time) const;
 
 	void PerformTimeUpdate(float DeltaTime);
-	void EnsureSaveId();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings")
 	bool bTimeStopped = false;
@@ -62,10 +57,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
 	float DayLength = 3600;
-
-	virtual void OnSave_Implementation(TArray<uint8>& OutData) override;
-	virtual void OnLoad_Implementation(const TArray<uint8>& InData) override;
-	virtual FString GetSaveID_Implementation() const override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

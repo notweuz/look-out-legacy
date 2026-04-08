@@ -9,8 +9,6 @@
 #include "Characters/Components/GrabbingComponent.h"
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
-#include "Characters/Components/InventoryComponent.h"
-#include "Characters/Components/PlayerUIComponent.h"
 
 // Sets default values for this component's properties
 UPlayerInputsComponent::UPlayerInputsComponent()
@@ -69,7 +67,6 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
 		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
 		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
-		EIC->BindAction(IA_Drop, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_DropTriggered);
 	}
 }
 
@@ -91,7 +88,7 @@ UEnhancedInputLocalPlayerSubsystem* UPlayerInputsComponent::GetInputSubsystem() 
 
 bool UPlayerInputsComponent::CanProcessGameplayInput() const
 {
-	return OwnerCharacter && !IsBlockedByOpenedUI();
+	return OwnerCharacter;
 }
 
 bool UPlayerInputsComponent::IsActionHeld(const UInputAction* Action) const
@@ -125,14 +122,6 @@ bool UPlayerInputsComponent::IsButtonHeld(const FKey Key) const
 	if (!KeyState) return false;
 
 	return KeyState->bDown;
-}
-
-bool UPlayerInputsComponent::IsBlockedByOpenedUI() const
-{
-	return OwnerCharacter &&
-		OwnerCharacter->PlayerUIComponent &&
-		OwnerCharacter->PlayerUIComponent->PlayerUI &&
-		OwnerCharacter->PlayerUIComponent->PlayerUI->bIsAnyInterfaceOpened;
 }
 
 void UPlayerInputsComponent::Input_MoveForward(const FInputActionValue& Value)
@@ -206,23 +195,12 @@ void UPlayerInputsComponent::Input_InteractTriggered()
 
 void UPlayerInputsComponent::Input_InventoryTriggered()
 {
-	if (OwnerCharacter && OwnerCharacter->PlayerUIComponent)
-	{
-		OwnerCharacter->PlayerUIComponent->ToggleInventoryWindow(nullptr);
-	}
+	
 }
 
 void UPlayerInputsComponent::Input_RMBTriggered()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->InventoryComponent) return;
-
-	if (OwnerCharacter->InventoryComponent->HasItemInHand())
-	{
-		OwnerCharacter->InventoryComponent->InteractWithItemInHand();
-		return;
-	}
-
-	OwnerCharacter->InventoryComponent->CollectItem();
+	
 }
 
 void UPlayerInputsComponent::Input_LMBTriggered()
@@ -233,26 +211,11 @@ void UPlayerInputsComponent::Input_LMBTriggered()
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent ||
-		!OwnerCharacter->InventoryComponent) return;
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->GrabbingComponent) return;
 
 	const float Delta = Value.Get<float>();
 	if (OwnerCharacter->GrabbingComponent->IsGrabbingObject)
 	{
 		OwnerCharacter->GrabbingComponent->ChangeGrabDistance(Delta);
-	}
-	else
-	{
-		OwnerCharacter->InventoryComponent->ScrollActiveItem(Delta);
-	}
-}
-
-void UPlayerInputsComponent::Input_DropTriggered()
-{
-	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->InventoryComponent) return;
-
-	if (OwnerCharacter->InventoryComponent->HasItemInHand())
-	{
-		OwnerCharacter->InventoryComponent->DropHotbarItem();
 	}
 }

@@ -31,7 +31,6 @@ public:
 	void SetupPlayerInput(UInputComponent* PlayerInputComponent);
 	bool IsActionHeld(const UInputAction* Action) const;
 	bool IsButtonHeld(const FKey Key) const;
-	bool IsBlockedByOpenedUI() const;
 
 	// Inputs
 
@@ -85,7 +84,7 @@ private:
 	ABaseCharacter* OwnerCharacter;
 
 	APlayerController* GetPlayerController() const;
-	class UEnhancedInputLocalPlayerSubsystem* GetInputSubsystem() const;
+	UEnhancedInputLocalPlayerSubsystem* GetInputSubsystem() const;
 	bool CanProcessGameplayInput() const;
 
 	// Input Hooks
@@ -104,5 +103,4 @@ private:
 	void Input_RMBTriggered();
 	void Input_LMBTriggered();
 	void Input_Scroll(const FInputActionValue& Value);
-	void Input_DropTriggered();
 };

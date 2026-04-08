@@ -8,9 +8,7 @@
 #include "BaseCharacter.generated.h"
 
 class UPlayerInputsComponent;
-class UBasePlayerUI;
 class UPlayerObjectHintsComponent;
-class UInventoryComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UPhysicsHandleComponent;
@@ -18,7 +16,6 @@ class UPhysicsConstraintComponent;
 class UMovementComponentExtended;
 class UGrabbingComponent;
 class UPlayerSideInteractionComponent;
-class UPlayerUIComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
@@ -86,12 +83,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UInventoryComponent* InventoryComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerUIComponent* PlayerUIComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UPlayerInputsComponent* PlayerInputsComponent;

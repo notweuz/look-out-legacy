@@ -4,11 +4,9 @@
 
 #include "Camera/CameraComponent.h"
 #include "Characters/Components/GrabbingComponent.h"
-#include "Characters/Components/InventoryComponent.h"
 #include "Characters/Components/MovementComponentExtended.h"
 #include "Characters/Components/PlayerObjectHintsComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
-#include "Characters/Components/PlayerUIComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Enums/GrabbableObjectType.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -28,8 +26,6 @@ ABaseCharacter::ABaseCharacter()
 		TEXT("PlayerInteractionComponent"));
 	PlayerObjectHintsComponent = CreateDefaultSubobject<
 		UPlayerObjectHintsComponent>(TEXT("PlayerObjectHintsComponent"));
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
 	PlayerInputsComponent = CreateDefaultSubobject<UPlayerInputsComponent>(TEXT("PlayerInputsComponent"));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));

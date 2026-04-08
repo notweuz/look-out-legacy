@@ -7,7 +7,6 @@
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
-#include "Interfaces/Storeable.h"
 
 UPlayerObjectHintsComponent::UPlayerObjectHintsComponent()
 {
@@ -175,6 +174,5 @@ bool UPlayerObjectHintsComponent::ImplementsAnyHintInterface(const UClass* Class
 
 	return Class->ImplementsInterface(UInteractable::StaticClass())
 		|| Class->ImplementsInterface(UGrabbable::StaticClass())
-		|| Class->ImplementsInterface(UStoreable::StaticClass())
 		|| Class->ImplementsInterface(UDescribable::StaticClass());
 }
