@@ -1,6 +1,7 @@
 # IDEs
 .vs/
 .idea/
+.vscode/
 
 # Compiled Object files
 *.slo
