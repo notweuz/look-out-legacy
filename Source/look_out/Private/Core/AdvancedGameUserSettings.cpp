@@ -12,3 +12,8 @@ void UAdvancedGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides
 {
 	Super::ApplySettings(bCheckForCommandLineOverrides);
 }
+
+void UAdvancedGameUserSettings::SaveSettings()
+{
+	Super::SaveSettings();
+}
