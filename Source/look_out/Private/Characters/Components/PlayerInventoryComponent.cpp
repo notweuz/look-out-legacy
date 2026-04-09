@@ -205,13 +205,15 @@ void UPlayerInventoryComponent::EquipActiveItem()
 
     ISaveable::Execute_OnLoad(ItemInHand, Record.Bytes);
 
-    ItemInHand->AttachToActor(
-        Owner,
-        FAttachmentTransformRules::SnapToTargetIncludingScale,
-        "hand_r"
+    ItemInHand->SetActorEnableCollision(false);
+    OwnerCharacter->ConfigureEquippedItem(ItemInHand);
+    ItemInHand->AttachToComponent(
+        OwnerCharacter->HandSceneComponent,
+        FAttachmentTransformRules::SnapToTargetNotIncludingScale
     );
+    ItemInHand->SetActorRelativeRotation(OwnerCharacter->EquippedItemFacingOffset);
 
-    UE_LOG(LogInventory, Log, TEXT("Equipped item: %s"), *ItemInHand->GetName())
+    UE_LOG(LogInventory, Log, TEXT("Equipped item: %s"), *ItemInHand->GetName());
     OnItemEquipped.Broadcast(ItemInHand);
 }
 

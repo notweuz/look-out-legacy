@@ -37,6 +37,7 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	void ConfigureEquippedItem(AActor* EquippedItem) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FCameraRelatedForwardVectorResult GetForwardVectorRelatedToCamera(float VectorLength) const;
@@ -52,6 +53,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* HandSceneComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
+	FVector HandItemOffset = FVector(25.0f, 12.0f, -10.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
+	FRotator HandItemRotation = FRotator(0.0f, 180.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
+	FRotator EquippedItemFacingOffset = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPhysicsConstraintComponent* PhysicsConstraint;

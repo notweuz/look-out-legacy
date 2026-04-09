@@ -14,6 +14,7 @@
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Characters/Components/PlayerInputsComponent.h"
 #include "Characters/Components/PlayerInventoryComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -40,6 +41,8 @@ ABaseCharacter::ABaseCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
 	HandSceneComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	HandSceneComponent->SetRelativeLocation(HandItemOffset);
+	HandSceneComponent->SetRelativeRotation(HandItemRotation);
 
 	// Spring Arm configurationotb
 	SpringArm->bUsePawnControlRotation = true;
@@ -79,6 +82,12 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HandSceneComponent)
+	{
+		HandSceneComponent->SetRelativeLocation(HandItemOffset);
+		HandSceneComponent->SetRelativeRotation(HandItemRotation);
+	}
 
 	if (SpringArm)
 	{
@@ -132,6 +141,27 @@ FCameraRelatedForwardVectorResult ABaseCharacter::GetForwardVectorRelatedToCamer
 	Result.EndVector = CameraLocation + CameraForward;
 
 	return Result;
+}
+
+void ABaseCharacter::ConfigureEquippedItem(AActor* EquippedItem) const
+{
+	if (!EquippedItem)
+	{
+		return;
+	}
+
+	TInlineComponentArray<UPrimitiveComponent*> PrimitiveComponents(EquippedItem);
+	for (UPrimitiveComponent* PrimitiveComponent : PrimitiveComponents)
+	{
+		if (!PrimitiveComponent)
+		{
+			continue;
+		}
+
+		PrimitiveComponent->SetEnableGravity(false);
+		PrimitiveComponent->SetSimulatePhysics(false);
+		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void ABaseCharacter::UpdateCameraDragResponse(const float DeltaTime)
