@@ -3,6 +3,7 @@
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
 #include "Objects/BaseLightweightObject.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/LogCategories.h"
 
@@ -81,7 +82,7 @@ void UPlayerInventoryComponent::Collect()
 void UPlayerInventoryComponent::DropActiveItem()
 {
     int32 ItemIndex = GetActiveItemIndex();
-    if (!Items.IsValidIndex(ItemIndex)) return;
+    if (!Items.IsValidIndex(ItemIndex) || !OwnerCharacter || !GetWorld()) return;
 
     UnequipItem();
 
@@ -89,9 +90,32 @@ void UPlayerInventoryComponent::DropActiveItem()
     UClass* Class = Record.ItemClass.LoadSynchronous();
     if (!Class) return;
 
-    FVector DropLocation = GetOwner()->GetActorLocation()
-        + GetOwner()->GetActorForwardVector() * 100.f;
-    FTransform DropTransform(DropLocation);
+    const auto [TraceStart, TraceEnd] =
+        OwnerCharacter->GetForwardVectorRelatedToCamera(OwnerCharacter->InteractionDistance);
+
+    FCollisionQueryParams Params(SCENE_QUERY_STAT(DropActiveItemTrace), false, OwnerCharacter);
+
+    FHitResult Hit;
+    const bool bHasSurfaceHit = GetWorld()->LineTraceSingleByChannel(
+        Hit,
+        TraceStart,
+        TraceEnd,
+        ECC_Visibility,
+        Params
+    );
+
+    const FVector OwnerLocation = OwnerCharacter->GetActorLocation();
+
+    const FVector DropLocation = bHasSurfaceHit
+        ? Hit.ImpactPoint + Hit.ImpactNormal
+        : OwnerLocation - FVector(0.0f, 0.0f, OwnerCharacter->GetDefaultHalfHeight());
+
+    const FRotator DropRotation = FRotator(
+        0.0f,
+        OwnerCharacter->GetActorRotation().Yaw,
+        0.0f
+    );
+    const FTransform DropTransform(DropRotation, DropLocation);
 
     AActor* DroppedActor = GetWorld()->SpawnActorDeferred<AActor>(Class, DropTransform);
     if (!DroppedActor) return;
