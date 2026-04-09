@@ -68,6 +68,7 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
 		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
 		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
+		EIC->BindAction(IA_Drop, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_DropTriggered);
 	}
 }
 
@@ -180,6 +181,12 @@ void UPlayerInputsComponent::Input_SprintEnded()
 {
 	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerMovementController) return;
 	OwnerCharacter->PlayerMovementController->ToggleSprint(false);
+}
+
+void UPlayerInputsComponent::Input_DropTriggered()
+{
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerInventoryComponent) return;
+	OwnerCharacter->PlayerInventoryComponent->DropActiveItem();
 }
 
 void UPlayerInputsComponent::Input_ThrowTriggered()

@@ -97,6 +97,7 @@ private:
 	void Input_CrouchEnded();
 	void Input_SprintStarted();
 	void Input_SprintEnded();
+	void Input_DropTriggered();
 	void Input_ThrowTriggered();
 	void Input_InteractTriggered();
 	void Input_InventoryTriggered();
