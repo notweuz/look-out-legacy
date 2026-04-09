@@ -13,4 +13,5 @@ void ISaveable::DefaultSaveObject(UObject* Object, TArray<uint8>& OutBytes)
 void ISaveable::DefaultLoadObject(UObject* Object, const TArray<uint8>& InBytes)
 {
 	SaveUtils::Load(Object, InBytes);
+	Execute_OnPostLoadFromSave(Object);
 }
