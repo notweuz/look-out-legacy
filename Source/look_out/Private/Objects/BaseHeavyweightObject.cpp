@@ -32,10 +32,10 @@ FText ABaseHeavyweightObject::GetGrabWidgetText_Implementation()
 
 void ABaseHeavyweightObject::OnSave_Implementation(TArray<uint8>& OutBytes)
 {
-	SaveUtils::Save(this, OutBytes);
+	Super::OnSave_Implementation(OutBytes);
 }
 
 void ABaseHeavyweightObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
 {
-	SaveUtils::Load(this, InBytes);
+	Super::OnLoad_Implementation(InBytes);
 }

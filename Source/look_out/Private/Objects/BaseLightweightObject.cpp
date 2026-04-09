@@ -32,12 +32,12 @@ FText ABaseLightweightObject::GetGrabWidgetText_Implementation()
 
 void ABaseLightweightObject::OnSave_Implementation(TArray<uint8>& OutBytes)
 {
-	SaveUtils::Save(this, OutBytes);
+	Super::OnSave_Implementation(OutBytes);
 }
 
 void ABaseLightweightObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
 {
-	SaveUtils::Load(this, InBytes);
+	Super::OnLoad_Implementation(InBytes);
 }
 
 UItemDefinition* ABaseLightweightObject::GetDefinition_Implementation()

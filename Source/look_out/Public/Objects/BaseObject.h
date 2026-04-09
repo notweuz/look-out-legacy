@@ -3,28 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseObject.h"
 #include "Core/Save/SaveTypes.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/Grabbable.h"
 #include "Interfaces/Saveable.h"
-#include "BaseStaticObject.generated.h"
+#include "BaseObject.generated.h"
 
-UCLASS()
-class LOOK_OUT_API ABaseStaticObject : public ABaseObject, public IGrabbable
+UCLASS(Blueprintable, BlueprintType)
+class LOOK_OUT_API ABaseObject : public AActor, public ISaveable
 {
 	GENERATED_BODY()
 
 public:
-	ABaseStaticObject();
+	ABaseObject();
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void Tick(float DeltaTime) override;
-	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
-	virtual FText GetGrabWidgetText_Implementation() override;
+	UPROPERTY(SaveGame)
+	FGuid SaveId = FGuid::NewGuid();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
+	EActorPersistence Persistence = EActorPersistence::Placed;
 
 	virtual FGuid GetSaveId_Implementation() override { return SaveId; }
 	virtual void OnSave_Implementation(TArray<uint8>& OutBytes) override;

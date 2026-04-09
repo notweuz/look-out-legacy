@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseObject.h"
 #include "Core/Save/SaveTypes.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Grabbable.h"
-#include "Interfaces/Saveable.h"
 #include "BaseHeavyweightObject.generated.h"
 
 UCLASS()
-class LOOK_OUT_API ABaseHeavyweightObject : public AActor, public IGrabbable, public ISaveable
+class LOOK_OUT_API ABaseHeavyweightObject : public ABaseObject, public IGrabbable
 {
 	GENERATED_BODY()
 
@@ -23,12 +23,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(SaveGame)
-	FGuid SaveId = FGuid::NewGuid();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
-	EActorPersistence Persistence = EActorPersistence::Placed;
-	
 	virtual void Tick(float DeltaTime) override;
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;
 	virtual FText GetGrabWidgetText_Implementation() override;

@@ -312,11 +312,7 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 
 EActorPersistence USaveManager::GetActorPersistence(AActor* Actor) const
 {
-    if (ABaseStaticObject* A = Cast<ABaseStaticObject>(Actor))
-        return A->Persistence;
-    if (ABaseLightweightObject* A = Cast<ABaseLightweightObject>(Actor))
-        return A->Persistence;
-    if (ABaseHeavyweightObject* A = Cast<ABaseHeavyweightObject>(Actor))
+    if (ABaseObject* A = Cast<ABaseObject>(Actor))
         return A->Persistence;
     return EActorPersistence::Placed;
 }
