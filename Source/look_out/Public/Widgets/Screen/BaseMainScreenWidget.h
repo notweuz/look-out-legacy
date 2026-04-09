@@ -7,13 +7,13 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "BaseMainMenuWidget.generated.h"
+#include "BaseMainScreenWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOOK_OUT_API UBaseMainMenuWidget : public UUserWidget
+class LOOK_OUT_API UBaseMainScreenWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
