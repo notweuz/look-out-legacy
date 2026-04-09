@@ -3,14 +3,22 @@
 
 #include "World/Objects/BaseObject.h"
 
+#include "Core/Save/SaveManager.h"
+
 ABaseObject::ABaseObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	Health = FMath::Max(Definition != nullptr ? Definition->MaxHealth : 100.0f, MaxHealth, 100.0f);
 }
 
 void ABaseObject::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ABaseObject::DestroyPermanently_Implementation()
+{
+	GetGameInstance()->GetSubsystem<USaveManager>()->DestroyActor(this);
 }
 
 void ABaseObject::OnSave_Implementation(TArray<uint8>& OutBytes)

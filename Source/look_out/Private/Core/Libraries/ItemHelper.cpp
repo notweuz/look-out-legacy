@@ -3,7 +3,7 @@
 #include "Core/Libraries/ItemHelper.h"
 
 UItemDefinition* UItemHelper::BuildItemDefinition(FText Name, FText Description, float Weight,
-	UTexture2D* Icon, TSubclassOf<AActor> ActorClass, UObject* Outer)
+	UTexture2D* Icon, TSubclassOf<AActor> ActorClass, UObject* Outer, float MaxHealth)
 {
 	UObject* DefinitionOuter = IsValid(Outer) ? Outer : GetTransientPackage();
 	UItemDefinition* Definition = NewObject<UItemDefinition>(
@@ -17,6 +17,7 @@ UItemDefinition* UItemHelper::BuildItemDefinition(FText Name, FText Description,
 	Definition->Icon = Icon;
 	Definition->DisplayName = Name;
 	Definition->Description = Description;
+	Definition->MaxHealth = MaxHealth;
 	
 	return Definition;
 }

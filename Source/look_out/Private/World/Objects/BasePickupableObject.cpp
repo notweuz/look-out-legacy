@@ -39,7 +39,8 @@ UItemDefinition* ABasePickupableObject::GetDefinition_Implementation()
 		Weight,
 		Icon,
 		GetClass(),
-		this
+		this,
+		MaxHealth
 	);
 	return Definition;
 }

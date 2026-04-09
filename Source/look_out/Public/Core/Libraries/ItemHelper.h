@@ -19,6 +19,7 @@ public:
 		float Weight, 
 		UTexture2D* Icon, 
 		TSubclassOf<AActor> ActorClass,
-		UObject* Outer
+		UObject* Outer,
+		float MaxHealth
 	);
 };

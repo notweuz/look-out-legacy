@@ -58,6 +58,8 @@ void USaveManager::CreateSave(const FString& SlotName, ABaseCharacter* Player)
     GlobalSave->TotalRunsStarted++;
     SaveGlobal();
 
+    ActiveSlotId = SlotId;
+    
     OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
@@ -103,6 +105,8 @@ void USaveManager::LoadSave(const FString& SlotId, ABaseCharacter* Player)
     );
     if (!SaveGame) return;
 
+    ActiveSlotId = SlotId;
+    
     RestoreWorldData(SaveGame);
     RestorePlayerData(SaveGame, Player);
 
@@ -190,6 +194,15 @@ int32 USaveManager::GetGlobalCounter(FName Key)
 bool USaveManager::GetGlobalFlag(FName Key, bool Default)
 {
     return GlobalSave->GetGlobalFlag(Key, Default);
+}
+
+void USaveManager::DestroyActor(AActor* Actor)
+{
+    if (!Actor || !Actor->Implements<USaveable>()) return;
+
+    FGuid SaveId = ISaveable::Execute_GetSaveId(Actor);
+    RegisterDestroyed(ActiveSlotId, SaveId);
+    Actor->Destroy();
 }
 
 void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)

@@ -22,6 +22,9 @@ public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
 
+    UPROPERTY(BlueprintReadOnly, Category="Save")
+    FString ActiveSlotId;
+    
     UFUNCTION(BlueprintCallable, Category="Save")
     void CreateSave(const FString& SlotName, ABaseCharacter* Player);
 
@@ -66,6 +69,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Save|Global")
     UGlobalSaveGame* GetGlobalSave() const { return GlobalSave; }
+    
+    UFUNCTION(BlueprintCallable, Category="Save")
+    void DestroyActor(AActor* Actor);
 
 private:
     UPROPERTY()

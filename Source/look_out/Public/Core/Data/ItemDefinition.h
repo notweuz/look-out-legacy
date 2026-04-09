@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
 	float Weight = 1.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
+	float MaxHealth = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
 	TObjectPtr<UTexture2D> Icon;
