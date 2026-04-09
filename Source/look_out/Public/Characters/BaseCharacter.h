@@ -55,10 +55,10 @@ public:
 	USceneComponent* HandSceneComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
-	FVector HandItemOffset = FVector(25.0f, 12.0f, -10.0f);
+	FVector HandItemOffset = FVector(60.0f, 30.0f, -20.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
-	FRotator HandItemRotation = FRotator(0.0f, 180.0f, 0.0f);
+	FRotator HandItemRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
 	FRotator EquippedItemFacingOffset = FRotator::ZeroRotator;
