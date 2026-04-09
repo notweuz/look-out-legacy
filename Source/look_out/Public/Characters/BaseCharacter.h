@@ -7,6 +7,7 @@
 #include "Core/Data/CameraRelatedForwardVectorResult.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerInventoryComponent;
 class UPlayerInputsComponent;
 class UPlayerObjectHintsComponent;
 class USpringArmComponent;
@@ -75,20 +76,12 @@ public:
 
 	// Components
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerMovementComponent* PlayerMovementController;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerGrabComponent* PlayerGrabComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerSideInteractionComponent* PlayerInteractionComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UPlayerInputsComponent* PlayerInputsComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerMovementComponent* PlayerMovementController;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerGrabComponent* PlayerGrabComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerSideInteractionComponent* PlayerInteractionComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerObjectHintsComponent* PlayerObjectHintsComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerInputsComponent* PlayerInputsComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components") UPlayerInventoryComponent* PlayerInventoryComponent;
 
 private:
 	float DefaultCameraLagSpeed = 0.0f;

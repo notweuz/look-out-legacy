@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Characters/Components/PlayerInputsComponent.h"
+#include "Characters/Components/PlayerInventoryComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -27,6 +28,7 @@ ABaseCharacter::ABaseCharacter()
 	PlayerObjectHintsComponent = CreateDefaultSubobject<
 		UPlayerObjectHintsComponent>(TEXT("PlayerObjectHintsComponent"));
 	PlayerInputsComponent = CreateDefaultSubobject<UPlayerInputsComponent>(TEXT("PlayerInputsComponent"));
+	PlayerInventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("PlayerInventoryComponent"));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));

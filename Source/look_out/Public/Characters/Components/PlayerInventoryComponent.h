@@ -16,7 +16,7 @@ class LOOK_OUT_API UPlayerInventoryComponent : public UStorageComponent
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Hotbar")
-    int32 HotbarSize = 6;
+    int32 HotbarSize = 10;
     
     UPROPERTY(BlueprintReadOnly, Category="Hotbar")
     TArray<int32> HotbarSlots;
