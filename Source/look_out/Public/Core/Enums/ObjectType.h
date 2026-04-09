@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Class.h"
-#include "GrabbableObjectType.generated.h"
+#include "ObjectType.generated.h"
 
 /**
  * 
  */
 UENUM(BlueprintType)
-enum EGrabbableObjectType
+enum class EObjectType : uint8
 {
 	Lightweight,
 	Heavyweight,

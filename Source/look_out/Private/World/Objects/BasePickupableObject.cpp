@@ -1,32 +1,32 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "World/Objects/BasePickupableLightweightObject.h"
+#include "World/Objects/BasePickupableObject.h"
 
 #include "Core/Libraries/ItemHelper.h"
 
 
 // Sets default values
-ABasePickupableLightweightObject::ABasePickupableLightweightObject()
+ABasePickupableObject::ABasePickupableObject()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void ABasePickupableLightweightObject::BeginPlay()
+void ABasePickupableObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ABasePickupableLightweightObject::Tick(float DeltaTime)
+void ABasePickupableObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-UItemDefinition* ABasePickupableLightweightObject::GetDefinition_Implementation()
+UItemDefinition* ABasePickupableObject::GetDefinition_Implementation()
 {
 	if (Definition)
 	{

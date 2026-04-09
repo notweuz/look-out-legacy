@@ -35,7 +35,7 @@ bool UPlayerMovementComponent::IsDraggingHeavyObject() const
 	return OwnerCharacter &&
 		OwnerCharacter->PlayerGrabComponent &&
 		OwnerCharacter->PlayerGrabComponent->IsGrabbingObject &&
-		OwnerCharacter->PlayerGrabComponent->GetGrabbedObjectType() == Heavyweight;
+		OwnerCharacter->PlayerGrabComponent->GetGrabbedObjectType() == EObjectType::Heavyweight;
 }
 
 UCharacterMovementComponent* UPlayerMovementComponent::GetCharacterMovementComponent() const
@@ -95,7 +95,7 @@ void UPlayerMovementComponent::Look(float InputAxisX, float InputAxisY)
 	const bool bRotateObject = OwnerCharacter->PlayerInputsComponent->IsActionHeld(
 		OwnerCharacter->PlayerInputsComponent->IA_Rotate);
 	if (const bool HaveToRotateItem = OwnerCharacter->PlayerGrabComponent->IsGrabbingObject && bRotateObject &&
-		OwnerCharacter->PlayerGrabComponent->GetGrabbedObjectType() == Lightweight; !HaveToRotateItem)
+		OwnerCharacter->PlayerGrabComponent->GetGrabbedObjectType() == EObjectType::Lightweight; !HaveToRotateItem)
 	{
 		float MouseSensitivity = GetMouseSensitivity();
 		if (IsDraggingHeavyObject())

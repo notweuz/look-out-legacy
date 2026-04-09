@@ -66,9 +66,15 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	{
 		if (const ABaseObject* BaseObject = Cast<ABaseObject>(Target))
 		{
-			DisplayName->SetText(BaseObject->DisplayName.IsEmpty() ?
-			                     FText::FromString(BaseObject->GetClass()->GetName()) :
-			                     BaseObject->DisplayName);
+			FText NameText = BaseObject->DisplayName;
+			if (!NameText.IsEmptyOrWhitespace())
+			{
+				DisplayName->SetText(NameText);
+			}
+			else
+			{
+				DisplayName->SetText(FText::FromString(BaseObject->GetClass()->GetName()));
+			}
 		}
 	}
 
@@ -76,8 +82,15 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	{
 		if (GrabText)
 		{
-			const FText GrabTextValue = IGrabbable::Execute_GetGrabWidgetText(Target);
-			GrabText->SetText(GrabTextValue.IsEmpty() ? FText::FromString(TEXT("LMB - Grab")) : GrabTextValue);
+			FText GrabTextValue = IGrabbable::Execute_GetGrabWidgetText(Target);
+			if (!GrabTextValue.IsEmptyOrWhitespace())
+			{
+				GrabText->SetText(GrabTextValue);
+			}
+			else
+			{
+				GrabText->SetText(FText::FromString(TEXT("LMB - Grab")));
+			}
 			GrabText->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
@@ -86,8 +99,15 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	{
 		if (InteractText)
 		{
-			const FText InteractHint = IInteractable::Execute_GetInteractWidgetText(Target);
-			InteractText->SetText(InteractHint.IsEmpty() ? FText::FromString(TEXT("E - Interact")) : InteractHint);
+			FText InteractHint = IInteractable::Execute_GetInteractWidgetText(Target);
+			if (!InteractHint.IsEmptyOrWhitespace())
+			{
+				InteractText->SetText(InteractHint);
+			}
+			else
+			{
+				InteractText->SetText(FText::FromString(TEXT("E - Interact")));
+			}
 			InteractText->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
@@ -96,7 +116,15 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	{
 		if (AActor* OwnerActor = Cast<AActor>(Target))
 		{
-			Description->SetText(IDescribable::Execute_GetDescribeWidgetText(OwnerActor, OwnerActor));
+			FText DescText = IDescribable::Execute_GetDescribeWidgetText(OwnerActor, OwnerActor);
+			if (!DescText.IsEmptyOrWhitespace())
+			{
+				Description->SetText(DescText);
+			}
+			else
+			{
+				Description->SetText(FText::GetEmpty());
+			}
 		}
 	}
 	

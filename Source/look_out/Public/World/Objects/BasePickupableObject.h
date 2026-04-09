@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseLightweightObject.h"
+#include "BaseObject.h"
 #include "Interfaces/Pickupable.h"
-#include "BasePickupableLightweightObject.generated.h"
+#include "BasePickupableObject.generated.h"
 
 UCLASS()
-class LOOK_OUT_API ABasePickupableLightweightObject : public ABaseLightweightObject, public IPickupable
+class LOOK_OUT_API ABasePickupableObject : public ABaseObject, public IPickupable
 {
 	GENERATED_BODY()
 
 public:
-	ABasePickupableLightweightObject();
+	ABasePickupableObject();
 
 protected:
 	virtual void BeginPlay() override;

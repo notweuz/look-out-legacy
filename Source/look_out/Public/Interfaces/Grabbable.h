@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/Enums/GrabbableObjectType.h"
+#include "Core/Enums/ObjectType.h"
 #include "UObject/Interface.h"
 #include "Grabbable.generated.h"
 
@@ -20,7 +20,7 @@ class LOOK_OUT_API IGrabbable
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
-	EGrabbableObjectType GetGrabbableType();
+	EObjectType GetGrabbableType();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Grabbing")
 	FText GetGrabWidgetText();

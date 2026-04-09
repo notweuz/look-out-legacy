@@ -8,7 +8,7 @@
 #include "Characters/Components/PlayerObjectHintsComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Core/Enums/GrabbableObjectType.h"
+#include "Core/Enums/ObjectType.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
@@ -258,7 +258,7 @@ void ABaseCharacter::UpdateCameraDragResponse(const float DeltaTime)
 	}
 
 	const bool bIsDraggingHeavyObject =
-		PlayerGrabComponent->IsGrabbingObject && PlayerGrabComponent->GetGrabbedObjectType() == Heavyweight;
+		PlayerGrabComponent->IsGrabbingObject && PlayerGrabComponent->GetGrabbedObjectType() == EObjectType::Heavyweight;
 	const float TargetCameraLagSpeed = bIsDraggingHeavyObject ? HeavyDragCameraLagSpeed : DefaultCameraLagSpeed;
 	const float TargetCameraRotationLagSpeed = bIsDraggingHeavyObject
 		                                           ? HeavyDragCameraRotationLagSpeed

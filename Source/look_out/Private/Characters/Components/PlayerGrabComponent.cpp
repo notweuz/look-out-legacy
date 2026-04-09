@@ -48,23 +48,23 @@ AActor* UPlayerGrabComponent::GetTargetActorForScrollInput() const
 	return nullptr;
 }
 
-EGrabbableObjectType UPlayerGrabComponent::GetGrabbedObjectType() const
+EObjectType UPlayerGrabComponent::GetGrabbedObjectType() const
 {
 	if (StaticObject)
 	{
-		return Static;
+		return EObjectType::Static;
 	}
 	if (HeavyObject)
 	{
-		return Heavyweight;
+		return EObjectType::Heavyweight;
 	}
 
 	if (OwnerCharacter && OwnerCharacter->PhysicsHandle && OwnerCharacter->PhysicsHandle->GetGrabbedComponent())
 	{
-		return Lightweight;
+		return EObjectType::Lightweight;
 	}
 
-	return None;
+	return EObjectType::None;
 }
 
 void UPlayerGrabComponent::ToggleGrab(bool bGrab)
@@ -126,7 +126,7 @@ void UPlayerGrabComponent::GrabObject()
 	UE_LOG(LogPlayer, Log, TEXT("GrabbingComponent hit grabbable actor: %s"), *HitActor->GetName());
 #endif
 
-	if (const EGrabbableObjectType Type = IGrabbable::Execute_GetGrabbableType(HitActor); Type == Lightweight)
+	if (const EObjectType Type = IGrabbable::Execute_GetGrabbableType(HitActor); Type == EObjectType::Lightweight)
 	{
 		GrabRotation = FRotator::ZeroRotator;
 		OwnerCharacter->PhysicsHandle->GrabComponentAtLocationWithRotation(
@@ -138,7 +138,7 @@ void UPlayerGrabComponent::GrabObject()
 		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Lightweight %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName());
 	}
-	else if (Type == Heavyweight)
+	else if (Type == EObjectType::Heavyweight)
 	{
 		HeavyObject = HitComponent;
 		OwnerCharacter->PhysicsConstraint->SetConstrainedComponents(
@@ -149,10 +149,10 @@ void UPlayerGrabComponent::GrabObject()
 		OwnerCharacter->PlayerMovementController->
 		                ChangeWalkSpeed(OwnerCharacter->PlayerMovementController->DragSpeed);
 		IsGrabbingObject = true;
-		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a Heavyweight %s (Actor: %s)"), *HitComponent->GetName(),
+		UE_LOG(LogPlayer, Log, TEXT("Player grabbed a EObjectType::Heavyweight %s (Actor: %s)"), *HitComponent->GetName(),
 		       *HitActor->GetName());
 	}
-	else if (Type == Static)
+	else if (Type == EObjectType::Static)
 	{
 		StaticObject = HitComponent;
 		OwnerCharacter->PlayerMovementController->CanSprint = false;
@@ -173,7 +173,7 @@ void UPlayerGrabComponent::ReleaseObject()
 		return;
 	}
 
-	if (const EGrabbableObjectType Type = GetGrabbedObjectType(); Type == Lightweight)
+	if (const EObjectType Type = GetGrabbedObjectType(); Type == EObjectType::Lightweight)
 	{
 		UPrimitiveComponent* GrabbedComponent = OwnerCharacter->PhysicsHandle->GetGrabbedComponent();
 		OwnerCharacter->PhysicsHandle->ReleaseComponent();
@@ -185,11 +185,11 @@ void UPlayerGrabComponent::ReleaseObject()
 			UE_LOG(LogPlayer, Log, TEXT("Player released a Lightweight %s"), *GrabbedComponent->GetName());
 		}
 	}
-	else if (Type == Heavyweight)
+	else if (Type == EObjectType::Heavyweight)
 	{
 		if (HeavyObject)
 		{
-			UE_LOG(LogPlayer, Log, TEXT("Player released a Heavyweight %s"), *HeavyObject->GetName());
+			UE_LOG(LogPlayer, Log, TEXT("Player released a EObjectType::Heavyweight %s"), *HeavyObject->GetName());
 		}
 
 		HeavyObject = nullptr;
@@ -198,7 +198,7 @@ void UPlayerGrabComponent::ReleaseObject()
 		OwnerCharacter->PlayerMovementController->
 		                ChangeWalkSpeed(OwnerCharacter->PlayerMovementController->WalkSpeed);
 	}
-	else if (Type == Static)
+	else if (Type == EObjectType::Static)
 	{
 		if (StaticObject)
 		{
@@ -221,15 +221,15 @@ void UPlayerGrabComponent::ProcessGrabbing(const float DeltaTime)
 		return;
 	}
 
-	if (const EGrabbableObjectType Type = GetGrabbedObjectType(); Type == Lightweight)
+	if (const EObjectType Type = GetGrabbedObjectType(); Type == EObjectType::Lightweight)
 	{
 		ProcessLightweightGrabbing(DeltaTime);
 	}
-	else if (Type == Heavyweight)
+	else if (Type == EObjectType::Heavyweight)
 	{
 		ProcessHeavyweightGrabbing();
 	}
-	else if (Type == Static)
+	else if (Type == EObjectType::Static)
 	{
 		ProcessStaticGrabbing();
 	}
@@ -307,8 +307,8 @@ void UPlayerGrabComponent::ProcessStaticGrabbing() const
 
 void UPlayerGrabComponent::ThrowObject()
 {
-	const EGrabbableObjectType Type = GetGrabbedObjectType();
-	if (Type != Lightweight || !HasRequiredComponents())
+	const EObjectType Type = GetGrabbedObjectType();
+	if (Type != EObjectType::Lightweight || !HasRequiredComponents())
 	{
 		return;
 	}
@@ -336,9 +336,9 @@ void UPlayerGrabComponent::ChangeGrabDistance(const float Delta)
 		return;
 	}
 
-	const EGrabbableObjectType Type = GetGrabbedObjectType();
+	const EObjectType Type = GetGrabbedObjectType();
 
-	if (Type == Lightweight)
+	if (Type == EObjectType::Lightweight)
 	{
 		GrabDistance = FMath::Clamp(GrabDistance + Delta * 5.0f, MinGrabDistance,  OwnerCharacter->InteractionDistance);
 		return;

@@ -1,4 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Core/Enums/GrabbableObjectType.h"
+#include "Core/Enums/ObjectType.h"

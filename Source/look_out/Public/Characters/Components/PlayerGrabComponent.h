@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Core/Enums/GrabbableObjectType.h"
+#include "Core/Enums/ObjectType.h"
 #include "PlayerGrabComponent.generated.h"
 
 class ABaseCharacter;
@@ -26,7 +26,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	EGrabbableObjectType GetGrabbedObjectType() const;
+	EObjectType GetGrabbedObjectType() const;
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleGrab(bool bGrab);
