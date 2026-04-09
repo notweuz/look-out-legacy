@@ -14,7 +14,7 @@ class LOOK_OUT_API ISaveable
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent) FGuid GetSaveId();
-	UFUNCTION(BlueprintNativeEvent) void OnSave(TArray<uint8>& OutBytes);
-	UFUNCTION(BlueprintNativeEvent) void OnLoad(const TArray<uint8>& InBytes);
+	UFUNCTION(BlueprintNativeEvent, Category="Saving") FGuid GetSaveId();
+	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnSave(TArray<uint8>& OutBytes);
+	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnLoad(const TArray<uint8>& InBytes);
 };
