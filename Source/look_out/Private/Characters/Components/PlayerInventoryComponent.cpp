@@ -182,7 +182,8 @@ void UPlayerInventoryComponent::NextSlot()
 
 void UPlayerInventoryComponent::PrevSlot()
 {
-    SetActiveSlot((ActiveSlotIndex - 1 + HotbarSize) % HotbarSize);
+    int32 newSlot = (ActiveSlotIndex - 1 + HotbarSize) % HotbarSize;
+    SetActiveSlot(newSlot == 0 ? HotbarSize - 1 : newSlot);
 }
 
 void UPlayerInventoryComponent::ScrollHotbar(int Delta)
