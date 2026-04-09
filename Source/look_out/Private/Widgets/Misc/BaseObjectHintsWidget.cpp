@@ -6,7 +6,7 @@
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
-#include "Objects/BaseObject.h"
+#include "World/Objects/BaseObject.h"
 
 void UBaseObjectHintsWidget::ResetHints() const
 {

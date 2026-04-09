@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Objects/BaseLightweightObject.h"
+#include "World/Objects/BaseLightweightObject.h"
 
 ABaseLightweightObject::ABaseLightweightObject()
 {

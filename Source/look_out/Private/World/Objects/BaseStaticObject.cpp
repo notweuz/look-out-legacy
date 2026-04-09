@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Objects/BaseStaticObject.h"
+#include "World/Objects/BaseStaticObject.h"
 
 #include "Utils/SaveUtils.h"
 

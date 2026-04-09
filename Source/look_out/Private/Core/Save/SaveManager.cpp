@@ -2,11 +2,10 @@
 
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/PlayerInventoryComponent.h"
-#include "Objects/BaseStaticObject.h"
-#include "Objects/BaseLightweightObject.h"
+#include "Interfaces/Saveable.h"
 #include "Utils/SaveUtils.h"
+#include "World/Objects/BaseObject.h"
 #include "Kismet/GameplayStatics.h"
-#include "Objects/BaseHeavyweightObject.h"
 
 const FString USaveManager::RegistrySlot = "SaveRegistry";
 const FString USaveManager::GlobalSlot   = "GlobalSave";

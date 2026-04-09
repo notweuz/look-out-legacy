@@ -3,8 +3,7 @@
 #include "Characters/Components/PlayerGrabComponent.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
-#include "Objects/BaseLightweightObject.h"
-#include "Components/CapsuleComponent.h"
+#include "Interfaces/Saveable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/LogCategories.h"
 

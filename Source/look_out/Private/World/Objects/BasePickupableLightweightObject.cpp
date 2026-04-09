@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "Objects/BasePickupableLightweightObject.h"
+#include "World/Objects/BasePickupableLightweightObject.h"
 
 #include "Core/Libraries/ItemHelper.h"
 

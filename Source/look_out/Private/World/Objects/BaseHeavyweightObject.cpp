@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Objects/BaseHeavyweightObject.h"
+#include "World/Objects/BaseHeavyweightObject.h"
 
 #include "Utils/SaveUtils.h"
 
