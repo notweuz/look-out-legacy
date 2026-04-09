@@ -187,8 +187,8 @@ void UPlayerInventoryComponent::PrevSlot()
 
 void UPlayerInventoryComponent::ScrollHotbar(int Delta)
 {
-    const int NormalizedSlot = (ActiveSlotIndex + Delta) % HotbarSize;
-    SetActiveSlot(NormalizedSlot);
+    if (Delta > 0) NextSlot();
+    else if (Delta < 0) PrevSlot();
 }
 
 bool UPlayerInventoryComponent::GetActiveItem(FItemSaveRecord& OutRecord) const
