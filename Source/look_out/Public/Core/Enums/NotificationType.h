@@ -10,7 +10,7 @@
  * 
  */
 UENUM(BlueprintType)
-enum ENotificationType
+enum class ENotificationType : uint8
 {
 	Info,
 	Error,

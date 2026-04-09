@@ -26,7 +26,7 @@ public:
 		const FText& Title,
 		const FText& Message,
 		float Duration = 3.0f,
-		ENotificationType Priority = Info
+		ENotificationType Priority = ENotificationType::Info
 	);
 
 	UPROPERTY(BlueprintAssignable, Category = "Notification")

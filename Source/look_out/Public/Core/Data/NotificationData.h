@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Core/Enums/NotificationType.h"
+#include "NotificationData.generated.h"
 
 USTRUCT(BlueprintType)
 struct FNotificationData
