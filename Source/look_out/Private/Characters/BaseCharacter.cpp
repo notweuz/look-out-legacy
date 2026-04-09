@@ -36,15 +36,17 @@ ABaseCharacter::ABaseCharacter()
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	PhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PhysicsConstraint"));
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComponent"));
+	HandSwaySourceComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSwaySourceComponent"));
 
 	SpringArm->SetupAttachment(GetMesh());
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	PhysicsConstraint->SetupAttachment(GetCapsuleComponent());
-	HandSceneComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	HandSceneComponent->SetRelativeLocation(HandItemOffset);
-	HandSceneComponent->SetRelativeRotation(HandItemRotation);
+	HandSceneComponent->SetupAttachment(RootComponent);
+	HandSwaySourceComponent->SetupAttachment(GetMesh());
+	HandSwaySourceComponent->SetRelativeLocation(HandItemOffset);
+	HandSwaySourceComponent->SetRelativeRotation(HandItemRotation);
 
-	// Spring Arm configurationotb
+	// Spring Arm configuration
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->TargetArmLength = 0.0f;
 	SpringArm->bDoCollisionTest = false;
@@ -83,11 +85,13 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandSceneComponent)
+	if (HandSwaySourceComponent)
 	{
-		HandSceneComponent->SetRelativeLocation(HandItemOffset);
-		HandSceneComponent->SetRelativeRotation(HandItemRotation);
+		InitialHandSwayRelativeLocation = HandSwaySourceComponent->GetRelativeLocation();
+		InitialHandSwayRelativeRotation = HandSwaySourceComponent->GetRelativeRotation();
 	}
+
+	UpdateHandItemTransform(0.0f);
 
 	if (SpringArm)
 	{
@@ -107,6 +111,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateCameraDragResponse(DeltaTime);
+	UpdateHandItemTransform(DeltaTime);
 
 	if (PlayerGrabComponent && PlayerGrabComponent->IsGrabbingObject)
 	{
@@ -162,6 +167,78 @@ void ABaseCharacter::ConfigureEquippedItem(AActor* EquippedItem) const
 		PrimitiveComponent->SetSimulatePhysics(false);
 		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+void ABaseCharacter::UpdateHandItemTransform(const float DeltaTime)
+{
+	if (!HandSceneComponent || !Camera)
+	{
+		return;
+	}
+
+	const FVector BaseWorldLocation =
+		Camera->GetComponentLocation()
+		+ Camera->GetForwardVector() * HandItemOffset.X
+		+ Camera->GetRightVector() * HandItemOffset.Y
+		+ Camera->GetUpVector() * HandItemOffset.Z;
+
+	FRotator TargetRotation = Camera->GetComponentRotation() + HandItemRotation;
+	if (bFollowCameraPitchWithHandItem && Controller)
+	{
+		const float ControlPitch = FRotator::NormalizeAxis(Controller->GetControlRotation().Pitch);
+		TargetRotation.Pitch += ControlPitch * (HandItemPitchMultiplier - 1.0f);
+	}
+
+	FVector SwayWorldOffset = FVector::ZeroVector;
+	FRotator SwayRotationOffset = FRotator::ZeroRotator;
+
+	if (HandSwaySourceComponent && GetMesh())
+	{
+		const FVector RelativeSwayLocation =
+			HandSwaySourceComponent->GetRelativeLocation() - InitialHandSwayRelativeLocation;
+		const FRotator RelativeSwayRotation =
+			HandSwaySourceComponent->GetRelativeRotation() - InitialHandSwayRelativeRotation;
+
+		const FVector ScaledRelativeSwayLocation = FVector(
+			RelativeSwayLocation.X * HandSwayLocationMultiplier.X,
+			RelativeSwayLocation.Y * HandSwayLocationMultiplier.Y,
+			RelativeSwayLocation.Z * HandSwayLocationMultiplier.Z
+		);
+
+		SwayWorldOffset = GetMesh()->GetComponentTransform().TransformVectorNoScale(ScaledRelativeSwayLocation);
+		SwayRotationOffset = FRotator(
+			RelativeSwayRotation.Pitch * HandSwayRotationMultiplier.Pitch,
+			RelativeSwayRotation.Yaw * HandSwayRotationMultiplier.Yaw,
+			RelativeSwayRotation.Roll * HandSwayRotationMultiplier.Roll
+		);
+	}
+
+	const FVector TargetWorldLocation = BaseWorldLocation + SwayWorldOffset;
+	const FRotator TargetWorldRotation = TargetRotation + SwayRotationOffset;
+
+	if (DeltaTime <= 0.0f || CurrentHandWorldLocation.IsZero() && CurrentHandWorldRotation.IsZero())
+	{
+		CurrentHandWorldLocation = TargetWorldLocation;
+		CurrentHandWorldRotation = TargetWorldRotation;
+	}
+	else
+	{
+		CurrentHandWorldLocation = FMath::VInterpTo(
+			CurrentHandWorldLocation,
+			TargetWorldLocation,
+			DeltaTime,
+			HandItemLocationInterpSpeed
+		);
+		CurrentHandWorldRotation = FMath::RInterpTo(
+			CurrentHandWorldRotation,
+			TargetWorldRotation,
+			DeltaTime,
+			HandItemRotationInterpSpeed
+		);
+	}
+
+	HandSceneComponent->SetWorldLocation(CurrentHandWorldLocation);
+	HandSceneComponent->SetWorldRotation(CurrentHandWorldRotation);
 }
 
 void ABaseCharacter::UpdateCameraDragResponse(const float DeltaTime)

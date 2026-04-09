@@ -17,6 +17,7 @@ class UPhysicsConstraintComponent;
 class UPlayerMovementComponent;
 class UPlayerGrabComponent;
 class UPlayerSideInteractionComponent;
+class USkeletalMeshComponent;
 
 UCLASS(Blueprintable, BlueprintType)
 class LOOK_OUT_API ABaseCharacter : public ACharacter
@@ -33,6 +34,7 @@ protected:
 	void Zoom(bool bZoomIn);
 
 	void UpdateCameraDragResponse(float DeltaTime);
+	void UpdateHandItemTransform(float DeltaTime);
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -54,6 +56,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* HandSceneComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USceneComponent* HandSwaySourceComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
 	FVector HandItemOffset = FVector(60.0f, 30.0f, -20.0f);
 
@@ -61,7 +66,14 @@ public:
 	FRotator HandItemRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand")
-	FRotator EquippedItemFacingOffset = FRotator::ZeroRotator;
+	bool bFollowCameraPitchWithHandItem = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemPitchMultiplier = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FVector HandSwayLocationMultiplier = FVector(0.5f, 0.5f, 0.5f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FRotator HandSwayRotationMultiplier = FRotator(1.0f, 1.0f, 1.0f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FRotator EquippedItemFacingOffset = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemLocationInterpSpeed = 18.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemRotationInterpSpeed = 18.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPhysicsConstraintComponent* PhysicsConstraint;
@@ -97,4 +109,8 @@ private:
 	float DefaultCameraLagSpeed = 0.0f;
 	float DefaultCameraRotationLagSpeed = 0.0f;
 	float DefaultCameraLagMaxDistance = 0.0f;
+	FVector InitialHandSwayRelativeLocation = FVector::ZeroVector;
+	FRotator InitialHandSwayRelativeRotation = FRotator::ZeroRotator;
+	FVector CurrentHandWorldLocation = FVector::ZeroVector;
+	FRotator CurrentHandWorldRotation = FRotator::ZeroRotator;
 };
