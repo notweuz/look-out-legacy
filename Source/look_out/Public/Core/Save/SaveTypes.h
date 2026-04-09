@@ -3,6 +3,13 @@
 #include "GameFramework/SaveGame.h"
 #include "SaveTypes.generated.h"
 
+UENUM(BlueprintType)
+enum class EActorPersistence : uint8
+{
+    Placed,
+    Runtime,
+};
+
 USTRUCT(BlueprintType)
 struct FItemSaveRecord
 {
@@ -24,6 +31,7 @@ struct FActorSaveRecord
     UPROPERTY(SaveGame) FRotator Rotation;
     UPROPERTY(SaveGame) FVector Scale = FVector::OneVector;
     UPROPERTY(SaveGame) TArray<uint8> Bytes;
+    UPROPERTY(SaveGame) EActorPersistence Persistence = EActorPersistence::Placed;
 };
 
 USTRUCT(BlueprintType)
@@ -43,7 +51,7 @@ USTRUCT(BlueprintType)
 struct FWorldStateData
 {
     GENERATED_BODY()
-    
+
     UPROPERTY(SaveGame, BlueprintReadWrite)
     TMap<FName, bool> Flags;
 
@@ -53,7 +61,7 @@ struct FWorldStateData
     UPROPERTY(SaveGame, BlueprintReadWrite)
     float PlaytimeSeconds = 0.f;
 
-    void SetFlag(FName Key, bool Value)       { Flags.Add(Key, Value); }
+    void SetFlag(FName Key, bool Value) { Flags.Add(Key, Value); }
     bool GetFlag(FName Key, bool Default = false) const
     {
         const bool* Val = Flags.Find(Key);
@@ -129,13 +137,11 @@ public:
         int32& Val = GlobalCounters.FindOrAdd(Key, 0);
         Val += Amount;
     }
-
     int32 GetGlobalCounter(FName Key) const
     {
         const int32* Val = GlobalCounters.Find(Key);
         return Val ? *Val : 0;
     }
-
     void SetGlobalFlag(FName Key, bool Value) { GlobalFlags.Add(Key, Value); }
     bool GetGlobalFlag(FName Key, bool Default = false) const
     {

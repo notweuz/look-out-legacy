@@ -1,10 +1,12 @@
 #include "Core/Save/SaveManager.h"
 
+#include "Characters/BaseCharacter.h"
 #include "Characters/Components/PlayerInventoryComponent.h"
-#include "Interfaces/Saveable.h"
-#include "Core/Save/SaveTypes.h"
+#include "Objects/BaseStaticObject.h"
+#include "Objects/BaseLightweightObject.h"
 #include "Utils/SaveUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "Objects/BaseHeavyweightObject.h"
 
 const FString USaveManager::RegistrySlot = "SaveRegistry";
 const FString USaveManager::GlobalSlot   = "GlobalSave";
@@ -15,9 +17,8 @@ void USaveManager::Initialize(FSubsystemCollectionBase& Collection)
     LoadRegistry();
     LoadGlobal();
 
-    SessionStartTime = FDateTime::Now();
-
-    GlobalSave->LastPlayedAt = SessionStartTime;
+    SessionStartTime             = FDateTime::Now();
+    GlobalSave->LastPlayedAt     = SessionStartTime;
     if (GlobalSave->FirstPlayedAt.GetTicks() == 0)
         GlobalSave->FirstPlayedAt = SessionStartTime;
     SaveGlobal();
@@ -27,7 +28,6 @@ void USaveManager::Deinitialize()
 {
     GlobalSave->TotalPlaytimeSeconds += CalcSessionTime();
     SaveGlobal();
-
     Super::Deinitialize();
 }
 
@@ -69,15 +69,13 @@ void USaveManager::OverwriteSave(const FString& SlotId, ABaseCharacter* Player)
     );
     if (!SaveGame) return;
 
-    float SessionTime = CalcSessionTime();
-
-    SaveGame->SavedAt          = FDateTime::Now();
-    SaveGame->PlaytimeSeconds += SessionTime;
+    float SessionTime              = CalcSessionTime();
+    SaveGame->SavedAt              = FDateTime::Now();
+    SaveGame->PlaytimeSeconds     += SessionTime;
+    SaveGame->WorldState.PlaytimeSeconds = SaveGame->PlaytimeSeconds;
 
     CollectWorldData(SaveGame);
     CollectPlayerData(SaveGame, Player);
-
-    SaveGame->WorldState.PlaytimeSeconds = SaveGame->PlaytimeSeconds;
 
     UGameplayStatics::SaveGameToSlot(SaveGame, SlotId, 0);
 
@@ -141,7 +139,6 @@ void USaveManager::SetFlag(const FString& SlotId, FName Key, bool Value)
         UGameplayStatics::LoadGameFromSlot(SlotId, 0)
     );
     if (!SaveGame) return;
-
     SaveGame->WorldState.SetFlag(Key, Value);
     UGameplayStatics::SaveGameToSlot(SaveGame, SlotId, 0);
 }
@@ -152,7 +149,6 @@ void USaveManager::IncrementCounter(const FString& SlotId, FName Key, int32 Amou
         UGameplayStatics::LoadGameFromSlot(SlotId, 0)
     );
     if (!SaveGame) return;
-
     SaveGame->WorldState.IncrementCounter(Key, Amount);
     UGameplayStatics::SaveGameToSlot(SaveGame, SlotId, 0);
 }
@@ -209,15 +205,16 @@ void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
     for (AActor* Actor : Actors)
     {
         FActorSaveRecord Record;
-        Record.SaveId     = ISaveable::Execute_GetSaveId(Actor);
-        Record.ActorClass = Actor->GetClass();
-        Record.Location   = Actor->GetActorLocation();
-        Record.Rotation   = Actor->GetActorRotation();
-        Record.Scale      = Actor->GetActorScale3D();
+        Record.SaveId      = ISaveable::Execute_GetSaveId(Actor);
+        Record.ActorClass  = Actor->GetClass();
+        Record.Location    = Actor->GetActorLocation();
+        Record.Rotation    = Actor->GetActorRotation();
+        Record.Scale       = Actor->GetActorScale3D();
+        Record.Persistence = GetActorPersistence(Actor);
         ISaveable::Execute_OnSave(Actor, Record.Bytes);
         SaveGame->ActorRecords.Add(Record);
     }
-    
+
     TSet<FGuid> ActiveIds;
     for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
         ActiveIds.Add(Record.SaveId);
@@ -237,6 +234,20 @@ void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
     TMap<FGuid, AActor*> ActorMap;
     for (AActor* Actor : Actors)
         ActorMap.Add(ISaveable::Execute_GetSaveId(Actor), Actor);
+
+    TSet<FGuid> SavedIds;
+    for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
+        SavedIds.Add(Record.SaveId);
+
+    for (AActor* Actor : Actors)
+    {
+        FGuid Id = ISaveable::Execute_GetSaveId(Actor);
+        if (!SavedIds.Contains(Id) &&
+            GetActorPersistence(Actor) == EActorPersistence::Placed)
+        {
+            Actor->Destroy();
+        }
+    }
 
     for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
     {
@@ -299,10 +310,21 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
     }
 }
 
+EActorPersistence USaveManager::GetActorPersistence(AActor* Actor) const
+{
+    if (ABaseStaticObject* A = Cast<ABaseStaticObject>(Actor))
+        return A->Persistence;
+    if (ABaseLightweightObject* A = Cast<ABaseLightweightObject>(Actor))
+        return A->Persistence;
+    if (ABaseHeavyweightObject* A = Cast<ABaseHeavyweightObject>(Actor))
+        return A->Persistence;
+    return EActorPersistence::Placed;
+}
+
 float USaveManager::CalcSessionTime() const
 {
-    FTimespan SessionDuration = FDateTime::Now() - SessionStartTime;
-    return static_cast<float>(SessionDuration.GetTotalSeconds());
+    FTimespan Duration = FDateTime::Now() - SessionStartTime;
+    return static_cast<float>(Duration.GetTotalSeconds());
 }
 
 void USaveManager::SaveRegistry()

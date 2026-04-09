@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Save/SaveTypes.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Saveable.h"
@@ -24,6 +25,9 @@ protected:
 public:
 	UPROPERTY(SaveGame)
 	FGuid SaveId = FGuid::NewGuid();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
+	EActorPersistence Persistence = EActorPersistence::Placed;
 	
 	virtual void Tick(float DeltaTime) override;
 	virtual EGrabbableObjectType GetGrabbableType_Implementation() override;

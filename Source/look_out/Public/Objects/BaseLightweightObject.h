@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Save/SaveTypes.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Pickupable.h"
@@ -23,6 +24,9 @@ protected:
 public:
 	UPROPERTY(SaveGame)
 	FGuid SaveId = FGuid::NewGuid();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
+	EActorPersistence Persistence = EActorPersistence::Placed;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition")
 	UItemDefinition* Definition;

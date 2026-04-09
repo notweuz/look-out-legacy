@@ -1,7 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "SaveTypes.h"
-#include "Characters/BaseCharacter.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SaveManager.generated.h"
 
@@ -40,7 +39,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Save")
     void RegisterDestroyed(const FString& SlotId, FGuid SaveId);
-    
+
     UFUNCTION(BlueprintCallable, Category="Save|WorldState")
     void SetFlag(const FString& SlotId, FName Key, bool Value);
 
@@ -87,7 +86,8 @@ private:
     void CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
     void RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
 
-    float CalcSessionTime() const;
+    EActorPersistence GetActorPersistence(AActor* Actor) const;
 
+    float CalcSessionTime() const;
     static FString GenerateSlotId();
 };
