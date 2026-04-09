@@ -26,6 +26,12 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UImage* TypeIcon;
 
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	UWidgetAnimation* SlideIn;
+
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	UWidgetAnimation* SlideOut;
+
 	UPROPERTY(EditDefaultsOnly, Category="Notification|Icons")
 	UTexture2D* IconInfo;
 
@@ -44,6 +50,9 @@ private:
 
 	void ApplyData();
 	UTexture2D* GetIconForType(ENotificationType Type) const;
+
+	UFUNCTION()
+	void StartDismiss();
 
 	UFUNCTION()
 	void DismissSelf();
