@@ -3,4 +3,14 @@
 
 #include "Interfaces/Saveable.h"
 
-// Add default functionality here for any ISaveable functions that are not pure virtual.
+#include "Utils/SaveUtils.h"
+
+void ISaveable::DefaultSaveObject(UObject* Object, TArray<uint8>& OutBytes)
+{
+	SaveUtils::Save(Object, OutBytes);
+}
+
+void ISaveable::DefaultLoadObject(UObject* Object, const TArray<uint8>& InBytes)
+{
+	SaveUtils::Load(Object, InBytes);
+}
