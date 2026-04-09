@@ -99,6 +99,15 @@ void ABaseCharacter::BeginPlay()
 		DefaultCameraRotationLagSpeed = SpringArm->CameraRotationLagSpeed;
 		DefaultCameraLagMaxDistance = SpringArm->CameraLagMaxDistance;
 	}
+	
+	if (GameplayScreenWidgetClass)
+	{
+		GameplayScreenWidget = CreateWidget<UBaseGameplayScreenWidget>(GetWorld(), GameplayScreenWidgetClass);
+		if (GameplayScreenWidget)
+		{
+			GameplayScreenWidget->AddToViewport();
+		}
+	}
 }
 
 void ABaseCharacter::Zoom(bool bZoomIn)

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Core/Data/CameraRelatedForwardVectorResult.h"
+#include "Widgets/Screen/BaseGameplayScreenWidget.h"
 #include "BaseCharacter.generated.h"
 
 class UPlayerInventoryComponent;
@@ -43,6 +44,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FCameraRelatedForwardVectorResult GetForwardVectorRelatedToCamera(float VectorLength) const;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface")
+	TSubclassOf<UBaseGameplayScreenWidget> GameplayScreenWidgetClass;
+	
+	UPROPERTY(BlueprintReadOnly, Category="Interface")
+	UBaseGameplayScreenWidget* GameplayScreenWidget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USpringArmComponent* SpringArm;
