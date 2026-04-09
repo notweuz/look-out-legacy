@@ -7,6 +7,7 @@
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/Pickupable.h"
 
 UPlayerObjectHintsComponent::UPlayerObjectHintsComponent()
 {
@@ -174,5 +175,7 @@ bool UPlayerObjectHintsComponent::ImplementsAnyHintInterface(const UClass* Class
 
 	return Class->ImplementsInterface(UInteractable::StaticClass())
 		|| Class->ImplementsInterface(UGrabbable::StaticClass())
-		|| Class->ImplementsInterface(UDescribable::StaticClass());
+		|| Class->ImplementsInterface(UDescribable::StaticClass())
+		|| Class->ImplementsInterface(UPickupable::StaticClass())
+	;
 }

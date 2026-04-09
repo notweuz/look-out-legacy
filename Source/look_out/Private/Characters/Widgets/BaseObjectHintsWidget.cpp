@@ -5,6 +5,7 @@
 #include "Interfaces/Describable.h"
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/Pickupable.h"
 
 void UBaseObjectHintsWidget::ResetHints() const
 {
@@ -49,7 +50,8 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 	UObject* Target = Component;
 	if (!Target->GetClass()->ImplementsInterface(UGrabbable::StaticClass()) &&
 		!Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()) &&
-		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()))
+		!Target->GetClass()->ImplementsInterface(UDescribable::StaticClass()) &&
+		!Target->GetClass()->ImplementsInterface(UPickupable::StaticClass()))
 	{
 		Target = Component->GetOwner();
 	}
@@ -96,6 +98,18 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 		if (AActor* OwnerActor = Cast<AActor>(Target))
 		{
 			Description->SetText(IDescribable::Execute_GetDescribeWidgetText(OwnerActor, OwnerActor));
+		}
+	}
+	
+	if (Target->GetClass()->ImplementsInterface(UPickupable::StaticClass()))
+	{
+		if (AActor* OwnerActor = Cast<AActor>(Target))
+		{
+			if (UItemDefinition* Definition = IPickupable::Execute_GetDefinition(OwnerActor))
+			{
+				StoreText->SetVisibility(ESlateVisibility::Visible);
+				StoreText->SetText(Definition->DisplayName);
+			}
 		}
 	}
 }
