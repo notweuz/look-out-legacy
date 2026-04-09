@@ -6,6 +6,7 @@
 #include "Interfaces/Grabbable.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
+#include "Objects/BaseObject.h"
 
 void UBaseObjectHintsWidget::ResetHints() const
 {
@@ -63,13 +64,11 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 
 	if (DisplayName)
 	{
-		if (const AActor* TargetActor = Cast<AActor>(Target))
+		if (const ABaseObject* BaseObject = Cast<ABaseObject>(Target))
 		{
-			DisplayName->SetText(FText::FromString(TargetActor->GetActorNameOrLabel()));
-		}
-		else
-		{
-			DisplayName->SetText(FText::FromString(Target->GetName()));
+			DisplayName->SetText(BaseObject->DisplayName.IsEmpty() ?
+			                     FText::FromString(BaseObject->GetClass()->GetName()) :
+			                     BaseObject->DisplayName);
 		}
 	}
 
