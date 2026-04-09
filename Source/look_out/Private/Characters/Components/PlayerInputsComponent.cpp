@@ -219,5 +219,8 @@ void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
 	if (OwnerCharacter->PlayerGrabComponent->IsGrabbingObject)
 	{
 		OwnerCharacter->PlayerGrabComponent->ChangeGrabDistance(Delta);
+	} else
+	{
+		OwnerCharacter->PlayerInventoryComponent->ScrollHotbar(FMath::Sign(Delta));
 	}
 }

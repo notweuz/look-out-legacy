@@ -138,6 +138,7 @@ void UPlayerInventoryComponent::SetActiveSlot(int32 SlotIndex)
 {
     if (!HotbarSlots.IsValidIndex(SlotIndex)) return;
     if (SlotIndex == ActiveSlotIndex) return;
+    UE_LOG(LogInventory, Log, TEXT("Selected slot: %d"), SlotIndex)
 
     ActiveSlotIndex = SlotIndex;
     OnActiveSlotChanged.Broadcast(ActiveSlotIndex);
@@ -152,6 +153,12 @@ void UPlayerInventoryComponent::NextSlot()
 void UPlayerInventoryComponent::PrevSlot()
 {
     SetActiveSlot((ActiveSlotIndex - 1 + HotbarSize) % HotbarSize);
+}
+
+void UPlayerInventoryComponent::ScrollHotbar(int Delta)
+{
+    const int NormalizedSlot = (ActiveSlotIndex + Delta) % HotbarSize;
+    SetActiveSlot(NormalizedSlot);
 }
 
 bool UPlayerInventoryComponent::GetActiveItem(FItemSaveRecord& OutRecord) const
@@ -204,6 +211,7 @@ void UPlayerInventoryComponent::EquipActiveItem()
         "hand_r"
     );
 
+    UE_LOG(LogInventory, Log, TEXT("Equipped item: %s"), *ItemInHand->GetName())
     OnItemEquipped.Broadcast(ItemInHand);
 }
 

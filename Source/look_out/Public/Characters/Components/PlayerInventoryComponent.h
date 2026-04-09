@@ -58,6 +58,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Hotbar")
     void PrevSlot();
+    
+    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    void ScrollHotbar(int Delta);
 
     UFUNCTION(BlueprintPure, Category="Hotbar")
     bool GetActiveItem(FItemSaveRecord& OutRecord) const;
