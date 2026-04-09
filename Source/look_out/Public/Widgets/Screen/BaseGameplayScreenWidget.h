@@ -15,19 +15,19 @@ UCLASS()
 class LOOK_OUT_API UBaseGameplayScreenWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	virtual void NativeConstruct() override;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay Screen")
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Screen")
 	TSubclassOf<UGameHUDWidget> HUDWidgetClass;
-	
-	UPROPERTY(meta=(BindWidget))
-	UGameHUDWidget* HUDWidget;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay Screen")
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Screen")
 	TSubclassOf<UBaseNotificationCenterWidget> NotificationCenterWidgetClass;
-	
-	UPROPERTY(meta=(BindWidget))
-	UBaseNotificationCenterWidget* NotificationCenterWidget;
+
+	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
+	UGameHUDWidget* HUD;
+
+	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
+	UBaseNotificationCenterWidget* NotificationCenter;
 };
