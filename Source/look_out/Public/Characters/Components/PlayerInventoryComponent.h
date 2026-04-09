@@ -90,4 +90,5 @@ private:
     void SaveEquippedItemState();
 
     void ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex);
+    virtual void OnItemMoved(int32 FromIndex, int32 ToIndex) override;
 };

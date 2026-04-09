@@ -33,6 +33,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Storage")
 	bool TransferItem(int32 Index, UStorageComponent* Target);
 
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	bool MoveItem(int32 FromIndex, int32 ToIndex);
+
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	bool MoveItemUp(int32 Index);
+
+	UFUNCTION(BlueprintCallable, Category="Storage")
+	bool MoveItemDown(int32 Index);
+
 	UFUNCTION(BlueprintPure, Category="Storage")
 	bool CanFit(float ItemWeight) const;
 
@@ -41,4 +50,7 @@ public:
 
 	virtual void SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const;
 	void LoadFromRecords(const TArray<FItemSaveRecord>& InRecords);
+
+protected:
+	virtual void OnItemMoved(int32 FromIndex, int32 ToIndex);
 };

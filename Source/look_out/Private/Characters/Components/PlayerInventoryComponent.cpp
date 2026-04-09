@@ -290,6 +290,53 @@ void UPlayerInventoryComponent::ShiftHotbarIndicesAfterRemoval(int32 RemovedItem
     }
 }
 
+void UPlayerInventoryComponent::OnItemMoved(int32 FromIndex, int32 ToIndex)
+{
+    for (int32 SlotIndex = 0; SlotIndex < HotbarSlots.Num(); ++SlotIndex)
+    {
+        int32& SlotItemIndex = HotbarSlots[SlotIndex];
+        int32 NewItemIndex = SlotItemIndex;
+
+        if (SlotItemIndex == FromIndex)
+        {
+            NewItemIndex = ToIndex;
+        }
+        else if (FromIndex < ToIndex)
+        {
+            if (SlotItemIndex > FromIndex && SlotItemIndex <= ToIndex)
+                NewItemIndex = SlotItemIndex - 1;
+        }
+        else
+        {
+            if (SlotItemIndex >= ToIndex && SlotItemIndex < FromIndex)
+                NewItemIndex = SlotItemIndex + 1;
+        }
+
+        if (NewItemIndex != SlotItemIndex)
+        {
+            SlotItemIndex = NewItemIndex;
+            OnHotbarChanged.Broadcast(SlotIndex);
+        }
+    }
+
+    if (EquippedItemIndex == FromIndex)
+    {
+        EquippedItemIndex = ToIndex;
+        return;
+    }
+
+    if (FromIndex < ToIndex)
+    {
+        if (EquippedItemIndex > FromIndex && EquippedItemIndex <= ToIndex)
+            EquippedItemIndex--;
+    }
+    else
+    {
+        if (EquippedItemIndex >= ToIndex && EquippedItemIndex < FromIndex)
+            EquippedItemIndex++;
+    }
+}
+
 void UPlayerInventoryComponent::SaveEquippedItemState()
 {
     if (!ItemInHand || !Items.IsValidIndex(EquippedItemIndex))
