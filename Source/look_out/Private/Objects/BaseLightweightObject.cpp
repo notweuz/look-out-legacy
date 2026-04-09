@@ -3,8 +3,6 @@
 
 #include "Objects/BaseLightweightObject.h"
 
-#include "Utils/SaveUtils.h"
-
 ABaseLightweightObject::ABaseLightweightObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -38,20 +36,4 @@ void ABaseLightweightObject::OnSave_Implementation(TArray<uint8>& OutBytes)
 void ABaseLightweightObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
 {
 	Super::OnLoad_Implementation(InBytes);
-}
-
-UItemDefinition* ABaseLightweightObject::GetDefinition_Implementation()
-{
-	if (Definition)
-	{
-		return Definition;
-	}
-	
-	Definition = NewObject<UItemDefinition>(this, UItemDefinition::StaticClass());
-	Definition->ActorClass = ActorClass;
-	Definition->Weight = Weight;
-	Definition->Icon = Icon;
-	Definition->DisplayName = DisplayName;
-		
-	return Definition;
 }

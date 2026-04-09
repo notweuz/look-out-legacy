@@ -14,6 +14,9 @@ class LOOK_OUT_API UItemDefinition : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
 	FText DisplayName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
+	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
 	float Weight = 1.0f;

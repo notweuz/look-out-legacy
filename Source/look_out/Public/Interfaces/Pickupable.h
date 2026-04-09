@@ -15,6 +15,6 @@ class LOOK_OUT_API IPickupable
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent) 
+	UFUNCTION(BlueprintNativeEvent, Category="Pickup") 
 	UItemDefinition* GetDefinition();
 };

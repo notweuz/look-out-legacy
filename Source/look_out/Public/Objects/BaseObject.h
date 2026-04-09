@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Data/ItemDefinition.h"
 #include "Core/Save/SaveTypes.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Saveable.h"
@@ -25,6 +26,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
 	EActorPersistence Persistence = EActorPersistence::Placed;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition") UItemDefinition* Definition;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") float Weight;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") TObjectPtr<UTexture2D> Icon;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") FText DisplayName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") FText Description;
 
 	virtual FGuid GetSaveId_Implementation() override { return SaveId; }
 	virtual void OnSave_Implementation(TArray<uint8>& OutBytes) override;
