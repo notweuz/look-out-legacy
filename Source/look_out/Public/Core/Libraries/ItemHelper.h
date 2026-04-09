@@ -18,6 +18,7 @@ public:
 		FText Description, 
 		float Weight, 
 		UTexture2D* Icon, 
-		AActor* ActorClass
+		TSubclassOf<AActor> ActorClass,
+		UObject* Outer
 	);
 };

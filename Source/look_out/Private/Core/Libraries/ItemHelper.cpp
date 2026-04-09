@@ -3,9 +3,15 @@
 #include "Core/Libraries/ItemHelper.h"
 
 UItemDefinition* UItemHelper::BuildItemDefinition(FText Name, FText Description, float Weight,
-	UTexture2D* Icon, AActor* ActorClass)
+	UTexture2D* Icon, TSubclassOf<AActor> ActorClass, UObject* Outer)
 {
-	UItemDefinition* Definition = NewObject<UItemDefinition>(nullptr, UItemDefinition::StaticClass());
+	UObject* DefinitionOuter = IsValid(Outer) ? Outer : GetTransientPackage();
+	UItemDefinition* Definition = NewObject<UItemDefinition>(
+		DefinitionOuter,
+		UItemDefinition::StaticClass(),
+		NAME_None,
+		RF_Transient
+	);
 	Definition->ActorClass = ActorClass;
 	Definition->Weight = Weight;
 	Definition->Icon = Icon;

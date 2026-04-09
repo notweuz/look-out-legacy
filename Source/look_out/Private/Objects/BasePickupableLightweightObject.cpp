@@ -32,7 +32,14 @@ UItemDefinition* ABasePickupableLightweightObject::GetDefinition_Implementation(
 	{
 		return Definition;
 	} 
-	Definition = UItemHelper::BuildItemDefinition(DisplayName, Description, Weight, Icon, this);
+
+	Definition = UItemHelper::BuildItemDefinition(
+		DisplayName,
+		Description,
+		Weight,
+		Icon,
+		GetClass(),
+		this
+	);
 	return Definition;
 }
-

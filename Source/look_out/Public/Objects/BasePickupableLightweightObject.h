@@ -20,6 +20,6 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-	
-	UItemDefinition* GetDefinition_Implementation() override;
+
+	virtual UItemDefinition* GetDefinition_Implementation() override;
 };
