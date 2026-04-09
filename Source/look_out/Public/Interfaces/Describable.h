@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Data/ItemDefinition.h"
 #include "UObject/Interface.h"
 #include "Describable.generated.h"
 

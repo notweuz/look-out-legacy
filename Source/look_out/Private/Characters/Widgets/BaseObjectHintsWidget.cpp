@@ -108,7 +108,7 @@ void UBaseObjectHintsWidget::UpdateFromComponent(UActorComponent* Component) con
 			if (UItemDefinition* Definition = IPickupable::Execute_GetDefinition(OwnerActor))
 			{
 				StoreText->SetVisibility(ESlateVisibility::Visible);
-				StoreText->SetText(Definition->DisplayName);
+				StoreText->SetText(FText::FromString("RMB - Collect"));
 			}
 		}
 	}
