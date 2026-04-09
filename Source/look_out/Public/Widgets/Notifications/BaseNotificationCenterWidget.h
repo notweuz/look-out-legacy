@@ -7,13 +7,13 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/VerticalBox.h"
 #include "Core/Subsystems/NotificationSubsystem.h"
-#include "NotificationCenterWidget.generated.h"
+#include "BaseNotificationCenterWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOOK_OUT_API UNotificationCenterWidget : public UUserWidget
+class LOOK_OUT_API UBaseNotificationCenterWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

@@ -1,9 +1,9 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "Widgets/Notifications/NotificationCenterWidget.h"
+#include "Widgets/Notifications/BaseNotificationCenterWidget.h"
 
-void UNotificationCenterWidget::NativeConstruct()
+void UBaseNotificationCenterWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -12,21 +12,21 @@ void UNotificationCenterWidget::NativeConstruct()
 		NotificationSubsystem = World->GetGameInstance()->GetSubsystem<UNotificationSubsystem>();
 		if (NotificationSubsystem)
 		{
-			NotificationSubsystem->OnNotificationReceived.AddDynamic(this, &UNotificationCenterWidget::HandleNotificationReceived);
+			NotificationSubsystem->OnNotificationReceived.AddDynamic(this, &UBaseNotificationCenterWidget::HandleNotificationReceived);
 		}
 	}
 }
 
-void UNotificationCenterWidget::NativeDestruct()
+void UBaseNotificationCenterWidget::NativeDestruct()
 {
 	if (NotificationSubsystem)
 	{
-		NotificationSubsystem->OnNotificationReceived.RemoveDynamic(this, &UNotificationCenterWidget::HandleNotificationReceived);
+		NotificationSubsystem->OnNotificationReceived.RemoveDynamic(this, &UBaseNotificationCenterWidget::HandleNotificationReceived);
 	}
 	Super::NativeDestruct();
 }
 
-void UNotificationCenterWidget::HandleNotificationReceived(const FNotificationData& Notification)
+void UBaseNotificationCenterWidget::HandleNotificationReceived(const FNotificationData& Notification)
 {
 	if (!NotificationWidgetClass || !NotificationsBox) return;
 
