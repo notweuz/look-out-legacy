@@ -255,7 +255,8 @@ void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
 
         AActor* Target = ActorMap.FindRef(Record.SaveId);
 
-        if (!Target)
+        const bool bWasSpawnedDeferred = !Target;
+        if (bWasSpawnedDeferred)
         {
             Target = GetWorld()->SpawnActorDeferred<AActor>(
                 Record.ActorClass.LoadSynchronous(),
@@ -263,15 +264,24 @@ void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
             );
         }
 
+        if (!Target)
+        {
+            continue;
+        }
+
         Target->SetActorLocation(Record.Location);
         Target->SetActorRotation(Record.Rotation);
         Target->SetActorScale3D(Record.Scale);
-        ISaveable::Execute_OnLoad(Target, Record.Bytes);
 
-        UGameplayStatics::FinishSpawningActor(
-            Target,
-            FTransform(Record.Rotation, Record.Location, Record.Scale)
-        );
+        if (bWasSpawnedDeferred)
+        {
+            UGameplayStatics::FinishSpawningActor(
+                Target,
+                FTransform(Record.Rotation, Record.Location, Record.Scale)
+            );
+        }
+
+        ISaveable::Execute_OnLoad(Target, Record.Bytes);
     }
 }
 

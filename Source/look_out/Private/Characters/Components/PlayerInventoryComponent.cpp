@@ -94,8 +94,10 @@ void UPlayerInventoryComponent::DropActiveItem()
     FTransform DropTransform(DropLocation);
 
     AActor* DroppedActor = GetWorld()->SpawnActorDeferred<AActor>(Class, DropTransform);
-    ISaveable::Execute_OnLoad(DroppedActor, Record.Bytes);
+    if (!DroppedActor) return;
+    
     UGameplayStatics::FinishSpawningActor(DroppedActor, DropTransform);
+    ISaveable::Execute_OnLoad(DroppedActor, Record.Bytes);
 
     ClearHotbarSlot(ActiveSlotIndex);
     ShiftHotbarIndicesAfterRemoval(ItemIndex);
