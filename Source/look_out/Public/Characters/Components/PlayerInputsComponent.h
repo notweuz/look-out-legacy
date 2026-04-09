@@ -78,6 +78,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Drop;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_ToggleEquip;
 
 private:
 	UPROPERTY()
@@ -103,5 +106,6 @@ private:
 	void Input_InventoryTriggered();
 	void Input_RMBTriggered();
 	void Input_LMBTriggered();
+	void Input_ToggleEquipStarted();
 	void Input_Scroll(const FInputActionValue& Value);
 };

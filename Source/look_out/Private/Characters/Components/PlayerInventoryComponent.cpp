@@ -269,6 +269,12 @@ void UPlayerInventoryComponent::UnequipItem()
     OnItemUnequipped.Broadcast();
 }
 
+void UPlayerInventoryComponent::ToggleEquip()
+{
+    if (ItemInHand) UnequipItem();
+    else EquipActiveItem();
+}
+
 void UPlayerInventoryComponent::InteractWithActiveItem()
 {
     FItemSaveRecord Record;

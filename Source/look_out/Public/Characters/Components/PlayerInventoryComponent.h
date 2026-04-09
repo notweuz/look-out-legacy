@@ -77,6 +77,9 @@ public:
     void UnequipItem();
     
     UFUNCTION(BlueprintCallable, Category="Hand")
+    void ToggleEquip();
+    
+    UFUNCTION(BlueprintCallable, Category="Hand")
     void InteractWithActiveItem();
 
 private:

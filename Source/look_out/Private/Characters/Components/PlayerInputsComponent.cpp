@@ -68,6 +68,7 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_RMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_RMBTriggered);
 		EIC->BindAction(IA_LMB, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_LMBTriggered);
 		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
+		EIC->BindAction(IA_ToggleEquip, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_ToggleEquipStarted);
 		EIC->BindAction(IA_Drop, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_DropTriggered);
 	}
 }
@@ -222,6 +223,12 @@ void UPlayerInputsComponent::Input_LMBTriggered()
 {
 	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->PlayerGrabComponent) return;
 	OwnerCharacter->PlayerGrabComponent->ToggleGrab(!OwnerCharacter->PlayerGrabComponent->IsGrabbingObject);
+}
+
+void UPlayerInputsComponent::Input_ToggleEquipStarted()
+{
+	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->PlayerInventoryComponent) return;
+	OwnerCharacter->PlayerInventoryComponent->ToggleEquip();
 }
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)
