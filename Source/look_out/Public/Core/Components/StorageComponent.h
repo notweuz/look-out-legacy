@@ -39,6 +39,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Storage")
 	float GetRemainingWeight() const { return MaxWeight - CurrentWeight; }
 
-	void SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const;
+	virtual void SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const;
 	void LoadFromRecords(const TArray<FItemSaveRecord>& InRecords);
 };

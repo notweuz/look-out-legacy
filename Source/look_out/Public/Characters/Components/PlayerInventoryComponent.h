@@ -68,6 +68,8 @@ public:
     UFUNCTION(BlueprintPure, Category="Inventory|Hotbar")
     int32 GetActiveItemIndex() const;
 
+    void SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const;
+
     UFUNCTION(BlueprintCallable, Category="Hand")
     void EquipActiveItem();
 
@@ -80,8 +82,12 @@ public:
 private:
     UPROPERTY()
     ABaseCharacter* OwnerCharacter;
+
+    UPROPERTY()
+    int32 EquippedItemIndex = INDEX_NONE;
     
     void RefreshHandItem();
+    void SaveEquippedItemState();
 
     void ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex);
 };

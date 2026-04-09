@@ -178,6 +178,12 @@ int32 UPlayerInventoryComponent::GetActiveItemIndex() const
     return HotbarSlots[ActiveSlotIndex];
 }
 
+void UPlayerInventoryComponent::SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const
+{
+    const_cast<UPlayerInventoryComponent*>(this)->SaveEquippedItemState();
+    UStorageComponent::SaveToRecords(OutRecords);
+}
+
 void UPlayerInventoryComponent::RefreshHandItem()
 {
     UnequipItem();
@@ -191,8 +197,10 @@ void UPlayerInventoryComponent::EquipActiveItem()
 {
     UnequipItem();
 
-    FItemSaveRecord Record;
-    if (!GetActiveItem(Record)) return;
+    const int32 ItemIndex = GetActiveItemIndex();
+    if (!Items.IsValidIndex(ItemIndex)) return;
+
+    const FItemSaveRecord& Record = Items[ItemIndex];
 
     UClass* Class = Record.ItemClass.LoadSynchronous();
     if (!Class) return;
@@ -214,6 +222,7 @@ void UPlayerInventoryComponent::EquipActiveItem()
         FAttachmentTransformRules::SnapToTargetNotIncludingScale
     );
     ItemInHand->SetActorRelativeRotation(OwnerCharacter->EquippedItemFacingOffset);
+    EquippedItemIndex = ItemIndex;
 
     UE_LOG(LogInventory, Log, TEXT("Equipped item: %s"), *ItemInHand->GetName());
     OnItemEquipped.Broadcast(ItemInHand);
@@ -223,15 +232,11 @@ void UPlayerInventoryComponent::UnequipItem()
 {
     if (!ItemInHand) return;
 
-    int32 ItemIndex = GetActiveItemIndex();
-    if (Items.IsValidIndex(ItemIndex))
-    {
-        Items[ItemIndex].Bytes.Empty();
-        ISaveable::Execute_OnSave(ItemInHand, Items[ItemIndex].Bytes);
-    }
+    SaveEquippedItemState();
 
     ItemInHand->Destroy();
     ItemInHand = nullptr;
+    EquippedItemIndex = INDEX_NONE;
 
     OnItemUnequipped.Broadcast();
 }
@@ -255,4 +260,15 @@ void UPlayerInventoryComponent::ShiftHotbarIndicesAfterRemoval(int32 RemovedItem
         if (SlotItemIndex > RemovedItemIndex)
             SlotItemIndex--;
     }
+}
+
+void UPlayerInventoryComponent::SaveEquippedItemState()
+{
+    if (!ItemInHand || !Items.IsValidIndex(EquippedItemIndex))
+    {
+        return;
+    }
+
+    Items[EquippedItemIndex].Bytes.Empty();
+    ISaveable::Execute_OnSave(ItemInHand, Items[EquippedItemIndex].Bytes);
 }
