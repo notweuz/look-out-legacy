@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "Characters/BaseCharacter.h"
 #include "Core/Components/StorageComponent.h"
 #include "Core/Save/SaveTypes.h"
 #include "PlayerInventoryComponent.generated.h"
@@ -36,6 +37,9 @@ public:
     
     UFUNCTION(BlueprintCallable, Category="Inventory")
     bool TryPickup(AActor* Actor);
+    
+    UFUNCTION(BlueprintCallable, Category="Inventory")
+    void Collect();
 
     UFUNCTION(BlueprintCallable, Category="Inventory")
     void DropActiveItem();
@@ -68,6 +72,9 @@ public:
     void UnequipItem();
 
 private:
+    UPROPERTY()
+    ABaseCharacter* OwnerCharacter;
+    
     void RefreshHandItem();
 
     void ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex);

@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/PlayerGrabComponent.h"
+#include "Characters/Components/PlayerInventoryComponent.h"
 #include "Characters/Components/PlayerMovementComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
 
@@ -200,7 +201,8 @@ void UPlayerInputsComponent::Input_InventoryTriggered()
 
 void UPlayerInputsComponent::Input_RMBTriggered()
 {
-	
+	if (!CanProcessGameplayInput()) return;
+	OwnerCharacter->PlayerInventoryComponent->Collect();
 }
 
 void UPlayerInputsComponent::Input_LMBTriggered()

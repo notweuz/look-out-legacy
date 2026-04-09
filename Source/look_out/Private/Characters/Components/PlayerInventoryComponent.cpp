@@ -2,25 +2,30 @@
 #include "Interfaces/Pickupable.h"
 #include "Objects/BaseLightweightObject.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/LogCategories.h"
 
 void UPlayerInventoryComponent::BeginPlay()
 {
     Super::BeginPlay();
     HotbarSlots.Init(INDEX_NONE, HotbarSize);
+    
+	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
 
 bool UPlayerInventoryComponent::TryPickup(AActor* Actor)
 {
     if (!Actor) return false;
 
-    if (!Cast<ABaseLightweightObject>(Actor)) return false;
-
     if (!Actor->Implements<UPickupable>()) return false;
 
-    UItemDefinition* Def = IPickupable::Execute_GetDefinition(Actor);
+    const UItemDefinition* Def = IPickupable::Execute_GetDefinition(Actor);
     if (!Def) return false;
 
-    if (!CanFit(Def->Weight)) return false;
+    if (!CanFit(Def->Weight))
+    {
+        UE_LOG(LogInventory, Log, TEXT("Couldn't fit item in inventory, not enough storage"))
+        return false;
+    }
 
     FItemSaveRecord Record;
     Record.ItemClass = Actor->GetClass();
@@ -41,6 +46,34 @@ bool UPlayerInventoryComponent::TryPickup(AActor* Actor)
 
     Actor->Destroy();
     return true;
+}
+
+void UPlayerInventoryComponent::Collect()
+{
+    if (!OwnerCharacter || !GetWorld())
+    {
+        return;
+    }
+    
+    const auto [Start, End] = OwnerCharacter->GetForwardVectorRelatedToCamera(OwnerCharacter->InteractionDistance);
+    
+    FHitResult Hit;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(OwnerCharacter);
+    
+#if WITH_EDITOR
+    DrawDebugLine(OwnerCharacter->GetWorld(), Start, End, FColor::Cyan, false, 10.0f);
+#endif
+    
+    if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+    {
+        return;
+    }
+
+    if (AActor* HitActor = Hit.GetActor(); TryPickup(HitActor))
+    {
+        UE_LOG(LogInventory, Log, TEXT("Player picked up item of type %s"), *HitActor->GetClass()->GetName());
+    }
 }
 
 void UPlayerInventoryComponent::DropActiveItem()
