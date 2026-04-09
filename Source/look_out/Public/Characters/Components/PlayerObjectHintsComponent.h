@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Characters/Widgets/BaseObjectHintsWidget.h"
+#include "Widgets/BaseObjectHintsWidget.h"
 #include "PlayerObjectHintsComponent.generated.h"
 
 class ABaseCharacter;
