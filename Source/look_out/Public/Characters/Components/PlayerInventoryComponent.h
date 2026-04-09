@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Core/StorageComponent.h"
+#include "Core/Components/StorageComponent.h"
 #include "Core/Save/SaveTypes.h"
 #include "PlayerInventoryComponent.generated.h"
 

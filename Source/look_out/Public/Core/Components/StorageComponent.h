@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Core/Save/SaveTypes.h"
-#include "Save/SaveTypes.h"
+#include "../Save/SaveTypes.h"
 #include "StorageComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnStorageChanged);

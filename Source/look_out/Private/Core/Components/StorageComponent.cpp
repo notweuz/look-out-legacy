@@ -1,4 +1,4 @@
-#include "Core/StorageComponent.h"
+#include "Core/Components/StorageComponent.h"
 
 bool UStorageComponent::CanFit(float ItemWeight) const
 {
