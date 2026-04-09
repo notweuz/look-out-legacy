@@ -190,8 +190,14 @@ void UPlayerInputsComponent::Input_ThrowTriggered()
 
 void UPlayerInputsComponent::Input_InteractTriggered()
 {
-	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerInteractionComponent) return;
-	OwnerCharacter->PlayerInteractionComponent->Interact();
+	if (!CanProcessGameplayInput() || !OwnerCharacter->PlayerInteractionComponent || !OwnerCharacter->PlayerInventoryComponent) return;
+	if (OwnerCharacter->PlayerInventoryComponent->ItemInHand)
+	{
+		OwnerCharacter ->PlayerInventoryComponent->InteractWithActiveItem();
+	} else
+	{
+		OwnerCharacter->PlayerInteractionComponent->Interact();
+	}
 }
 
 void UPlayerInputsComponent::Input_InventoryTriggered()

@@ -41,31 +41,31 @@ public:
     UFUNCTION(BlueprintCallable, Category="Inventory")
     void Collect();
 
-    UFUNCTION(BlueprintCallable, Category="Inventory")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void DropActiveItem();
     
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     bool AssignToHotbar(int32 ItemIndex, int32 HotbarSlot);
 
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void ClearHotbarSlot(int32 HotbarSlot);
 
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void SetActiveSlot(int32 SlotIndex);
 
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void NextSlot();
 
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void PrevSlot();
     
-    UFUNCTION(BlueprintCallable, Category="Hotbar")
+    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void ScrollHotbar(int Delta);
 
-    UFUNCTION(BlueprintPure, Category="Hotbar")
+    UFUNCTION(BlueprintPure, Category="Inventory|Hotbar")
     bool GetActiveItem(FItemSaveRecord& OutRecord) const;
 
-    UFUNCTION(BlueprintPure, Category="Hotbar")
+    UFUNCTION(BlueprintPure, Category="Inventory|Hotbar")
     int32 GetActiveItemIndex() const;
 
     UFUNCTION(BlueprintCallable, Category="Hand")
@@ -73,6 +73,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Hand")
     void UnequipItem();
+    
+    UFUNCTION(BlueprintCallable, Category="Hand")
+    void InteractWithActiveItem();
 
 private:
     UPROPERTY()

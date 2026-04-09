@@ -1,4 +1,6 @@
 #include "Characters/Components/PlayerInventoryComponent.h"
+
+#include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
 #include "Objects/BaseLightweightObject.h"
 #include "Kismet/GameplayStatics.h"
@@ -232,6 +234,18 @@ void UPlayerInventoryComponent::UnequipItem()
     ItemInHand = nullptr;
 
     OnItemUnequipped.Broadcast();
+}
+
+void UPlayerInventoryComponent::InteractWithActiveItem()
+{
+    FItemSaveRecord Record;
+    if (!GetActiveItem(Record)) return;
+    
+    if (ItemInHand.GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+    {
+        UE_LOG(LogPlayer, Log, TEXT("Interacting with item: %s"), *ItemInHand->GetName())
+        IInteractable::Execute_Interact(ItemInHand, GetOwner());
+    }
 }
 
 void UPlayerInventoryComponent::ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex)
