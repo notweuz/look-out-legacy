@@ -33,7 +33,6 @@ void UNotificationCenterWidget::HandleNotificationReceived(const FNotificationDa
 	UBaseNotificationWidget* NewNotif = CreateWidget<UBaseNotificationWidget>(this, NotificationWidgetClass);
 	if (NewNotif)
 	{
-		NewNotif->ShowNotification(Notification.Title, Notification.Message, Notification.Duration, Notification.NotificationType);
 		NotificationsBox->AddChild(NewNotif);
 	}
 }

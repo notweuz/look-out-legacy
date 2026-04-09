@@ -23,9 +23,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Notification", meta = (AdvancedDisplay = 3))
 	void SendNotification(
-		const FText& Title,
 		const FText& Message,
-		float Duration = 3.0f,
+		const float Duration,
 		ENotificationType Priority = ENotificationType::Info
 	);
 

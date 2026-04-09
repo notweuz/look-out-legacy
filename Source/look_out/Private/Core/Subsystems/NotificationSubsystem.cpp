@@ -13,13 +13,11 @@ void UNotificationSubsystem::BroadcastNotification(const FNotificationData& Noti
 }
 
 void UNotificationSubsystem::SendNotification(
-	const FText& Title,
 	const FText& Message,
-	float Duration,
+	const float Duration,
 	ENotificationType Type)
 {
 	FNotificationData Data;
-	Data.Title = Title;
 	Data.Message = Message;
 	Data.Duration = Duration;
 	Data.NotificationType = Type;

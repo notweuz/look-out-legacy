@@ -13,14 +13,11 @@ struct FNotificationData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notification")
-	FText Title;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notification")
 	FText Message;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notification")
-	float Duration = 3.0f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notification")
 	ENotificationType NotificationType;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notification")
+	float Duration = 3.0f;
 };
