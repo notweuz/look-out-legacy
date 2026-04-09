@@ -1,5 +1,6 @@
 #include "Characters/Components/PlayerInventoryComponent.h"
 
+#include "Characters/Components/PlayerGrabComponent.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Pickupable.h"
 #include "Objects/BaseLightweightObject.h"
@@ -76,6 +77,7 @@ void UPlayerInventoryComponent::Collect()
     if (AActor* HitActor = Hit.GetActor(); TryPickup(HitActor))
     {
         UE_LOG(LogInventory, Log, TEXT("Player picked up item of type %s"), *HitActor->GetClass()->GetName());
+        OwnerCharacter->PlayerGrabComponent->ToggleGrab(false);
     }
 }
 
