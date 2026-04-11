@@ -7,351 +7,374 @@
 #include "Utils/SaveUtils.h"
 #include "Kismet/GameplayStatics.h"
 
-const FString USaveManager::RegistrySlot = "SaveRegistry";
-const FString USaveManager::GlobalSlot   = "GlobalSave";
+const FString USaveManager::RegistrySlot = TEXT("SaveRegistry");
+const FString USaveManager::GlobalSlot = TEXT("GlobalSave");
 
 void USaveManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-    Super::Initialize(Collection);
-    LoadRegistry();
-    LoadGlobal();
+	Super::Initialize(Collection);
 
-    SessionStartTime             = FDateTime::Now();
-    GlobalSave->LastPlayedAt     = SessionStartTime;
-    if (GlobalSave->FirstPlayedAt.GetTicks() == 0)
-        GlobalSave->FirstPlayedAt = SessionStartTime;
-    SaveGlobal();
+	LoadRegistry();
+	LoadGlobal();
+
+	SessionStartTime = FDateTime::Now();
+	GlobalSave->LastPlayedAt = SessionStartTime;
+
+	if (GlobalSave->FirstPlayedAt.GetTicks() == 0)
+		GlobalSave->FirstPlayedAt = SessionStartTime;
+
+	SaveGlobal();
 }
 
 void USaveManager::Deinitialize()
 {
-    GlobalSave->TotalPlaytimeSeconds += CalcSessionTime();
-    SaveGlobal();
-    Super::Deinitialize();
+	GlobalSave->TotalPlaytimeSeconds += CalcSessionTime();
+	SaveGlobal();
+
+	Super::Deinitialize();
 }
+
 
 void USaveManager::CreateSave(const FString& BaseName)
 {
-    FString SlotName = GenerateSlotName(BaseName);
+	const FString SlotName = GenerateSlotName(BaseName);
 
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::CreateSaveGameObject(UGameSaveGame::StaticClass())
-    );
-    SaveGame->SlotName        = SlotName;
-    SaveGame->SavedAt         = FDateTime::Now();
-    SaveGame->PlaytimeSeconds = 0.f;
+	UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UGameSaveGame::StaticClass()));
 
-    UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+	SaveGame->SlotName = SlotName;
+	SaveGame->SavedAt = FDateTime::Now();
+	SaveGame->PlaytimeSeconds = 0.f;
 
-    FSaveSlotMeta Meta;
-    Meta.SlotName        = SlotName;
-    Meta.SavedAt         = SaveGame->SavedAt;
-    Meta.PlaytimeSeconds = 0.f;
-    Registry->Slots.Add(Meta);
-    SaveRegistry();
+	UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
 
-    GlobalSave->TotalRunsStarted++;
-    SaveGlobal();
+	FSaveSlotMeta Meta;
+	Meta.SlotName = SlotName;
+	Meta.SavedAt = SaveGame->SavedAt;
+	Meta.PlaytimeSeconds = 0.f;
+	Registry->Slots.Add(Meta);
+	SaveRegistry();
 
-    ActiveSlotName = SlotName;
-    OnSaveSlotsChanged.Broadcast(Registry->Slots);
+	++GlobalSave->TotalRunsStarted;
+	SaveGlobal();
+
+	ActiveSlotName = SlotName;
+	OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
 void USaveManager::LoadSave(const FString& SlotName)
 {
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(SlotName, 0)
-    );
-    if (!SaveGame) return;
+	UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 
-    ActiveSlotName = SlotName;
-    SessionStartTime = FDateTime::Now();
+	if (!SaveGame)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("USaveManager::LoadSave — slot '%s' not found"), *SlotName);
+		return;
+	}
 
-    RestoreWorldData(SaveGame);
+	ActiveSlotName = SlotName;
+	SessionStartTime = FDateTime::Now();
 
-    APlayerController* PC = GetWorld()->GetFirstPlayerController();
-    if (!PC) return;
-
-    ABaseCharacter* Player = Cast<ABaseCharacter>(PC->GetPawn());
-    if (!Player) return;
-
-    RestorePlayerData(SaveGame, Player);
+	RestoreWorldData(SaveGame, true);
 }
 
 void USaveManager::SaveCurrent()
 {
-    if (ActiveSlotName.IsEmpty()) return;
+	if (ActiveSlotName.IsEmpty()) return;
 
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(ActiveSlotName, 0)
-    );
-    if (!SaveGame) return;
+	UGameSaveGame* SaveGame = LoadSlotOrNull(ActiveSlotName);
+	if (!SaveGame) return;
 
-    SaveGame->SavedAt         = FDateTime::Now();
-    SaveGame->PlaytimeSeconds += CalcSessionTime();
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (!PC) return;
 
-    APlayerController* PC = GetWorld()->GetFirstPlayerController();
-    if (!PC) return;
-    
-    ABaseCharacter* Player = Cast<ABaseCharacter>(PC->GetPawn());
-    if (!Player) return;
+	ABaseCharacter* Player = Cast<ABaseCharacter>(PC->GetPawn());
+	if (!Player) return;
 
-    CollectWorldData(SaveGame);
-    CollectPlayerData(SaveGame, Player);
+	SaveGame->SavedAt = FDateTime::Now();
+	SaveGame->PlaytimeSeconds += CalcSessionTime();
+	SessionStartTime = FDateTime::Now();
 
-    UGameplayStatics::SaveGameToSlot(SaveGame, ActiveSlotName, 0);
+	CollectWorldData(SaveGame);
+	CollectPlayerData(SaveGame, Player);
 
-    for (FSaveSlotMeta& Meta : Registry->Slots)
-    {
-        if (Meta.SlotName == ActiveSlotName)
-        {
-            Meta.SavedAt         = SaveGame->SavedAt;
-            Meta.PlaytimeSeconds = SaveGame->PlaytimeSeconds;
-            break;
-        }
-    }
-    SaveRegistry();
-    
-    OnSaveSlotsChanged.Broadcast(Registry->Slots);
+	UGameplayStatics::SaveGameToSlot(SaveGame, ActiveSlotName, 0);
+	FlushSlotMeta(SaveGame);
+	SaveRegistry();
+
+	OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
 void USaveManager::DeleteSave(const FString& SlotName)
 {
-    UGameplayStatics::DeleteGameInSlot(SlotName, 0);
+	UGameplayStatics::DeleteGameInSlot(SlotName, 0);
 
-    Registry->Slots.RemoveAll([&](const FSaveSlotMeta& Meta) {
-        return Meta.SlotName == SlotName;
-    });
-    SaveRegistry();
+	Registry->Slots.RemoveAll([&SlotName](const FSaveSlotMeta& Meta)
+	{
+		return Meta.SlotName == SlotName;
+	});
+	SaveRegistry();
 
-    OnSaveSlotsChanged.Broadcast(Registry->Slots);
+	OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
+
 
 void USaveManager::SetFlag(const FString& SlotName, FName Key, bool Value)
 {
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(SlotName, 0)
-    );
-    if (!SaveGame) return;
-    SaveGame->WorldState.SetFlag(Key, Value);
-    UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+	if (UGameSaveGame* SaveGame = LoadSlotOrNull(SlotName))
+	{
+		SaveGame->WorldState.SetFlag(Key, Value);
+		UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+	}
 }
 
 void USaveManager::IncrementCounter(const FString& SlotName, FName Key, int32 Amount)
 {
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(SlotName, 0)
-    );
-    if (!SaveGame) return;
-    SaveGame->WorldState.IncrementCounter(Key, Amount);
-    UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+	if (UGameSaveGame* SaveGame = LoadSlotOrNull(SlotName))
+	{
+		SaveGame->WorldState.IncrementCounter(Key, Amount);
+		UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+	}
 }
 
 bool USaveManager::GetFlag(const FString& SlotName, FName Key, bool Default)
 {
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(SlotName, 0)
-    );
-    if (!SaveGame) return Default;
-    return SaveGame->WorldState.GetFlag(Key, Default);
+	const UGameSaveGame* SaveGame = LoadSlotOrNull(SlotName);
+	return SaveGame ? SaveGame->WorldState.GetFlag(Key, Default) : Default;
 }
 
 int32 USaveManager::GetCounter(const FString& SlotName, FName Key)
 {
-    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(SlotName, 0)
-    );
-    if (!SaveGame) return 0;
-    return SaveGame->WorldState.GetCounter(Key);
+	const UGameSaveGame* SaveGame = LoadSlotOrNull(SlotName);
+	return SaveGame ? SaveGame->WorldState.GetCounter(Key) : 0;
 }
+
 
 void USaveManager::IncrementGlobalCounter(FName Key, int32 Amount)
 {
-    GlobalSave->IncrementGlobalCounter(Key, Amount);
-    SaveGlobal();
+	GlobalSave->IncrementGlobalCounter(Key, Amount);
+	SaveGlobal();
 }
 
 void USaveManager::SetGlobalFlag(FName Key, bool Value)
 {
-    GlobalSave->SetGlobalFlag(Key, Value);
-    SaveGlobal();
+	GlobalSave->SetGlobalFlag(Key, Value);
+	SaveGlobal();
 }
 
 int32 USaveManager::GetGlobalCounter(FName Key)
 {
-    return GlobalSave->GetGlobalCounter(Key);
+	return GlobalSave->GetGlobalCounter(Key);
 }
 
 bool USaveManager::GetGlobalFlag(FName Key, bool Default)
 {
-    return GlobalSave->GetGlobalFlag(Key, Default);
+	return GlobalSave->GetGlobalFlag(Key, Default);
 }
+
 
 void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
 {
-    SaveGame->ActorRecords.Empty();
+	SaveGame->ActorRecords.Empty();
 
-    TArray<AActor*> Actors;
-    UGameplayStatics::GetAllActorsWithInterface(
-        GetWorld(), USaveable::StaticClass(), Actors
-    );
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveable::StaticClass(), Actors);
 
-    for (AActor* Actor : Actors)
-    {
-        FActorSaveRecord Record;
-        Record.ActorClass  = Actor->GetClass();
-        Record.Location    = Actor->GetActorLocation();
-        Record.Rotation    = Actor->GetActorRotation();
-        Record.Scale       = Actor->GetActorScale3D();
-        ISaveable::Execute_OnSave(Actor, Record.Bytes);
-        SaveGame->ActorRecords.Add(Record);
-    }
+	for (AActor* Actor : Actors)
+	{
+		FActorSaveRecord Record;
+		Record.ActorClass = Actor->GetClass();
+		Record.Location = Actor->GetActorLocation();
+		Record.Rotation = Actor->GetActorRotation();
+		Record.Scale = Actor->GetActorScale3D();
+		ISaveable::Execute_OnSave(Actor, Record.Bytes);
+		SaveGame->ActorRecords.Add(MoveTemp(Record));
+	}
 }
 
-void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
+void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame, bool bRestorePlayer)
 {
-    if (SaveGame->ActorRecords.IsEmpty())
-        return;
-    
-    TArray<FSoftObjectPath> ClassesToLoad;
-    for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
-    {
-        if (!Record.ActorClass.IsNull())
-            ClassesToLoad.Add(Record.ActorClass.ToSoftObjectPath());
-    }
+	if (SaveGame->ActorRecords.IsEmpty())
+	{
+		if (bRestorePlayer)
+		{
+			APlayerController* PC = GetWorld()->GetFirstPlayerController();
+			ABaseCharacter* Player = PC ? Cast<ABaseCharacter>(PC->GetPawn()) : nullptr;
+			if (Player) RestorePlayerData(SaveGame, Player);
+		}
+		return;
+	}
 
-    TArray<AActor*> ExistingActors;
-    UGameplayStatics::GetAllActorsWithInterface(
-        GetWorld(), USaveable::StaticClass(), ExistingActors
-    );
-    for (AActor* Actor : ExistingActors)
-        Actor->Destroy();
+	TArray<FSoftObjectPath> PathsToLoad;
+	PathsToLoad.Reserve(SaveGame->ActorRecords.Num());
+	for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
+	{
+		if (!Record.ActorClass.IsNull())
+			PathsToLoad.Add(Record.ActorClass.ToSoftObjectPath());
+	}
 
-    TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager()
-        .RequestAsyncLoad(
-            ClassesToLoad,
-            [this, SaveGame]()
-            {
-                SpawnRestoredActors(SaveGame);
-            }
-        );
+	TArray<AActor*> ExistingActors;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveable::StaticClass(), ExistingActors);
+	for (AActor* Actor : ExistingActors)
+		Actor->Destroy();
+
+	UAssetManager::GetStreamableManager().RequestAsyncLoad(
+		PathsToLoad,
+		[this, SaveGame, bRestorePlayer]()
+		{
+			SpawnRestoredActors(SaveGame, bRestorePlayer);
+		});
 }
 
-void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame)
+void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame, bool bRestorePlayer)
 {
-    for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
-    {
-        if (Record.ActorClass.IsNull())
-        {
-            UE_LOG(LogTemp, Warning, TEXT("RestoreWorldData: null ActorClass, skipping"));
-            continue;
-        }
+	for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
+	{
+		if (Record.ActorClass.IsNull())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SpawnRestoredActors: null ActorClass, skipping"));
+			continue;
+		}
 
-        UClass* LoadedClass = Record.ActorClass.Get();
-        if (!LoadedClass)
-        {
-            UE_LOG(LogTemp, Warning,
-                TEXT("RestoreWorldData: failed to load class %s, skipping"),
-                *Record.ActorClass.ToString());
-            continue;
-        }
+		UClass* LoadedClass = Record.ActorClass.Get();
+		if (!LoadedClass)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SpawnRestoredActors: failed to resolve class '%s', skipping"),
+			       *Record.ActorClass.ToString());
+			continue;
+		}
 
-        AActor* Actor = GetWorld()->SpawnActor<AActor>(
-            LoadedClass,
-            FTransform(Record.Rotation, Record.Location, Record.Scale)
-        );
+		AActor* Actor = GetWorld()->SpawnActor<AActor>(
+			LoadedClass,
+			FTransform(Record.Rotation, Record.Location, Record.Scale));
 
-        if (!Actor)
-        {
-            UE_LOG(LogTemp, Warning,
-                TEXT("RestoreWorldData: SpawnActor failed for class %s"),
-                *LoadedClass->GetName());
-            continue;
-        }
+		if (!Actor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SpawnRestoredActors: SpawnActor failed for class '%s'"),
+			       *LoadedClass->GetName());
+			continue;
+		}
 
-        ISaveable::Execute_OnLoad(Actor, Record.Bytes);
-        ISaveable::Execute_OnPostLoadFromSave(Actor);
-    }
+		ISaveable::Execute_OnLoad(Actor, Record.Bytes);
+		ISaveable::Execute_OnPostLoadFromSave(Actor);
+	}
+
+	if (bRestorePlayer)
+	{
+		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		ABaseCharacter* Player = PC ? Cast<ABaseCharacter>(PC->GetPawn()) : nullptr;
+
+		if (Player)
+		{
+			RestorePlayerData(SaveGame, Player);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning,
+			       TEXT("SpawnRestoredActors: could not find player pawn to restore — "
+				       "make sure the pawn is spawned before LoadSave is called"));
+		}
+	}
 }
+
 
 void USaveManager::CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player)
 {
-    FPlayerSaveData& Data = SaveGame->PlayerData;
-    Data.Location = Player->GetActorLocation();
-    Data.Rotation = Player->GetActorRotation();
-    SaveUtils::Save(Player, Data.CharacterBytes);
+	FPlayerSaveData& Data = SaveGame->PlayerData;
+	Data.Location = Player->GetActorLocation();
+	Data.Rotation = Player->GetActorRotation();
+	SaveUtils::Save(Player, Data.CharacterBytes);
 
-    UPlayerInventoryComponent* Inv =
-        Player->FindComponentByClass<UPlayerInventoryComponent>();
-    if (Inv)
-    {
-        Inv->SaveToRecords(Data.InventoryItems);
-        Data.HotbarSlots     = Inv->HotbarSlots;
-        Data.ActiveSlotIndex = Inv->ActiveSlotIndex;
-    }
+	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
+	{
+		Inv->SaveToRecords(Data.InventoryItems);
+		Data.HotbarSlots = Inv->HotbarSlots;
+		Data.ActiveSlotIndex = Inv->ActiveSlotIndex;
+	}
 }
 
 void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player)
 {
-    const FPlayerSaveData& Data = SaveGame->PlayerData;
-    
-    if (!Data.CharacterBytes.IsEmpty())
-    {
-        Player->SetActorLocation(Data.Location);
-        Player->SetActorRotation(Data.Rotation);
-        SaveUtils::Load(Player, Data.CharacterBytes);
+	const FPlayerSaveData& Data = SaveGame->PlayerData;
 
-        UPlayerInventoryComponent* Inv =
-            Player->FindComponentByClass<UPlayerInventoryComponent>();
-        if (Inv)
-        {
-            Inv->LoadFromRecords(Data.InventoryItems);
-            Inv->HotbarSlots     = Data.HotbarSlots;
-            Inv->ActiveSlotIndex = Data.ActiveSlotIndex;
-            Inv->EquipActiveItem();
-        }
-    }
+	if (Data.CharacterBytes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Log, TEXT("RestorePlayerData: no character bytes — fresh save, skipping"));
+		return;
+	}
+
+	Player->SetActorLocation(Data.Location);
+	Player->SetActorRotation(Data.Rotation);
+	SaveUtils::Load(Player, Data.CharacterBytes);
+
+	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
+	{
+		Inv->LoadFromRecords(Data.InventoryItems);
+		Inv->HotbarSlots = Data.HotbarSlots;
+		Inv->ActiveSlotIndex = Data.ActiveSlotIndex;
+		Inv->EquipActiveItem();
+	}
+}
+
+
+UGameSaveGame* USaveManager::LoadSlotOrNull(const FString& SlotName) const
+{
+	UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+
+	if (!SaveGame)
+		UE_LOG(LogTemp, Warning, TEXT("USaveManager::LoadSlotOrNull — slot '%s' not found"), *SlotName);
+
+	return SaveGame;
+}
+
+void USaveManager::FlushSlotMeta(const UGameSaveGame* SaveGame)
+{
+	for (FSaveSlotMeta& Meta : Registry->Slots)
+	{
+		if (Meta.SlotName == SaveGame->SlotName)
+		{
+			Meta.SavedAt = SaveGame->SavedAt;
+			Meta.PlaytimeSeconds = SaveGame->PlaytimeSeconds;
+			return;
+		}
+	}
 }
 
 float USaveManager::CalcSessionTime() const
 {
-    FTimespan Duration = FDateTime::Now() - SessionStartTime;
-    return static_cast<float>(Duration.GetTotalSeconds());
+	return static_cast<float>((FDateTime::Now() - SessionStartTime).GetTotalSeconds());
 }
 
 FString USaveManager::GenerateSlotName(const FString& BaseName)
 {
-    return FString::Printf(TEXT("Save_%s"), *BaseName);
+	return FString::Printf(TEXT("Save_%s"), *BaseName);
 }
+
 
 void USaveManager::SaveRegistry()
 {
-    UGameplayStatics::SaveGameToSlot(Registry, RegistrySlot, 0);
+	UGameplayStatics::SaveGameToSlot(Registry, RegistrySlot, 0);
 }
 
 void USaveManager::LoadRegistry()
 {
-    Registry = Cast<USaveSlotRegistry>(
-        UGameplayStatics::LoadGameFromSlot(RegistrySlot, 0)
-    );
-    if (!Registry)
-        Registry = Cast<USaveSlotRegistry>(
-            UGameplayStatics::CreateSaveGameObject(USaveSlotRegistry::StaticClass())
-        );
+	Registry = Cast<USaveSlotRegistry>(UGameplayStatics::LoadGameFromSlot(RegistrySlot, 0));
+	if (!Registry)
+		Registry = Cast<USaveSlotRegistry>(
+			UGameplayStatics::CreateSaveGameObject(USaveSlotRegistry::StaticClass()));
 }
 
 void USaveManager::SaveGlobal()
 {
-    UGameplayStatics::SaveGameToSlot(GlobalSave, GlobalSlot, 0);
+	UGameplayStatics::SaveGameToSlot(GlobalSave, GlobalSlot, 0);
 }
 
 void USaveManager::LoadGlobal()
 {
-    GlobalSave = Cast<UGlobalSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(GlobalSlot, 0)
-    );
-    if (!GlobalSave)
-        GlobalSave = Cast<UGlobalSaveGame>(
-            UGameplayStatics::CreateSaveGameObject(UGlobalSaveGame::StaticClass())
-        );
+	GlobalSave = Cast<UGlobalSaveGame>(UGameplayStatics::LoadGameFromSlot(GlobalSlot, 0));
+	if (!GlobalSave)
+		GlobalSave = Cast<UGlobalSaveGame>(
+			UGameplayStatics::CreateSaveGameObject(UGlobalSaveGame::StaticClass()));
 }

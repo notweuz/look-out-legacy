@@ -22,49 +22,51 @@ public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
 
-    UPROPERTY(BlueprintReadOnly, Category="Save")
+    UPROPERTY(BlueprintReadOnly, Category = "Save")
     FString ActiveSlotName;
-    
-    UFUNCTION(BlueprintCallable, Category="Save")
-    void CreateSave(const FString& SlotName);
 
-    UFUNCTION(BlueprintCallable, Category="Save")
+    UFUNCTION(BlueprintCallable, Category = "Save")
+    void CreateSave(const FString& BaseName);
+
+    UFUNCTION(BlueprintCallable, Category = "Save")
     void LoadSave(const FString& SlotName);
-    
-    UFUNCTION(BlueprintCallable, Category="Save")
+
+    UFUNCTION(BlueprintCallable, Category = "Save")
     void SaveCurrent();
 
-    UFUNCTION(BlueprintCallable, Category="Save")
+    UFUNCTION(BlueprintCallable, Category = "Save")
     void DeleteSave(const FString& SlotName);
 
-    UFUNCTION(BlueprintPure, Category="Save")
-    TArray<FSaveSlotMeta> GetAllSlots() const { return Registry->Slots; }
+    UFUNCTION(BlueprintPure, Category = "Save")
+    TArray<FSaveSlotMeta> GetAllSlots() const { return Registry ? Registry->Slots : TArray<FSaveSlotMeta>{}; }
 
-    UFUNCTION(BlueprintCallable, Category="Save|WorldState")
+
+    UFUNCTION(BlueprintCallable, Category = "Save|WorldState")
     void SetFlag(const FString& SlotName, FName Key, bool Value);
 
-    UFUNCTION(BlueprintCallable, Category="Save|WorldState")
+    UFUNCTION(BlueprintCallable, Category = "Save|WorldState")
     void IncrementCounter(const FString& SlotName, FName Key, int32 Amount = 1);
 
-    UFUNCTION(BlueprintPure, Category="Save|WorldState")
+    UFUNCTION(BlueprintPure, Category = "Save|WorldState")
     bool GetFlag(const FString& SlotName, FName Key, bool Default = false);
 
-    UFUNCTION(BlueprintPure, Category="Save|WorldState")
+    UFUNCTION(BlueprintPure, Category = "Save|WorldState")
     int32 GetCounter(const FString& SlotName, FName Key);
+    
 
-    UFUNCTION(BlueprintCallable, Category="Save|Global")
+    UFUNCTION(BlueprintCallable, Category = "Save|Global")
     void IncrementGlobalCounter(FName Key, int32 Amount = 1);
 
-    UFUNCTION(BlueprintCallable, Category="Save|Global")
+    UFUNCTION(BlueprintCallable, Category = "Save|Global")
     void SetGlobalFlag(FName Key, bool Value);
 
-    UFUNCTION(BlueprintPure, Category="Save|Global")
+    UFUNCTION(BlueprintPure, Category = "Save|Global")
     int32 GetGlobalCounter(FName Key);
 
-    UFUNCTION(BlueprintPure, Category="Save|Global")
+    UFUNCTION(BlueprintPure, Category = "Save|Global")
     bool GetGlobalFlag(FName Key, bool Default = false);
 
-    UFUNCTION(BlueprintPure, Category="Save|Global")
+    UFUNCTION(BlueprintPure, Category = "Save|Global")
     UGlobalSaveGame* GetGlobalSave() const { return GlobalSave; }
 
 private:
@@ -82,11 +84,17 @@ private:
     void LoadGlobal();
 
     void CollectWorldData(UGameSaveGame* SaveGame);
-    void RestoreWorldData(UGameSaveGame* SaveGame);
-    void SpawnRestoredActors(UGameSaveGame* SaveGame);
+
+    void RestoreWorldData(UGameSaveGame* SaveGame, bool bRestorePlayer);
+
+    void SpawnRestoredActors(UGameSaveGame* SaveGame, bool bRestorePlayer);
+
     void CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
     void RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
 
-    float CalcSessionTime() const;
+    UGameSaveGame* LoadSlotOrNull(const FString& SlotName) const;
+    void           FlushSlotMeta(const UGameSaveGame* SaveGame);
+
+    float  CalcSessionTime() const;
     static FString GenerateSlotName(const FString& BaseName);
 };
