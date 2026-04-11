@@ -7,13 +7,14 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "BaseMainScreenWidget.generated.h"
+#include "Widgets/Common/BaseButton.h"
+#include "BaseMainMenuScreenWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOOK_OUT_API UBaseMainScreenWidget : public UUserWidget
+class LOOK_OUT_API UBaseMainMenuScreenWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -22,16 +23,16 @@ public:
 	UImage* LogoImage;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UButton* StartButton;
+	UBaseButton* StartButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UButton* SettingsButton;
+	UBaseButton* SettingsButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UButton* CreditsButton;
+	UBaseButton* CreditsButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UButton* ExitButton;
+	UBaseButton* ExitButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links")
 	UButton* DiscordButton;

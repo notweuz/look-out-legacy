@@ -1,12 +1,12 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
-#include "Widgets/Screen/BaseMainScreenWidget.h"
+#include "Widgets/Screen/BaseMainMenuScreenWidget.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/LogCategories.h"
 
-void UBaseMainScreenWidget::NativeConstruct()
+void UBaseMainMenuScreenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -23,11 +23,11 @@ void UBaseMainScreenWidget::NativeConstruct()
 
 	if (ExitButton)
 	{
-		ExitButton->OnClicked.AddDynamic(this, &UBaseMainScreenWidget::OnExitClicked);
+		ExitButton->Button->OnClicked.AddDynamic(this, &UBaseMainMenuScreenWidget::OnExitClicked);
 	}
 }
 
-void UBaseMainScreenWidget::OnExitClicked()
+void UBaseMainMenuScreenWidget::OnExitClicked()
 {
 	UE_LOG(LogUI, Display, TEXT("Exiting game"));
 	UKismetSystemLibrary::QuitGame(
