@@ -30,20 +30,16 @@ void USaveManager::Deinitialize()
     Super::Deinitialize();
 }
 
-void USaveManager::CreateSave(const FString& BaseName, ABaseCharacter* Player)
+void USaveManager::CreateSave(const FString& BaseName)
 {
-    FString SlotName = GenerateSlotName(BaseName);   
-    
+    FString SlotName = GenerateSlotName(BaseName);
+
     UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
         UGameplayStatics::CreateSaveGameObject(UGameSaveGame::StaticClass())
     );
-
     SaveGame->SlotName        = SlotName;
     SaveGame->SavedAt         = FDateTime::Now();
     SaveGame->PlaytimeSeconds = 0.f;
-
-    CollectWorldData(SaveGame);
-    CollectPlayerData(SaveGame, Player);
 
     UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
 
@@ -58,7 +54,6 @@ void USaveManager::CreateSave(const FString& BaseName, ABaseCharacter* Player)
     SaveGlobal();
 
     ActiveSlotName = SlotName;
-    
     OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
@@ -202,6 +197,9 @@ void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
 
 void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
 {
+    if (SaveGame->ActorRecords.IsEmpty())
+        return;
+    
     TArray<FSoftObjectPath> ClassesToLoad;
     for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
     {
@@ -283,18 +281,22 @@ void USaveManager::CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player)
 {
     const FPlayerSaveData& Data = SaveGame->PlayerData;
-    Player->SetActorLocation(Data.Location);
-    Player->SetActorRotation(Data.Rotation);
-    SaveUtils::Load(Player, Data.CharacterBytes);
-
-    UPlayerInventoryComponent* Inv =
-        Player->FindComponentByClass<UPlayerInventoryComponent>();
-    if (Inv)
+    
+    if (!Data.CharacterBytes.IsEmpty())
     {
-        Inv->LoadFromRecords(Data.InventoryItems);
-        Inv->HotbarSlots     = Data.HotbarSlots;
-        Inv->ActiveSlotIndex = Data.ActiveSlotIndex;
-        Inv->EquipActiveItem();
+        Player->SetActorLocation(Data.Location);
+        Player->SetActorRotation(Data.Rotation);
+        SaveUtils::Load(Player, Data.CharacterBytes);
+
+        UPlayerInventoryComponent* Inv =
+            Player->FindComponentByClass<UPlayerInventoryComponent>();
+        if (Inv)
+        {
+            Inv->LoadFromRecords(Data.InventoryItems);
+            Inv->HotbarSlots     = Data.HotbarSlots;
+            Inv->ActiveSlotIndex = Data.ActiveSlotIndex;
+            Inv->EquipActiveItem();
+        }
     }
 }
 
