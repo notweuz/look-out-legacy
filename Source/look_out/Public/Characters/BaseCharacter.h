@@ -79,7 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FVector HandSwayLocationMultiplier = FVector(0.5f, 0.5f, 0.5f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FRotator HandSwayRotationMultiplier = FRotator(1.0f, 1.0f, 1.0f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") FRotator EquippedItemFacingOffset = FRotator::ZeroRotator;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemLocationInterpSpeed = 18.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemLocationInterpSpeed = 40.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hand") float HandItemRotationInterpSpeed = 18.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
