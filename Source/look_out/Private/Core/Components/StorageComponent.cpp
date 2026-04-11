@@ -1,5 +1,7 @@
 #include "Core/Components/StorageComponent.h"
 
+#include "Interfaces/Pickupable.h"
+
 bool UStorageComponent::CanFit(float ItemWeight) const
 {
 	return (CurrentWeight + ItemWeight) <= MaxWeight;
@@ -7,10 +9,12 @@ bool UStorageComponent::CanFit(float ItemWeight) const
 
 bool UStorageComponent::AddItem(const FItemSaveRecord& Record)
 {
-	if (!CanFit(Record.Weight)) return false;
+	float Weight = IPickupable::Execute_GetDefinition(Record.ItemClass->GetDefaultObject())->Weight;
+	
+	if (!CanFit(Weight)) return false;
 
 	Items.Add(Record);
-	CurrentWeight += Record.Weight;
+	CurrentWeight += Weight;
 	OnStorageChanged.Broadcast();
 	return true;
 }
@@ -18,8 +22,10 @@ bool UStorageComponent::AddItem(const FItemSaveRecord& Record)
 bool UStorageComponent::RemoveItem(int32 Index)
 {
 	if (!Items.IsValidIndex(Index)) return false;
+	
+	float Weight = IPickupable::Execute_GetDefinition(Items[Index].ItemClass->GetDefaultObject())->Weight;
 
-	CurrentWeight -= Items[Index].Weight;
+	CurrentWeight -= Weight;
 	Items.RemoveAt(Index);
 	OnStorageChanged.Broadcast();
 	return true;
@@ -31,8 +37,8 @@ bool UStorageComponent::TransferItem(int32 Index, UStorageComponent* Target)
 
 	FItemSaveRecord Record = Items[Index];
 	if (!Target->AddItem(Record)) return false;
-
-	CurrentWeight -= Record.Weight;
+	
+	CurrentWeight -= IPickupable::Execute_GetDefinition(Record.ItemClass->GetDefaultObject())->Weight;
 	Items.RemoveAt(Index);
 	OnStorageChanged.Broadcast();
 	return true;
@@ -72,7 +78,7 @@ void UStorageComponent::LoadFromRecords(const TArray<FItemSaveRecord>& InRecords
 	Items = InRecords;
 	CurrentWeight = 0.f;
 	for (const FItemSaveRecord& Record : Items)
-		CurrentWeight += Record.Weight;
+		CurrentWeight += IPickupable::Execute_GetDefinition(Record.ItemClass->GetDefaultObject())->Weight;
 	OnStorageChanged.Broadcast();
 }
 

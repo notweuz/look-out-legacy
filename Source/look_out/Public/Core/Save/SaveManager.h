@@ -85,9 +85,9 @@ private:
 
     void CollectWorldData(UGameSaveGame* SaveGame);
 
-    void RestoreWorldData(UGameSaveGame* SaveGame, bool bRestorePlayer);
+    void RestoreWorldData(UGameSaveGame* SaveGame);
 
-    void SpawnRestoredActors(UGameSaveGame* SaveGame, bool bRestorePlayer);
+    void SpawnRestoredActors(UGameSaveGame* SaveGame);
 
     void CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
     void RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);

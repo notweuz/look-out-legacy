@@ -26,13 +26,13 @@ bool UPlayerInventoryComponent::TryPickup(AActor* Actor)
 
     if (!CanFit(Def->Weight))
     {
-        UE_LOG(LogInventory, Log, TEXT("Couldn't fit item in inventory, not enough storage"))
+        UNotificationSubsystem* Notification = OwnerCharacter->GetGameInstance()->GetSubsystem<UNotificationSubsystem>();
+        Notification->SendNotification(FText::FromString("Not enough storage"), 3.0f, ENotificationType::Warning);
         return false;
     }
 
     FItemSaveRecord Record;
     Record.ItemClass = Actor->GetClass();
-    Record.Weight    = Def->Weight;
     ISaveable::Execute_OnSave(Actor, Record.Bytes);
 
     int32 NewIndex = Items.Num();
@@ -77,6 +77,9 @@ void UPlayerInventoryComponent::Collect()
     {
         UE_LOG(LogInventory, Log, TEXT("Player picked up item of type %s"), *HitActor->GetClass()->GetName());
         OwnerCharacter->PlayerGrabComponent->ToggleGrab(false);
+    } else
+    {
+        UE_LOG(LogInventory, Log, TEXT("Player couldn't pick up item of type %s"), *HitActor->GetClass()->GetName());
     }
 }
 

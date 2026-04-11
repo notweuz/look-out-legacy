@@ -10,7 +10,6 @@ struct FItemSaveRecord
 
     UPROPERTY(SaveGame) TSoftClassPtr<AActor> ItemClass;
     UPROPERTY(SaveGame) TArray<uint8> Bytes;
-    UPROPERTY(SaveGame) float Weight = 0.f;
 };
 
 USTRUCT(BlueprintType)
@@ -32,9 +31,8 @@ struct FPlayerSaveData
 
     UPROPERTY(SaveGame) FVector Location;
     UPROPERTY(SaveGame) FRotator Rotation;
-    UPROPERTY(SaveGame) TArray<uint8> CharacterBytes;
+    UPROPERTY(SaveGame) FVector CameraRotation;
     UPROPERTY(SaveGame) TArray<FItemSaveRecord> InventoryItems;
-    UPROPERTY(SaveGame) TArray<int32> HotbarSlots;
     UPROPERTY(SaveGame) int32 ActiveSlotIndex = 0;
 };
 
@@ -94,6 +92,9 @@ public:
 
     UPROPERTY(SaveGame)
     FPlayerSaveData PlayerData;
+    
+    UPROPERTY(SaveGame)
+    bool bFirstStart = true;
 };
 
 UCLASS()

@@ -1,7 +1,9 @@
 #include "Core/Save/SaveManager.h"
 
+#include "Camera/CameraComponent.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/PlayerInventoryComponent.h"
+#include "Commandlets/WorldPartitionCommandletHelpers.h"
 #include "Engine/AssetManager.h"
 #include "Interfaces/Saveable.h"
 #include "Utils/SaveUtils.h"
@@ -76,7 +78,8 @@ void USaveManager::LoadSave(const FString& SlotName)
 	ActiveSlotName = SlotName;
 	SessionStartTime = FDateTime::Now();
 
-	RestoreWorldData(SaveGame, true);
+	if (SaveGame->bFirstStart) return;
+	RestoreWorldData(SaveGame);
 }
 
 void USaveManager::SaveCurrent()
@@ -94,6 +97,7 @@ void USaveManager::SaveCurrent()
 
 	SaveGame->SavedAt = FDateTime::Now();
 	SaveGame->PlaytimeSeconds += CalcSessionTime();
+	SaveGame->bFirstStart = false;
 	SessionStartTime = FDateTime::Now();
 
 	CollectWorldData(SaveGame);
@@ -189,23 +193,12 @@ void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
 		Record.Rotation = Actor->GetActorRotation();
 		Record.Scale = Actor->GetActorScale3D();
 		ISaveable::Execute_OnSave(Actor, Record.Bytes);
-		SaveGame->ActorRecords.Add(MoveTemp(Record));
+		SaveGame->ActorRecords.Add(Record);
 	}
 }
 
-void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame, bool bRestorePlayer)
+void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
 {
-	if (SaveGame->ActorRecords.IsEmpty())
-	{
-		if (bRestorePlayer)
-		{
-			APlayerController* PC = GetWorld()->GetFirstPlayerController();
-			ABaseCharacter* Player = PC ? Cast<ABaseCharacter>(PC->GetPawn()) : nullptr;
-			if (Player) RestorePlayerData(SaveGame, Player);
-		}
-		return;
-	}
-
 	TArray<FSoftObjectPath> PathsToLoad;
 	PathsToLoad.Reserve(SaveGame->ActorRecords.Num());
 	for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
@@ -221,13 +214,13 @@ void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame, bool bRestorePlayer
 
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 		PathsToLoad,
-		[this, SaveGame, bRestorePlayer]()
+		[this, SaveGame]()
 		{
-			SpawnRestoredActors(SaveGame, bRestorePlayer);
+			SpawnRestoredActors(SaveGame);
 		});
 }
 
-void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame, bool bRestorePlayer)
+void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame)
 {
 	for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
 	{
@@ -260,21 +253,18 @@ void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame, bool bRestorePla
 		ISaveable::Execute_OnPostLoadFromSave(Actor);
 	}
 
-	if (bRestorePlayer)
-	{
-		APlayerController* PC = GetWorld()->GetFirstPlayerController();
-		ABaseCharacter* Player = PC ? Cast<ABaseCharacter>(PC->GetPawn()) : nullptr;
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	ABaseCharacter* Player = PC ? Cast<ABaseCharacter>(PC->GetPawn()) : nullptr;
 
-		if (Player)
-		{
-			RestorePlayerData(SaveGame, Player);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning,
-			       TEXT("SpawnRestoredActors: could not find player pawn to restore — "
-				       "make sure the pawn is spawned before LoadSave is called"));
-		}
+	if (Player)
+	{
+		RestorePlayerData(SaveGame, Player);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+		       TEXT("SpawnRestoredActors: could not find player pawn to restore — "
+			       "make sure the pawn is spawned before LoadSave is called"));
 	}
 }
 
@@ -284,12 +274,11 @@ void USaveManager::CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 	FPlayerSaveData& Data = SaveGame->PlayerData;
 	Data.Location = Player->GetActorLocation();
 	Data.Rotation = Player->GetActorRotation();
-	SaveUtils::Save(Player, Data.CharacterBytes);
+	Data.CameraRotation = Player->Camera->GetRelativeLocation();
 
 	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
 	{
 		Inv->SaveToRecords(Data.InventoryItems);
-		Data.HotbarSlots = Inv->HotbarSlots;
 		Data.ActiveSlotIndex = Inv->ActiveSlotIndex;
 	}
 }
@@ -298,7 +287,7 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 {
 	const FPlayerSaveData& Data = SaveGame->PlayerData;
 
-	if (Data.CharacterBytes.IsEmpty())
+	if (SaveGame->bFirstStart)
 	{
 		UE_LOG(LogTemp, Log, TEXT("RestorePlayerData: no character bytes — fresh save, skipping"));
 		return;
@@ -306,12 +295,11 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 
 	Player->SetActorLocation(Data.Location);
 	Player->SetActorRotation(Data.Rotation);
-	SaveUtils::Load(Player, Data.CharacterBytes);
+	Player->Camera->SetRelativeLocation(Data.CameraRotation);
 
 	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
 	{
 		Inv->LoadFromRecords(Data.InventoryItems);
-		Inv->HotbarSlots = Data.HotbarSlots;
 		Inv->ActiveSlotIndex = Data.ActiveSlotIndex;
 		Inv->EquipActiveItem();
 	}
