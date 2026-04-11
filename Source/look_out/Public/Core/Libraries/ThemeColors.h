@@ -14,18 +14,9 @@ class LOOK_OUT_API UThemeColors : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor SlotBackground();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor SlotBorder();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor MovingSlotBorder();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory")
-	static FLinearColor MovingSlotBackground();
-
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FSlateBrush MakeBrush(FLinearColor Color);
+	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
 	static FLinearColor GeneralBackground();
 
@@ -34,10 +25,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
 	static FLinearColor GeneralClose();
-
+	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
-	static FLinearColor GeneralSelectedBackground();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
-	static FLinearColor GeneralSelectedBorder();
+	static FLinearColor GeneralSelected();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Styles")
+	static FButtonStyle DefaultButtonStyle();
 };

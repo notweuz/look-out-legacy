@@ -3,26 +3,6 @@
 
 #include "Core/Libraries/ThemeColors.h"
 
-FLinearColor UThemeColors::SlotBackground()
-{
-	return FLinearColor::FromSRGBColor(FColor(62, 62, 62, 127));
-}
-
-FLinearColor UThemeColors::SlotBorder()
-{
-	return FLinearColor::FromSRGBColor(FColor(62, 62, 62, 127));
-}
-
-FLinearColor UThemeColors::MovingSlotBorder()
-{
-	return FLinearColor::FromSRGBColor(FColor(35, 138, 255, 127));
-}
-
-FLinearColor UThemeColors::MovingSlotBackground()
-{
-	return FLinearColor::FromSRGBColor(FColor(35, 138, 255, 63));
-}
-
 FLinearColor UThemeColors::GeneralBackground()
 {
 	return FLinearColor::FromSRGBColor(FColor(31, 31, 31, 216));
@@ -38,12 +18,24 @@ FLinearColor UThemeColors::GeneralClose()
 	return FLinearColor::FromSRGBColor(FColor(255, 97, 97, 255));
 }
 
-FLinearColor UThemeColors::GeneralSelectedBackground()
+FLinearColor UThemeColors::GeneralSelected()
 {
-	return FLinearColor::FromSRGBColor(FColor(255, 137, 35, 63));
+	return FLinearColor::FromSRGBColor(FColor(240, 144, 64, 255));
 }
 
-FLinearColor UThemeColors::GeneralSelectedBorder()
+FButtonStyle UThemeColors::DefaultButtonStyle()
 {
-	return FLinearColor::FromSRGBColor(FColor(255, 137, 35, 127));
+	FButtonStyle Style;
+	Style.Normal  = MakeBrush(GeneralBackground());
+	Style.Hovered = MakeBrush(GeneralSelected());
+	Style.Pressed = MakeBrush(GeneralSelected() * 0.8f);
+	return Style;
+}
+
+FSlateBrush UThemeColors::MakeBrush(FLinearColor Color)
+{
+	FSlateBrush Brush;
+	Brush.TintColor = FSlateColor(Color);
+	Brush.DrawAs = ESlateBrushDrawType::Box;
+	return Brush;
 }

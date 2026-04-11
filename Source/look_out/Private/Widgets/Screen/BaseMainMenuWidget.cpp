@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
 
 
+#include "Core/Libraries/ThemeColors.h"
 #include "Widgets/Screen/BaseMainMenuScreenWidget.h"
 
 #include "Kismet/KismetSystemLibrary.h"
@@ -23,8 +24,17 @@ void UBaseMainMenuScreenWidget::NativeConstruct()
 
 	if (ExitButton)
 	{
-		ExitButton->Button->OnClicked.AddDynamic(this, &UBaseMainMenuScreenWidget::OnExitClicked);
+		ExitButton->ActionButton->OnClicked.AddDynamic(this, &UBaseMainMenuScreenWidget::OnExitClicked);
 	}
+	ExitButton->ButtonText->SetColorAndOpacity(UThemeColors::GeneralClose());
+	
+	FSlateFontInfo NewFont = StartButton->ButtonText->GetFont();
+	NewFont.Size = 32;
+	
+	StartButton->ButtonText->SetFont(NewFont);
+	SettingsButton->ButtonText->SetFont(NewFont);
+	CreditsButton->ButtonText->SetFont(NewFont);
+	ExitButton->ButtonText->SetFont(NewFont);
 }
 
 void UBaseMainMenuScreenWidget::OnExitClicked()

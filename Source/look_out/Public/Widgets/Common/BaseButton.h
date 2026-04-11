@@ -1,5 +1,3 @@
-// Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,22 +6,18 @@
 #include "Components/TextBlock.h"
 #include "BaseButton.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class LOOK_OUT_API UBaseButton : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-	virtual void NativePreConstruct() override;
-	
 	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Button")
-	UButton* Button;
-	
+	UButton* ActionButton;
+
 	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Button")
-	UTextBlock* Text;
-private:
-	void SetupStyle();
+	UTextBlock* ButtonText;
+	
+protected:
+	virtual void NativeConstruct() override;
 };

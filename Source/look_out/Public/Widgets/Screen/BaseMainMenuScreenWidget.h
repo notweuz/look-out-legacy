@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Widgets/Common/BaseButton.h"
 #include "BaseMainMenuScreenWidget.generated.h"
@@ -47,7 +48,7 @@ public:
 	UTextBlock* Version;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Info")
-	UTextBlock* Authors;
+	URichTextBlock* Authors;
 
 protected:
 	virtual void NativeConstruct() override;
