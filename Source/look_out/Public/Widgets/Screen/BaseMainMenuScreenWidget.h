@@ -9,6 +9,8 @@
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Widgets/Common/BaseButton.h"
+#include "Widgets/Menus/BaseMenuWidget.h"
+#include "Widgets/Menus/Content/BaseSaveMenuContentWidget.h"
 #include "BaseMainMenuScreenWidget.generated.h"
 
 /**
@@ -23,33 +25,27 @@ public:
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
 	UImage* LogoImage;
 
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UBaseButton* StartButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons") UBaseButton* StartButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons") UBaseButton* SettingsButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons") UBaseButton* CreditsButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons") UBaseButton* ExitButton;
+	
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links") UButton* DiscordButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links") UButton* TelegramButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links") UButton* BoostyButton;
 
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UBaseButton* SettingsButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Info") UTextBlock* Version;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Info") URichTextBlock* Authors;
+	
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Menus") UNamedSlot* MenuSlot;
 
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UBaseButton* CreditsButton;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Main Buttons")
-	UBaseButton* ExitButton;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links")
-	UButton* DiscordButton;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links")
-	UButton* TelegramButton;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Links")
-	UButton* BoostyButton;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Info")
-	UTextBlock* Version;
-
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite, Category = "Info")
-	URichTextBlock* Authors;
-
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Menus")
+	TSubclassOf<UBaseMenuWidget> MenuWidgetClass;
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Menus")
+	TSubclassOf<UBaseSaveMenuContentWidget> SaveMenuContentWidgetClass;
+	
+	UFUNCTION() void OnStartButtonPressed();
 protected:
 	virtual void NativeConstruct() override;
 

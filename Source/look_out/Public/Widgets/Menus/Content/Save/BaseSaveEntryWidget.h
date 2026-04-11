@@ -6,13 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "SaveEntryWidget.generated.h"
+#include "BaseSaveEntryWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOOK_OUT_API USaveEntryWidget : public UUserWidget
+class LOOK_OUT_API UBaseSaveEntryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -35,4 +35,5 @@ public:
 	UFUNCTION() void OnLoadButtonPressed();
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 };

@@ -8,6 +8,11 @@ FLinearColor UThemeColors::GeneralBackground()
 	return FLinearColor::FromSRGBColor(FColor(31, 31, 31, 216));
 }
 
+FLinearColor UThemeColors::DarkerBackground()
+{
+	return FLinearColor::FromSRGBColor(FColor(21, 21, 21, 216));
+}
+
 FLinearColor UThemeColors::GeneralBorder()
 {
 	return FLinearColor::FromSRGBColor(FColor(77, 77, 77, 216));

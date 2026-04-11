@@ -7,10 +7,29 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/LogCategories.h"
 
+void UBaseMainMenuScreenWidget::OnStartButtonPressed()
+{
+	UBaseMenuWidget* MenuWidget = CreateWidget<UBaseMenuWidget>(GetWorld(), MenuWidgetClass);
+	if (!MenuWidget) return;
+	
+	UBaseSaveMenuContentWidget* SaveMenuContentWidget = CreateWidget<UBaseSaveMenuContentWidget>(GetWorld(), SaveMenuContentWidgetClass);
+	if (!SaveMenuContentWidget) return;
+	
+	MenuWidget->SetBodyWidget(SaveMenuContentWidget);
+	
+	MenuWidget->TitleTextBlock->SetText(FText::FromString("Save Manager"));
+	MenuWidget->CloseButton->SetVisibility(ESlateVisibility::Visible);
+	
+	MenuSlot->ClearChildren();
+	MenuSlot->AddChild(MenuWidget);
+}
+
 void UBaseMainMenuScreenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	StartButton->ActionButton->OnPressed.AddDynamic(this, &UBaseMainMenuScreenWidget::OnStartButtonPressed);
+	
 	FString VersionString;
 
 	GConfig->GetString(

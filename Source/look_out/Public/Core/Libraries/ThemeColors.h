@@ -19,6 +19,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
 	static FLinearColor GeneralBackground();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
+	static FLinearColor DarkerBackground();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="General")
 	static FLinearColor GeneralBorder();
