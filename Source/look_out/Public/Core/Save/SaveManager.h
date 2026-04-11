@@ -30,6 +30,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Save")
     void LoadSave(const FString& SlotName, ABaseCharacter* Player);
+    
+    UFUNCTION(BlueprintCallable, Category="Save")
+    void SaveCurrent(ABaseCharacter* Player);
 
     UFUNCTION(BlueprintCallable, Category="Save")
     void DeleteSave(const FString& SlotName);
@@ -80,6 +83,7 @@ private:
 
     void CollectWorldData(UGameSaveGame* SaveGame);
     void RestoreWorldData(UGameSaveGame* SaveGame);
+    void SpawnRestoredActors(UGameSaveGame* SaveGame);
     void CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
     void RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Player);
 

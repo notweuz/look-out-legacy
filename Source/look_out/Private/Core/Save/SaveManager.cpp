@@ -1,8 +1,8 @@
 #include "Core/Save/SaveManager.h"
 
-#include "GuidStructCustomization.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/Components/PlayerInventoryComponent.h"
+#include "Engine/AssetManager.h"
 #include "Interfaces/Saveable.h"
 #include "Utils/SaveUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -75,6 +75,36 @@ void USaveManager::LoadSave(const FString& SlotName, ABaseCharacter* Player)
     RestorePlayerData(SaveGame, Player);
 
     SessionStartTime = FDateTime::Now();
+}
+
+void USaveManager::SaveCurrent(ABaseCharacter* Player)
+{
+    if (ActiveSlotName.IsEmpty()) return;
+
+    UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
+        UGameplayStatics::LoadGameFromSlot(ActiveSlotName, 0)
+    );
+    if (!SaveGame) return;
+
+    SaveGame->SavedAt         = FDateTime::Now();
+    SaveGame->PlaytimeSeconds += CalcSessionTime();
+
+    CollectWorldData(SaveGame);
+    CollectPlayerData(SaveGame, Player);
+
+    UGameplayStatics::SaveGameToSlot(SaveGame, ActiveSlotName, 0);
+
+    for (FSaveSlotMeta& Meta : Registry->Slots)
+    {
+        if (Meta.SlotName == ActiveSlotName)
+        {
+            Meta.SavedAt         = SaveGame->SavedAt;
+            Meta.PlaytimeSeconds = SaveGame->PlaytimeSeconds;
+            break;
+        }
+    }
+    SaveRegistry();
+    OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
 void USaveManager::DeleteSave(const FString& SlotName)
@@ -172,23 +202,62 @@ void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
 
 void USaveManager::RestoreWorldData(UGameSaveGame* SaveGame)
 {
-    TArray<AActor*> Actors;
-    UGameplayStatics::GetAllActorsWithInterface(
-        GetWorld(), USaveable::StaticClass(), Actors
-    );
-    
-    for (AActor* Actor : Actors)
-    {
-        // Destroy placed actors because loading from save
-        Actor->Destroy();
-    }
-    
+    TArray<FSoftObjectPath> ClassesToLoad;
     for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
     {
+        if (!Record.ActorClass.IsNull())
+            ClassesToLoad.Add(Record.ActorClass.ToSoftObjectPath());
+    }
+
+    TArray<AActor*> ExistingActors;
+    UGameplayStatics::GetAllActorsWithInterface(
+        GetWorld(), USaveable::StaticClass(), ExistingActors
+    );
+    for (AActor* Actor : ExistingActors)
+        Actor->Destroy();
+
+    TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager()
+        .RequestAsyncLoad(
+            ClassesToLoad,
+            [this, SaveGame]()
+            {
+                SpawnRestoredActors(SaveGame);
+            }
+        );
+}
+
+void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame)
+{
+    for (const FActorSaveRecord& Record : SaveGame->ActorRecords)
+    {
+        if (Record.ActorClass.IsNull())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("RestoreWorldData: null ActorClass, skipping"));
+            continue;
+        }
+
+        UClass* LoadedClass = Record.ActorClass.Get();
+        if (!LoadedClass)
+        {
+            UE_LOG(LogTemp, Warning,
+                TEXT("RestoreWorldData: failed to load class %s, skipping"),
+                *Record.ActorClass.ToString());
+            continue;
+        }
+
         AActor* Actor = GetWorld()->SpawnActor<AActor>(
-            Record.ActorClass.LoadSynchronous(),
+            LoadedClass,
             FTransform(Record.Rotation, Record.Location, Record.Scale)
         );
+
+        if (!Actor)
+        {
+            UE_LOG(LogTemp, Warning,
+                TEXT("RestoreWorldData: SpawnActor failed for class %s"),
+                *LoadedClass->GetName());
+            continue;
+        }
+
         ISaveable::Execute_OnLoad(Actor, Record.Bytes);
         ISaveable::Execute_OnPostLoadFromSave(Actor);
     }
