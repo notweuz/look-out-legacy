@@ -16,11 +16,6 @@ void ABaseObject::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABaseObject::DestroyPermanently_Implementation()
-{
-	GetGameInstance()->GetSubsystem<USaveManager>()->DestroyActor(this);
-}
-
 void ABaseObject::OnSave_Implementation(TArray<uint8>& OutBytes)
 {
 	DefaultSaveObject(this, OutBytes);

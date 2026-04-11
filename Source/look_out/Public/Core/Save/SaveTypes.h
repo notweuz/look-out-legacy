@@ -3,13 +3,6 @@
 #include "GameFramework/SaveGame.h"
 #include "SaveTypes.generated.h"
 
-UENUM(BlueprintType)
-enum class EActorPersistence : uint8
-{
-    Placed,
-    Runtime,
-};
-
 USTRUCT(BlueprintType)
 struct FItemSaveRecord
 {
@@ -25,13 +18,11 @@ struct FActorSaveRecord
 {
     GENERATED_BODY()
 
-    UPROPERTY(SaveGame) FGuid SaveId;
     UPROPERTY(SaveGame) TSoftClassPtr<AActor> ActorClass;
     UPROPERTY(SaveGame) FVector Location;
     UPROPERTY(SaveGame) FRotator Rotation;
     UPROPERTY(SaveGame) FVector Scale = FVector::OneVector;
     UPROPERTY(SaveGame) TArray<uint8> Bytes;
-    UPROPERTY(SaveGame) EActorPersistence Persistence = EActorPersistence::Placed;
 };
 
 USTRUCT(BlueprintType)
@@ -98,9 +89,6 @@ public:
     UPROPERTY(SaveGame)
     TArray<FActorSaveRecord> ActorRecords;
 
-    UPROPERTY(SaveGame)
-    TArray<FGuid> DestroyedActorIds;
-
     UPROPERTY(SaveGame, BlueprintReadWrite)
     FWorldStateData WorldState;
 
@@ -155,7 +143,6 @@ struct FSaveSlotMeta
 {
     GENERATED_BODY()
 
-    UPROPERTY(BlueprintReadOnly) FString SlotId;
     UPROPERTY(BlueprintReadOnly) FString SlotName;
     UPROPERTY(BlueprintReadOnly) FDateTime SavedAt;
     UPROPERTY(BlueprintReadOnly) float PlaytimeSeconds = 0.f;

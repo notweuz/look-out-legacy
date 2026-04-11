@@ -25,12 +25,6 @@ public:
 	UPROPERTY(SaveGame, VisibleAnywhere, BlueprintReadWrite)
 	float Health;
 	
-	UPROPERTY(SaveGame)
-	FGuid SaveId = FGuid::NewGuid();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Save")
-	EActorPersistence Persistence = EActorPersistence::Placed;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Type")
 	EObjectType ObjectType = EObjectType::Lightweight;
 	
@@ -41,10 +35,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") FText Description;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") float MaxHealth;
 	
-	virtual FGuid GetSaveId_Implementation() override { return SaveId; }
 	virtual void OnSave_Implementation(TArray<uint8>& OutBytes) override;
 	virtual void OnLoad_Implementation(const TArray<uint8>& InBytes) override;
-	virtual void DestroyPermanently_Implementation() override;
 
 	virtual EObjectType GetGrabbableType_Implementation() override;
 	virtual FText GetGrabWidgetText_Implementation() override;
