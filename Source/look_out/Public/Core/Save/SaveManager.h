@@ -29,7 +29,7 @@ public:
     void CreateSave(const FString& SlotName);
 
     UFUNCTION(BlueprintCallable, Category="Save")
-    void LoadSave(const FString& SlotName, ABaseCharacter* Player);
+    void LoadSave(const FString& SlotName);
     
     UFUNCTION(BlueprintCallable, Category="Save")
     void SaveCurrent(ABaseCharacter* Player);

@@ -57,7 +57,7 @@ void USaveManager::CreateSave(const FString& BaseName)
     OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
-void USaveManager::LoadSave(const FString& SlotName, ABaseCharacter* Player)
+void USaveManager::LoadSave(const FString& SlotName)
 {
     UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
         UGameplayStatics::LoadGameFromSlot(SlotName, 0)
@@ -65,11 +65,17 @@ void USaveManager::LoadSave(const FString& SlotName, ABaseCharacter* Player)
     if (!SaveGame) return;
 
     ActiveSlotName = SlotName;
-    
-    RestoreWorldData(SaveGame);
-    RestorePlayerData(SaveGame, Player);
-
     SessionStartTime = FDateTime::Now();
+
+    RestoreWorldData(SaveGame);
+
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (!PC) return;
+
+    ABaseCharacter* Player = Cast<ABaseCharacter>(PC->GetPawn());
+    if (!Player) return;
+
+    RestorePlayerData(SaveGame, Player);
 }
 
 void USaveManager::SaveCurrent(ABaseCharacter* Player)
