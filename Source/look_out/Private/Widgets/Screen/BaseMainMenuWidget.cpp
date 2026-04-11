@@ -18,7 +18,6 @@ void UBaseMainMenuScreenWidget::OnStartButtonPressed()
 	MenuWidget->SetBodyWidget(SaveMenuContentWidget);
 	
 	MenuWidget->TitleTextBlock->SetText(FText::FromString("Save Manager"));
-	MenuWidget->CloseButton->SetVisibility(ESlateVisibility::Visible);
 	
 	MenuSlot->ClearChildren();
 	MenuSlot->AddChild(MenuWidget);

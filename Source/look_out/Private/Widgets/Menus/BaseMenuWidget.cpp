@@ -9,7 +9,6 @@ void UBaseMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	CloseButton->OnClicked.AddDynamic(this, &UBaseMenuWidget::Close);
-	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UBaseMenuWidget::SetBodyWidget(UWidget* Widget)
