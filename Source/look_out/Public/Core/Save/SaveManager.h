@@ -32,7 +32,7 @@ public:
     void LoadSave(const FString& SlotName);
     
     UFUNCTION(BlueprintCallable, Category="Save")
-    void SaveCurrent(ABaseCharacter* Player);
+    void SaveCurrent();
 
     UFUNCTION(BlueprintCallable, Category="Save")
     void DeleteSave(const FString& SlotName);

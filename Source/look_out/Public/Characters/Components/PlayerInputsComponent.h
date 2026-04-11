@@ -81,6 +81,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_ToggleEquip;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_QuickSave;
 
 private:
 	UPROPERTY()
@@ -107,5 +110,6 @@ private:
 	void Input_RMBTriggered();
 	void Input_LMBTriggered();
 	void Input_ToggleEquipStarted();
+	void Input_QuickSaveTriggered();
 	void Input_Scroll(const FInputActionValue& Value);
 };

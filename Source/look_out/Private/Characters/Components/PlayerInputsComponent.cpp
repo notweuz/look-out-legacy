@@ -10,6 +10,7 @@
 #include "Characters/Components/PlayerInventoryComponent.h"
 #include "Characters/Components/PlayerMovementComponent.h"
 #include "Characters/Components/PlayerSideInteractionComponent.h"
+#include "Core/Save/SaveManager.h"
 
 // Sets default values for this component's properties
 UPlayerInputsComponent::UPlayerInputsComponent()
@@ -70,6 +71,7 @@ void UPlayerInputsComponent::SetupPlayerInput(UInputComponent* PlayerInputCompon
 		EIC->BindAction(IA_Scroll, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_Scroll);
 		EIC->BindAction(IA_ToggleEquip, ETriggerEvent::Started, this, &UPlayerInputsComponent::Input_ToggleEquipStarted);
 		EIC->BindAction(IA_Drop, ETriggerEvent::Triggered, this, &UPlayerInputsComponent::Input_DropTriggered);
+		EIC->BindAction(IA_QuickSave, ETriggerEvent::Completed, this, &UPlayerInputsComponent::Input_QuickSaveTriggered);
 	}
 }
 
@@ -229,6 +231,22 @@ void UPlayerInputsComponent::Input_ToggleEquipStarted()
 {
 	if (!CanProcessGameplayInput() || !OwnerCharacter || !OwnerCharacter->PlayerInventoryComponent) return;
 	OwnerCharacter->PlayerInventoryComponent->ToggleEquip();
+}
+
+void UPlayerInputsComponent::Input_QuickSaveTriggered()
+{
+	if (!CanProcessGameplayInput() || !OwnerCharacter) return;
+	
+	UNotificationSubsystem* NotificationSub = OwnerCharacter->GetGameInstance()->GetSubsystem<UNotificationSubsystem>();
+	if (!NotificationSub) return;
+	
+	NotificationSub->SendNotification(FText::FromString("Trying to save"), 3.0f, ENotificationType::Debug);
+	
+	USaveManager* SaveManager = OwnerCharacter->GetGameInstance()->GetSubsystem<USaveManager>();
+	if (!SaveManager) return;
+	
+	SaveManager->SaveCurrent();
+	NotificationSub->SendNotification(FText::FromString("Saved!"), 3.0f, ENotificationType::Info);
 }
 
 void UPlayerInputsComponent::Input_Scroll(const FInputActionValue& Value)

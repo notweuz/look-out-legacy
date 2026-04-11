@@ -11,7 +11,6 @@ void ABaseGameplayGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	USaveManager* SaveManager = GetGameInstance()->GetSubsystem<USaveManager>();
 	if (!SaveManager) return;
-	if (SaveManager->ActiveSlotName.IsEmpty()) return;
 
 	SaveManager->LoadSave(SaveManager->ActiveSlotName);
 }

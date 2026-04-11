@@ -16,6 +16,8 @@ void UBaseSaveEntryWidget::OnDeleteButtonPressed()
 
 void UBaseSaveEntryWidget::OnLoadButtonPressed()
 {
+	USaveManager* SaveManager = GetGameInstance()->GetSubsystem<USaveManager>();
+	SaveManager->ActiveSlotName = SaveName;
 	UGameplayStatics::OpenLevel(this, TEXT("MainMap"));
 }
 
