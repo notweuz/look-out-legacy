@@ -28,6 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Type")
 	EObjectType ObjectType = EObjectType::Lightweight;
 	
+	UPROPERTY(SaveGame) TArray<uint8> StorageBytes;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition") UItemDefinition* Definition;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") float Weight;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory Definition|Manual") TObjectPtr<UTexture2D> Icon;

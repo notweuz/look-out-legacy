@@ -3,7 +3,9 @@
 
 #include "World/Objects/BaseObject.h"
 
+#include "Core/Components/StorageComponent.h"
 #include "Core/Save/SaveManager.h"
+#include "Utils/SaveUtils.h"
 
 ABaseObject::ABaseObject()
 {
@@ -18,12 +20,18 @@ void ABaseObject::BeginPlay()
 
 void ABaseObject::OnSave_Implementation(TArray<uint8>& OutBytes)
 {
+	if (UStorageComponent* Storage = FindComponentByClass<UStorageComponent>())
+		SaveUtils::Save(Storage, StorageBytes);
+
 	DefaultSaveObject(this, OutBytes);
 }
 
 void ABaseObject::OnLoad_Implementation(const TArray<uint8>& InBytes)
 {
 	DefaultLoadObject(this, InBytes);
+
+	if (UStorageComponent* Storage = FindComponentByClass<UStorageComponent>())
+		SaveUtils::Load(Storage, StorageBytes);
 }
 
 EObjectType ABaseObject::GetGrabbableType_Implementation()
