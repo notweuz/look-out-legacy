@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "ItemDefinition.generated.h"
 
@@ -12,6 +13,9 @@ class LOOK_OUT_API UItemDefinition : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item")
+	FGameplayTagContainer ItemTags;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item")
 	FText DisplayName;
 	
