@@ -13,6 +13,13 @@ void UAdvancedGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides
 	Super::ApplySettings(bCheckForCommandLineOverrides);
 }
 
+void UAdvancedGameUserSettings::LoadSettings(bool bForceReload)
+{
+	Super::LoadSettings(bForceReload);
+	
+	ApplySettings(false);
+}
+
 void UAdvancedGameUserSettings::SaveSettings()
 {
 	Super::SaveSettings();

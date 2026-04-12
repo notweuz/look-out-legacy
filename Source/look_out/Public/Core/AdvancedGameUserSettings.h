@@ -22,6 +22,6 @@ public:
 	float MouseSensitivity = 1.0f;
 
 	virtual void ApplySettings(bool bCheckForCommandLineOverrides) override;
-	
+	virtual void LoadSettings(bool bForceReload = false) override;
 	virtual void SaveSettings() override;
 };
