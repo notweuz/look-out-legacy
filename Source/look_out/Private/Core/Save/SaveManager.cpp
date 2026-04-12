@@ -285,7 +285,9 @@ void USaveManager::CollectPlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 	FPlayerSaveData& Data = SaveGame->PlayerData;
 	Data.Location = Player->GetActorLocation();
 	Data.Rotation = Player->GetActorRotation();
-	Data.CameraRotation = Player->Camera->GetRelativeLocation();
+
+	if (AController* C = Player->GetController())
+		Data.CameraRotation = C->GetControlRotation();
 
 	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
 	{
@@ -298,15 +300,13 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 {
 	const FPlayerSaveData& Data = SaveGame->PlayerData;
 
-	if (SaveGame->bFirstStart)
-	{
-		UE_LOG(LogTemp, Log, TEXT("RestorePlayerData: no character bytes — fresh save, skipping"));
-		return;
-	}
+	if (SaveGame->bFirstStart) return;
 
 	Player->SetActorLocation(Data.Location);
 	Player->SetActorRotation(Data.Rotation);
-	Player->Camera->SetRelativeLocation(Data.CameraRotation);
+
+	if (AController* C = Player->GetController())
+		C->SetControlRotation(Data.CameraRotation);
 
 	if (UPlayerInventoryComponent* Inv = Player->FindComponentByClass<UPlayerInventoryComponent>())
 	{
@@ -315,7 +315,6 @@ void USaveManager::RestorePlayerData(UGameSaveGame* SaveGame, ABaseCharacter* Pl
 		Inv->EquipActiveItem();
 	}
 }
-
 
 UGameSaveGame* USaveManager::LoadSlotOrNull(const FString& SlotName) const
 {

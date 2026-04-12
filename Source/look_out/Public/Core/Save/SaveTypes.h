@@ -31,7 +31,7 @@ struct FPlayerSaveData
 
     UPROPERTY(SaveGame) FVector Location;
     UPROPERTY(SaveGame) FRotator Rotation;
-    UPROPERTY(SaveGame) FVector CameraRotation;
+    UPROPERTY(SaveGame) FRotator CameraRotation;
     UPROPERTY(SaveGame) TArray<FItemSaveRecord> InventoryItems;
     UPROPERTY(SaveGame) int32 ActiveSlotIndex = 0;
 };
