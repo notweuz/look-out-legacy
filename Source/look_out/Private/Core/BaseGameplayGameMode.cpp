@@ -13,4 +13,6 @@ void ABaseGameplayGameMode::PostLogin(APlayerController* NewPlayer)
 	if (!SaveManager) return;
 
 	SaveManager->LoadSave(SaveManager->ActiveSlotName);
+	NewPlayer->bShowMouseCursor = false;
+	NewPlayer->SetInputMode(FInputModeGameOnly());
 }
