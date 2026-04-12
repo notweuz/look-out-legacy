@@ -19,7 +19,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Storage")
 	float CurrentWeight = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, SaveGame)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, SaveGame)
 	TArray<FItemSaveRecord> Items;
 
 	FOnStorageChanged OnStorageChanged;

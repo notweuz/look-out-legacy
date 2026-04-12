@@ -5,7 +5,6 @@
 #include "Core/Save/SaveTypes.h"
 #include "PlayerInventoryComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHotbarChanged,     int32 /*SlotIndex*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnActiveSlotChanged, int32 /*NewSlotIndex*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemEquipped,      AActor* /*SpawnedActor*/);
 DECLARE_MULTICAST_DELEGATE(FOnItemUnequipped);
@@ -18,9 +17,6 @@ class LOOK_OUT_API UPlayerInventoryComponent : public UStorageComponent
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Hotbar")
     int32 HotbarSize = 10;
-    
-    UPROPERTY(BlueprintReadOnly, Category="Hotbar")
-    TArray<int32> HotbarSlots;
 
     UPROPERTY(BlueprintReadOnly, Category="Hotbar")
     int32 ActiveSlotIndex = 0;
@@ -28,7 +24,6 @@ public:
     UPROPERTY(BlueprintReadOnly, Category="Hotbar")
     TObjectPtr<AActor> ItemInHand;
 
-    FOnHotbarChanged     OnHotbarChanged;
     FOnActiveSlotChanged OnActiveSlotChanged;
     FOnItemEquipped      OnItemEquipped;
     FOnItemUnequipped    OnItemUnequipped;
@@ -43,12 +38,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void DropActiveItem();
-    
-    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
-    bool AssignToHotbar(int32 ItemIndex, int32 HotbarSlot);
-
-    UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
-    void ClearHotbarSlot(int32 HotbarSlot);
 
     UFUNCTION(BlueprintCallable, Category="Inventory|Hotbar")
     void SetActiveSlot(int32 SlotIndex);
@@ -64,9 +53,6 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Inventory|Hotbar")
     bool GetActiveItem(FItemSaveRecord& OutRecord) const;
-
-    UFUNCTION(BlueprintPure, Category="Inventory|Hotbar")
-    int32 GetActiveItemIndex() const;
 
     void SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const;
 
@@ -92,6 +78,5 @@ private:
     void RefreshHandItem();
     void SaveEquippedItemState();
 
-    void ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex);
     virtual void OnItemMoved(int32 FromIndex, int32 ToIndex) override;
 };

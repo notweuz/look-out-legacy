@@ -10,7 +10,6 @@
 void UPlayerInventoryComponent::BeginPlay()
 {
     Super::BeginPlay();
-    HotbarSlots.Init(INDEX_NONE, HotbarSize);
     
 	OwnerCharacter = Cast<ABaseCharacter>(GetOwner());
 }
@@ -35,17 +34,7 @@ bool UPlayerInventoryComponent::TryPickup(AActor* Actor)
     Record.ItemClass = Actor->GetClass();
     ISaveable::Execute_OnSave(Actor, Record.Bytes);
 
-    int32 NewIndex = Items.Num();
     AddItem(Record);
-
-    for (int32 i = 0; i < HotbarSlots.Num(); i++)
-    {
-        if (HotbarSlots[i] == INDEX_NONE)
-        {
-            AssignToHotbar(NewIndex, i);
-            break;
-        }
-    }
 
     Actor->Destroy();
     return true;
@@ -85,12 +74,11 @@ void UPlayerInventoryComponent::Collect()
 
 void UPlayerInventoryComponent::DropActiveItem()
 {
-    int32 ItemIndex = GetActiveItemIndex();
-    if (!Items.IsValidIndex(ItemIndex) || !OwnerCharacter || !GetWorld()) return;
+    if (!Items.IsValidIndex(ActiveSlotIndex) || !OwnerCharacter || !GetWorld()) return;
 
     UnequipItem();
 
-    FItemSaveRecord Record = Items[ItemIndex];
+    FItemSaveRecord Record = Items[ActiveSlotIndex];
     UClass* Class = Record.ItemClass.LoadSynchronous();
     if (!Class) return;
 
@@ -127,48 +115,12 @@ void UPlayerInventoryComponent::DropActiveItem()
     UGameplayStatics::FinishSpawningActor(DroppedActor, DropTransform);
     ISaveable::Execute_OnLoad(DroppedActor, Record.Bytes);
 
-    ClearHotbarSlot(ActiveSlotIndex);
-    ShiftHotbarIndicesAfterRemoval(ItemIndex);
-    RemoveItem(ItemIndex);
-}
-
-bool UPlayerInventoryComponent::AssignToHotbar(int32 ItemIndex, int32 HotbarSlot)
-{
-    if (!Items.IsValidIndex(ItemIndex)) return false;
-    if (!HotbarSlots.IsValidIndex(HotbarSlot)) return false;
-
-    for (int32 i = 0; i < HotbarSlots.Num(); i++)
-    {
-        if (HotbarSlots[i] == ItemIndex)
-        {
-            HotbarSlots[i] = INDEX_NONE;
-            OnHotbarChanged.Broadcast(i);
-        }
-    }
-
-    HotbarSlots[HotbarSlot] = ItemIndex;
-    OnHotbarChanged.Broadcast(HotbarSlot);
-
-    if (HotbarSlot == ActiveSlotIndex)
-        RefreshHandItem();
-
-    return true;
-}
-
-void UPlayerInventoryComponent::ClearHotbarSlot(int32 HotbarSlot)
-{
-    if (!HotbarSlots.IsValidIndex(HotbarSlot)) return;
-
-    HotbarSlots[HotbarSlot] = INDEX_NONE;
-    OnHotbarChanged.Broadcast(HotbarSlot);
-
-    if (HotbarSlot == ActiveSlotIndex)
-        RefreshHandItem();
+    RemoveItem(ActiveSlotIndex);
 }
 
 void UPlayerInventoryComponent::SetActiveSlot(int32 SlotIndex)
 {
-    if (!HotbarSlots.IsValidIndex(SlotIndex)) return;
+    if (Items.IsValidIndex(SlotIndex) && SlotIndex < HotbarSize && SlotIndex >= 0)
     if (SlotIndex == ActiveSlotIndex) return;
     UE_LOG(LogInventory, Log, TEXT("Selected slot: %d"), SlotIndex)
 
@@ -196,17 +148,10 @@ void UPlayerInventoryComponent::ScrollHotbar(int Delta)
 
 bool UPlayerInventoryComponent::GetActiveItem(FItemSaveRecord& OutRecord) const
 {
-    int32 ItemIndex = GetActiveItemIndex();
-    if (!Items.IsValidIndex(ItemIndex)) return false;
+    if (!Items.IsValidIndex(ActiveSlotIndex)) return false;
 
-    OutRecord = Items[ItemIndex];
+    OutRecord = Items[ActiveSlotIndex];
     return true;
-}
-
-int32 UPlayerInventoryComponent::GetActiveItemIndex() const
-{
-    if (!HotbarSlots.IsValidIndex(ActiveSlotIndex)) return INDEX_NONE;
-    return HotbarSlots[ActiveSlotIndex];
 }
 
 void UPlayerInventoryComponent::SaveToRecords(TArray<FItemSaveRecord>& OutRecords) const
@@ -228,10 +173,9 @@ void UPlayerInventoryComponent::EquipActiveItem()
 {
     UnequipItem();
 
-    const int32 ItemIndex = GetActiveItemIndex();
-    if (!Items.IsValidIndex(ItemIndex)) return;
+    if (!Items.IsValidIndex(ActiveSlotIndex)) return;
 
-    const FItemSaveRecord& Record = Items[ItemIndex];
+    const FItemSaveRecord& Record = Items[ActiveSlotIndex];
 
     UClass* Class = Record.ItemClass.LoadSynchronous();
     if (!Class) return;
@@ -253,7 +197,7 @@ void UPlayerInventoryComponent::EquipActiveItem()
         FAttachmentTransformRules::SnapToTargetNotIncludingScale
     );
     ItemInHand->SetActorRelativeRotation(OwnerCharacter->EquippedItemFacingOffset);
-    EquippedItemIndex = ItemIndex;
+    EquippedItemIndex = ActiveSlotIndex;
 
     UE_LOG(LogInventory, Log, TEXT("Equipped item: %s"), *ItemInHand->GetName());
     OnItemEquipped.Broadcast(ItemInHand);
@@ -290,59 +234,14 @@ void UPlayerInventoryComponent::InteractWithActiveItem()
     }
 }
 
-void UPlayerInventoryComponent::ShiftHotbarIndicesAfterRemoval(int32 RemovedItemIndex)
-{
-    for (int32& SlotItemIndex : HotbarSlots)
-    {
-        if (SlotItemIndex > RemovedItemIndex)
-            SlotItemIndex--;
-    }
-}
-
 void UPlayerInventoryComponent::OnItemMoved(int32 FromIndex, int32 ToIndex)
 {
-    for (int32 SlotIndex = 0; SlotIndex < HotbarSlots.Num(); ++SlotIndex)
-    {
-        int32& SlotItemIndex = HotbarSlots[SlotIndex];
-        int32 NewItemIndex = SlotItemIndex;
-
-        if (SlotItemIndex == FromIndex)
-        {
-            NewItemIndex = ToIndex;
-        }
-        else if (FromIndex < ToIndex)
-        {
-            if (SlotItemIndex > FromIndex && SlotItemIndex <= ToIndex)
-                NewItemIndex = SlotItemIndex - 1;
-        }
-        else
-        {
-            if (SlotItemIndex >= ToIndex && SlotItemIndex < FromIndex)
-                NewItemIndex = SlotItemIndex + 1;
-        }
-
-        if (NewItemIndex != SlotItemIndex)
-        {
-            SlotItemIndex = NewItemIndex;
-            OnHotbarChanged.Broadcast(SlotIndex);
-        }
-    }
-
     if (EquippedItemIndex == FromIndex)
     {
         EquippedItemIndex = ToIndex;
+        EquipActiveItem();
+        OnActiveSlotChanged.Broadcast(ToIndex);
         return;
-    }
-
-    if (FromIndex < ToIndex)
-    {
-        if (EquippedItemIndex > FromIndex && EquippedItemIndex <= ToIndex)
-            EquippedItemIndex--;
-    }
-    else
-    {
-        if (EquippedItemIndex >= ToIndex && EquippedItemIndex < FromIndex)
-            EquippedItemIndex++;
     }
 }
 
