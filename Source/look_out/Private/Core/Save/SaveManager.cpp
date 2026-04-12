@@ -185,8 +185,19 @@ void USaveManager::CollectWorldData(UGameSaveGame* SaveGame)
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveable::StaticClass(), Actors);
 
+	AActor* ItemInHand = nullptr;
+	if (ABaseCharacter* Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		if (UPlayerInventoryComponent* Inventory = Player->PlayerInventoryComponent)
+		{
+			ItemInHand = Inventory->ItemInHand;
+		}
+	}
+	
 	for (AActor* Actor : Actors)
 	{
+		if (Actor == ItemInHand) continue;
+		
 		FActorSaveRecord Record;
 		Record.ActorClass = Actor->GetClass();
 		Record.Location = Actor->GetActorLocation();
