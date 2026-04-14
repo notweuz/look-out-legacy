@@ -261,7 +261,7 @@ void USaveManager::SpawnRestoredActors(UGameSaveGame* SaveGame)
 		}
 
 		ISaveable::Execute_OnLoad(Actor, Record.Bytes);
-		ISaveable::Execute_OnPostLoadFromSave(Actor);
+		ISaveable::Execute_OnPostLoad(Actor);
 	}
 
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();

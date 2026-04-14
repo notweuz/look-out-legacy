@@ -16,7 +16,7 @@ class LOOK_OUT_API ISaveable
 public:
 	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnSave(TArray<uint8>& OutBytes);
 	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnLoad(const TArray<uint8>& InBytes);
-	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnPostLoadFromSave();
+	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnPostLoad();
 	UFUNCTION(BlueprintNativeEvent, Category="Saving") void DestroyPermanently();
 	
 	static void DefaultSaveObject(UObject* Object, TArray<uint8>& OutBytes);
