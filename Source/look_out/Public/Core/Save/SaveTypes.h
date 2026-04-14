@@ -9,6 +9,7 @@ struct FItemSaveRecord
     GENERATED_BODY()
 
     UPROPERTY(SaveGame) TSoftClassPtr<AActor> ItemClass;
+    UPROPERTY(SaveGame) TSoftClassPtr<UItemDefinition> ItemDefinition;
     UPROPERTY(SaveGame) TArray<uint8> Bytes;
 };
 

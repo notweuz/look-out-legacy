@@ -33,6 +33,7 @@ bool UPlayerInventoryComponent::TryPickup(AActor* Actor)
 
 	FItemSaveRecord Record;
 	Record.ItemClass = Actor->GetClass();
+	Record.ItemDefinition = Def;
 	ISaveable::Execute_OnSave(Actor, Record.Bytes);
 
 	if (AddItem(Record))
