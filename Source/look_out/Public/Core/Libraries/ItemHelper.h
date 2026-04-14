@@ -47,6 +47,64 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Item|Utils")
 	static void GetStorageProperty(const FItemSaveRecord& Record, TArray<FItemSaveRecord>& OutItems, float& OutCurrentWeight);
 
+	
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetFloatProperty(FItemSaveRecord& Record, FName PropertyName, float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetIntProperty(FItemSaveRecord& Record, FName PropertyName, int32 Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetBoolProperty(FItemSaveRecord& Record, FName PropertyName, bool Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetStringProperty(FItemSaveRecord& Record, FName PropertyName, const FString& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetTextProperty(FItemSaveRecord& Record, FName PropertyName, const FText& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetNameProperty(FItemSaveRecord& Record, FName PropertyName, FName Value);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool IsValidItemRecord(const FItemSaveRecord& Record);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool HasProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static TArray<FName> GetAllPropertyNames(const FItemSaveRecord& Record);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static float GetItemWeight(const FItemSaveRecord& Record);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static FText GetItemDisplayName(const FItemSaveRecord& Record);
+
+	
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static FItemSaveRecord CreateItemRecord(TSubclassOf<AActor> ItemClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static FItemSaveRecord CreateItemRecordFromDefinition(UItemDefinition* ItemDef);
+
+	
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void SetStorageProperty(FItemSaveRecord& Record, const TArray<FItemSaveRecord>& Items, float CurrentWeight);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static int32 GetStorageItemCount(const FItemSaveRecord& Record);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool IsStorageEmpty(const FItemSaveRecord& Record);
+
+	
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool AreItemsEqual(const FItemSaveRecord& RecordA, const FItemSaveRecord& RecordB);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool IsSameItemType(const FItemSaveRecord& RecordA, const FItemSaveRecord& RecordB);
+
 private:
 	static void LoadSavePropertiesInternal(UObject* TargetObject, const TArray<uint8>& Bytes);
 };
