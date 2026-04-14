@@ -1,8 +1,7 @@
-// Copyright (c) 2025 Team Diff Studios. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "Core/Data/ItemDefinition.h"
 #include "Core/Save/SaveTypes.h"
 #include "ItemHelper.generated.h"
@@ -13,25 +12,41 @@ class LOOK_OUT_API UItemHelper : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Inventory Definition|Manual")
+	UFUNCTION(BlueprintPure, Category = "Inventory Definition|Manual")
 	static UItemDefinition* BuildItemDefinition(
 		FText Name,
-		FText Description, 
-		float Weight, 
-		UTexture2D* Icon, 
+		FText Description,
+		float Weight,
+		UTexture2D* Icon,
 		TSubclassOf<AActor> ActorClass,
-		UObject* Outer,
-		float MaxHealth
+		UObject* Outer = nullptr,
+		float MaxHealth = 100.0f
 	);
-	
-	UFUNCTION(BlueprintCallable, Category = "Save|Utils")
-	static void LoadSaveProperties(UObject* TargetObject, const TArray<uint8>& Bytes);
-	
-	UFUNCTION(BlueprintCallable, Category = "Save|Utils", CustomThunk, meta = (CustomStructureParam = "OutValue", BlueprintInternalUseOnly = "true"))
-	static bool GetSaveGameProperty(const FItemSaveRecord& Record, FName PropertyName, int32& OutValue);
-	
-	DECLARE_FUNCTION(execGetSaveGameProperty);
 
-	UFUNCTION(BlueprintPure, Category = "Save|Utils")
-	static void GetItemStorage(const FItemSaveRecord& Record, TArray<FItemSaveRecord>& OutItems, float& OutCurrentWeight);
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static void LoadSaveProperties(UObject* TargetObject, const TArray<uint8>& Bytes);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static float GetFloatProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static int32 GetIntProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static bool GetBoolProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static FString GetStringProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static FText GetTextProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static FName GetNameProperty(const FItemSaveRecord& Record, FName PropertyName);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Utils")
+	static void GetStorageProperty(const FItemSaveRecord& Record, TArray<FItemSaveRecord>& OutItems, float& OutCurrentWeight);
+
+private:
+	static void LoadSavePropertiesInternal(UObject* TargetObject, const TArray<uint8>& Bytes);
 };
