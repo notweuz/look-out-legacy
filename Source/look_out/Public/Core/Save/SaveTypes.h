@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Core/Data/ItemDefinition.h"
 #include "SaveTypes.generated.h"
 
 USTRUCT(BlueprintType)
