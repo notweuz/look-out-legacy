@@ -88,6 +88,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
 	static FItemSaveRecord CreateItemRecordFromDefinition(UItemDefinition* ItemDef);
 
+	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
+	static FItemSaveRecord CreateItemRecordFromActor(AActor* Actor);
+
 	
 	UFUNCTION(BlueprintCallable, Category = "Item|Utils")
 	static void SetStorageProperty(FItemSaveRecord& Record, const TArray<FItemSaveRecord>& Items, float CurrentWeight);

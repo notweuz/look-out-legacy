@@ -4,6 +4,7 @@
 #include "Core/Components/StorageComponent.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "Utils/SaveUtils.h"
 
 UItemDefinition* UItemHelper::BuildItemDefinition(FText Name, FText Description, float Weight,
                                                   UTexture2D* Icon, TSubclassOf<AActor> ActorClass,
@@ -450,6 +451,20 @@ FItemSaveRecord UItemHelper::CreateItemRecordFromDefinition(UItemDefinition* Ite
 		Record.ItemClass = ItemDef->ActorClass;
 		Record.Bytes.Empty();
 	}
+	return Record;
+}
+
+FItemSaveRecord UItemHelper::CreateItemRecordFromActor(AActor* Actor)
+{
+	FItemSaveRecord Record;
+	if (!IsValid(Actor))
+	{
+		return Record;
+	}
+
+	Record.ItemClass = Actor->GetClass();
+	
+	SaveUtils::Save(Actor, Record.Bytes);
 	return Record;
 }
 
