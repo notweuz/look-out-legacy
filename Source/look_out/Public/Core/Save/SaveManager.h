@@ -39,6 +39,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "Save")
     TArray<FSaveSlotMeta> GetAllSlots() const { return Registry ? Registry->Slots : TArray<FSaveSlotMeta>{}; }
+    
+    UFUNCTION(BlueprintPure, Category = "Save")
+    bool SlotExists(const FString& SlotName) const;
 
     UFUNCTION(BlueprintPure, Category = "Save")
     UGameSaveGame* GetSave(const FString& SlotName) const;

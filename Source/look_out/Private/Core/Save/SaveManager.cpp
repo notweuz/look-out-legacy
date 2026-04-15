@@ -40,7 +40,14 @@ void USaveManager::Deinitialize()
 void USaveManager::CreateSave(const FString& BaseName)
 {
 	const FString SlotName = GenerateSlotName(BaseName);
-
+	
+	if (SlotExists(SlotName))
+	{
+		UNotificationSubsystem* NotificationSubsystem = GetGameInstance()->GetSubsystem<UNotificationSubsystem>();
+		NotificationSubsystem->SendNotification(FText::FromString("Save with that name already exist"), 5.0f, ENotificationType::Error);
+		return;
+	}
+	
 	UGameSaveGame* SaveGame = Cast<UGameSaveGame>(
 		UGameplayStatics::CreateSaveGameObject(UGameSaveGame::StaticClass()));
 
@@ -121,6 +128,16 @@ void USaveManager::DeleteSave(const FString& SlotName)
 	SaveRegistry();
 
 	OnSaveSlotsChanged.Broadcast(Registry->Slots);
+}
+
+bool USaveManager::SlotExists(const FString& SlotName) const
+{
+	for (FSaveSlotMeta& Meta : Registry->Slots)
+	{
+		if (Meta.SlotName == SlotName)
+			return true;
+	}
+	return false;
 }
 
 UGameSaveGame* USaveManager::GetSave(const FString& SlotName) const
