@@ -6,33 +6,21 @@
 #include "Core/Save/SaveManager.h"
 #include "Kismet/GameplayStatics.h"
 
-void UBaseSaveEntryWidget::OnDeleteButtonPressed()
+void UBaseSaveEntryWidget::OnSelectButtonClicked()
 {
-	USaveManager* SaveManager = GetGameInstance()->GetSubsystem<USaveManager>();
-	if (!SaveManager) return;
-	
-	SaveManager->DeleteSave(SaveName);
-}
-
-void UBaseSaveEntryWidget::OnLoadButtonPressed()
-{
-	USaveManager* SaveManager = GetGameInstance()->GetSubsystem<USaveManager>();
-	SaveManager->ActiveSlotName = SaveName;
-	UGameplayStatics::OpenLevel(this, TEXT("MainMap"));
+	OnSaveSelected.Broadcast(this);
 }
 
 void UBaseSaveEntryWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	DeleteButton->OnClicked.AddDynamic(this, &UBaseSaveEntryWidget::OnDeleteButtonPressed);
-	LoadButton->OnClicked.AddDynamic(this, &UBaseSaveEntryWidget::OnLoadButtonPressed);
+	SelectButton->OnClicked.AddDynamic(this, &UBaseSaveEntryWidget::OnSelectButtonClicked);
 }
 
 void UBaseSaveEntryWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 	
-	DeleteButton->OnClicked.RemoveAll(this);
-	LoadButton->OnClicked.RemoveAll(this);
+	SelectButton->OnClicked.RemoveAll(this);
 }

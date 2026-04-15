@@ -43,14 +43,13 @@ struct FWorldStateData
 {
     GENERATED_BODY()
 
-    UPROPERTY(SaveGame, BlueprintReadWrite)
-    TMap<FName, bool> Flags;
+    UPROPERTY(SaveGame, BlueprintReadWrite) TMap<FName, bool> Flags;
+    UPROPERTY(SaveGame, BlueprintReadWrite) TMap<FName, int32> Counters;
 
-    UPROPERTY(SaveGame, BlueprintReadWrite)
-    TMap<FName, int32> Counters;
-
-    UPROPERTY(SaveGame, BlueprintReadWrite)
-    float PlaytimeSeconds = 0.f;
+    UPROPERTY(SaveGame, BlueprintReadWrite) float PlaytimeSeconds = 0.f;
+    
+    UPROPERTY(SaveGame, BlueprintReadWrite) int Day = 0;
+    UPROPERTY(SaveGame, BlueprintReadWrite) float Time = 0;
 
     void SetFlag(FName Key, bool Value) { Flags.Add(Key, Value); }
     bool GetFlag(FName Key, bool Default = false) const
@@ -77,26 +76,16 @@ class LOOK_OUT_API UGameSaveGame : public USaveGame
     GENERATED_BODY()
 
 public:
-    UPROPERTY(SaveGame, BlueprintReadOnly)
-    FString SlotName;
+    UPROPERTY(SaveGame, BlueprintReadOnly) FString SlotName;
+    UPROPERTY(SaveGame, BlueprintReadOnly) FDateTime SavedAt;
 
-    UPROPERTY(SaveGame, BlueprintReadOnly)
-    FDateTime SavedAt;
+    UPROPERTY(SaveGame, BlueprintReadOnly) float PlaytimeSeconds = 0.f;
+    UPROPERTY(SaveGame) TArray<FActorSaveRecord> ActorRecords;
 
-    UPROPERTY(SaveGame, BlueprintReadOnly)
-    float PlaytimeSeconds = 0.f;
-
-    UPROPERTY(SaveGame)
-    TArray<FActorSaveRecord> ActorRecords;
-
-    UPROPERTY(SaveGame, BlueprintReadWrite)
-    FWorldStateData WorldState;
-
-    UPROPERTY(SaveGame)
-    FPlayerSaveData PlayerData;
+    UPROPERTY(SaveGame, BlueprintReadWrite) FWorldStateData WorldState;
+    UPROPERTY(SaveGame) FPlayerSaveData PlayerData;
     
-    UPROPERTY(SaveGame)
-    bool bFirstStart = true;
+    UPROPERTY(SaveGame) bool bFirstStart = true;
 };
 
 UCLASS()

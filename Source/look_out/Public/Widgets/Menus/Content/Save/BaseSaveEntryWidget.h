@@ -8,6 +8,9 @@
 #include "Components/TextBlock.h"
 #include "BaseSaveEntryWidget.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveSelected, UBaseSaveEntryWidget*, Widget);
+
 /**
  * 
  */
@@ -19,20 +22,23 @@ class LOOK_OUT_API UBaseSaveEntryWidget : public UUserWidget
 public:
 	FString SaveName;
 	
-	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save")
+	UPROPERTY(BlueprintAssignable, Category="Save")
+	FOnSaveSelected OnSaveSelected;
+	
+	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save|Info")
 	UTextBlock* SaveNameText;
 	
-	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save")
+	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save|Info")
+	UTextBlock* DaysPassedText;
+	
+	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save|Info")
 	UTextBlock* SaveDateText;
 	
 	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save")
-	UButton* DeleteButton;
+	UButton* SelectButton;
 	
-	UPROPERTY(meta=(BindWidget), BlueprintReadWrite, Category="Save")
-	UButton* LoadButton;
-	
-	UFUNCTION() void OnDeleteButtonPressed();
-	UFUNCTION() void OnLoadButtonPressed();
+	UFUNCTION() void OnSelectButtonClicked();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Save") void OnStateChanged(bool Selected);
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/EditableTextBox.h"
-#include "Components/ListView.h"
 #include "Components/ScrollBox.h"
 #include "Core/Save/SaveTypes.h"
 #include "Save/BaseSaveEntryWidget.h"
@@ -20,6 +19,9 @@ class LOOK_OUT_API UBaseSaveMenuContentWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY() FString SelectedSaveName;
+	UPROPERTY() UBaseSaveEntryWidget* SelectedSaveEntryWidget;
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Save")
 	TSubclassOf<UBaseSaveEntryWidget> SaveEntryWidgetClass;
 	
@@ -37,6 +39,7 @@ public:
 
 	UFUNCTION() void OnSaveSlotsChanged(const TArray<FSaveSlotMeta>& SaveSlots);
 	UFUNCTION() void OnCreateButtonClicked();
+	UFUNCTION() void OnSaveSelected(UBaseSaveEntryWidget* Widget);
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;

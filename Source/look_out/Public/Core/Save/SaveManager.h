@@ -40,6 +40,8 @@ public:
     UFUNCTION(BlueprintPure, Category = "Save")
     TArray<FSaveSlotMeta> GetAllSlots() const { return Registry ? Registry->Slots : TArray<FSaveSlotMeta>{}; }
 
+    UFUNCTION(BlueprintPure, Category = "Save")
+    UGameSaveGame* GetSave(const FString& SlotName) const;
 
     UFUNCTION(BlueprintCallable, Category = "Save|WorldState")
     void SetFlag(const FString& SlotName, FName Key, bool Value);
@@ -52,7 +54,6 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "Save|WorldState")
     int32 GetCounter(const FString& SlotName, FName Key);
-    
 
     UFUNCTION(BlueprintCallable, Category = "Save|Global")
     void IncrementGlobalCounter(FName Key, int32 Amount = 1);

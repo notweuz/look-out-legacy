@@ -123,6 +123,10 @@ void USaveManager::DeleteSave(const FString& SlotName)
 	OnSaveSlotsChanged.Broadcast(Registry->Slots);
 }
 
+UGameSaveGame* USaveManager::GetSave(const FString& SlotName) const
+{
+	return Cast<UGameSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+}
 
 void USaveManager::SetFlag(const FString& SlotName, FName Key, bool Value)
 {
