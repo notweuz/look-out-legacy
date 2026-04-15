@@ -14,10 +14,10 @@ class LOOK_OUT_API ISaveable
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnSave(TArray<uint8>& OutBytes);
-	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnLoad(const TArray<uint8>& InBytes);
-	UFUNCTION(BlueprintNativeEvent, Category="Saving") void OnPostLoad();
-	UFUNCTION(BlueprintNativeEvent, Category="Saving") void DestroyPermanently();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Saving") void OnSave(TArray<uint8>& OutBytes);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Saving") void OnLoad(const TArray<uint8>& InBytes);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Saving") void OnPostLoad();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Saving") void DestroyPermanently();
 	
 	static void DefaultSaveObject(UObject* Object, TArray<uint8>& OutBytes);
 	static void DefaultLoadObject(UObject* Object, const TArray<uint8>& InBytes);
